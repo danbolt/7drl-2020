@@ -1,4 +1,6 @@
 
+// --- GAME LOGIC STUFF ---
+
 /*
  * This will:
  * - always match its index in the Gameplay.entities array
@@ -54,6 +56,13 @@ const DexterityComponent = function(value) {
   this.value = value ? value : 1.0;
 };
 
+// --- INPUT CONTROL STUFF ---
+const PlayerControlComponent = function() {};
+
+// TODO: Various types of AI control
+const AIControlComponent = function() {}
+
+// --- RENDERING STUFF ---
 const MeshComponent = function() {
   this.mesh = null;
 };

@@ -11,9 +11,10 @@ let Gameplay = function () {
   this.gameCameraPos = new Phaser.Math.Vector2();
   this.gameCameraTheta = 0.0;
   this.gameCamera = null;
-  this.ROTScheduler = null;
 
   this.entities = [];
+  this.ROTScheduler = null;
+  this.nextTurnReady = true;
 };
 Gameplay.prototype.preload = function () {
   this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
@@ -27,8 +28,8 @@ Gameplay.prototype.create = function () {
   this.gameCameraTheta = 0.0;
   this.setupInput();
 
-  // TODO: remove me later (dummy setup)
-  for (let i = 0; i < 40; i++) {
+  // TODO: remove me later and add real ship placement (dummy setup)
+  for (let i = 0; i < 15; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20)));
@@ -37,7 +38,15 @@ Gameplay.prototype.create = function () {
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(50 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
-    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(Math.random() > 0.5 ? 0xFF00FF : 0xFF0000));
+
+    if (i === 0) {
+      AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());
+    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
+    } else {
+      AddComponent(e, 'AIControlComponent', new AIControlComponent());
+    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
+    }
+
     this.entities.push(e);
   }
 
@@ -49,22 +58,7 @@ Gameplay.prototype.create = function () {
       getSpeed: () => { return dex.value; }
     }, true);
   });
-
-  // Dummy auto-turn order: fix this later
-  this.time.addEvent({
-    repeat: 100,
-    delay: 500,
-    callback: () => {
-      const nextTurn = this.ROTScheduler.next();
-      console.log('the next turn is ' + nextTurn.indComponent.value + ' with a speed of ' + nextTurn.getSpeed());
-
-      const nextEntity = this.entities[nextTurn.indComponent.value];
-      ViewEntities([nextEntity], ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
-        position.x += Math.cos(rotation.value) * velocity.value;
-        position.y += Math.sin(rotation.value) * velocity.value;
-      });
-    }
-  });
+  this.nextTurnReady = true;
 
   this.events.on('shutdown', this.shutdown, this);
 };
@@ -72,13 +66,18 @@ Gameplay.prototype.update = function () {
   this.updateCameraFromInput();
   this.update3DScene();
 
-  this.updateSystems();
+  this.updateViewSystems();
+
+  if (this.nextTurnReady) {
+    this.doNextTurn();
+  }
 };
 Gameplay.prototype.shutdown = function () {
   this.events.removeListener('shutdown');
 
   this.entities = [];
   this.ROTScheduler = null;
+  this.nextTurnReady = true;
 
   this.teardown3DScene();
 };

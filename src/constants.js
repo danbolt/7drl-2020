@@ -4,7 +4,7 @@ const GAME_HEIGHT = 240;
 const DEFAULT_IMAGE_MAP = 'test_sheet_image';
 const DEFAULT_IMAGE_SPRITE = DEFAULT_IMAGE_MAP + '_whole_image';
 
-const CAMERA_DISTANCE = 10.0;
+const CAMERA_DISTANCE = 6.0;
 const CAMERA_TURN_INVERT = -1;
 const CAMERA_TURN_SPEED = 0.1 * CAMERA_TURN_INVERT;
 const CAMERA_PAN_SPEED = 0.3;
