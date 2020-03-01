@@ -11,6 +11,8 @@ let Gameplay = function () {
   this.gameCameraPos = new Phaser.Math.Vector2();
   this.gameCameraTheta = 0.0;
   this.gameCamera = null;
+
+  this.entities = [];
 };
 Gameplay.prototype.preload = function () {
   this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
@@ -24,14 +26,28 @@ Gameplay.prototype.create = function () {
   this.gameCameraTheta = 0.0;
   this.setupInput();
 
+  // TODO: remove me
+  for (let i = 0; i < 40; i++) {
+    let e = NewEntity();
+    AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30, Math.random() * 30));
+    AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+    AddComponent(e, 'MeshComponent', new MeshComponent());
+    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent());
+    this.entities.push(e);
+  }
+
   this.events.on('shutdown', this.shutdown, this);
 };
 Gameplay.prototype.update = function () {
   this.updateCameraFromInput();
   this.update3DScene();
+
+  this.updateSystems();
 };
 Gameplay.prototype.shutdown = function () {
   this.events.removeListener('shutdown');
+
+  this.entities = [];
 
   this.teardown3DScene();
 };
@@ -68,12 +84,6 @@ Gameplay.prototype.setup3DScene = function () {
     that.three.renderer.state.reset();
     that.three.renderer.render(that.three.scene, that.three.camera);
   }
-
-  let debugWallGeometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-  let debugWallMaterial = new THREE.MeshBasicMaterial( { color: 0x00FF00 } );
-  let debugWallMesh = new THREE.Mesh( debugWallGeometry, debugWallMaterial );
-  this.three.scene.add(debugWallMesh);
-
 };
 Gameplay.prototype.teardown3DScene = function () {
   //
@@ -108,3 +118,4 @@ Gameplay.prototype.update3DScene = function() {
   this.gameCamera.position.z = this.gameCameraPos.y + (Math.sin(this.gameCameraTheta) * CAMERA_DISTANCE);
   this.gameCamera.lookAt(this.gameCameraPos.x, 0, this.gameCameraPos.y);
 };
+

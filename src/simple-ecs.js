@@ -56,6 +56,15 @@ const HasNoneComponents = function (entity, componentNames) {
   return hasNoneOfTheComponents;
 };
 
+const RemoveComponentFromAllEntities = function (entities, componentName) {
+  for (let i = 0; i < entities.length; i++) {
+    const candidate = entities[i];
+    if (HasComponent(candidate, componentName)) {
+      RemoveComponent(candidate, componentName);
+    }
+  }
+};
+
 const ViewEntities = function(entities, includeComponents, excludeComponents, viewFunction) {
   const ViewEntity = function (entity, shouldHaveComponents, viewFunction) {
     let argsToPush = [entity];
