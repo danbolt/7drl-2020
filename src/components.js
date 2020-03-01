@@ -20,7 +20,6 @@ const ECSIndexComponent = function(value) {
   this.value = value;
 };
 
-
 const PositionComponent = function (x, y) {
   this.x = x ? x : 0;
   this.y = y ? y : x;
@@ -28,6 +27,10 @@ const PositionComponent = function (x, y) {
 
 const RotationComponent = function(rotation) {
   this.value = rotation ? rotation : 0;
+};
+
+const ForwardVelocityComponent = function(velocity) {
+  this.value = velocity ? velocity : 0.0;
 };
 
 const DexterityComponent = function(value) {

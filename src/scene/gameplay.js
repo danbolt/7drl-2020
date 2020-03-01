@@ -32,6 +32,7 @@ Gameplay.prototype.create = function () {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
+    AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(50 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
@@ -46,6 +47,22 @@ Gameplay.prototype.create = function () {
       indComponent: ecsIndex,
       getSpeed: () => { return dex.value; }
     }, true);
+  });
+
+  // Dummy auto-turn order: fix this later
+  this.time.addEvent({
+    repeat: 100,
+    delay: 500,
+    callback: () => {
+      const nextTurn = this.ROTScheduler.next();
+      console.log('the next turn is ' + nextTurn.indComponent.value + ' with a speed of ' + nextTurn.getSpeed());
+
+      const nextEntity = this.entities[nextTurn.indComponent.value];
+      ViewEntities([nextEntity], ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
+        position.x += Math.cos(rotation.value) * velocity.value;
+        position.y += Math.sin(rotation.value) * velocity.value;
+      });
+    }
   });
 
   this.events.on('shutdown', this.shutdown, this);
