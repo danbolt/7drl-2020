@@ -11,20 +11,27 @@ Gameplay.prototype.doNextTurn = function() {
 
   const nextEntity = [this.entities[nextTurn.indComponent.value]];
 
-  ViewEntities(nextEntity, ['PlayerControlComponent', 'PositionComponent'], [], (entity, playerControl, position) => {
-    this.gameCameraPos.x = position.x;
-    this.gameCameraPos.y = position.y;
+  ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent'], [], (entity, skipper, playerControl) => {
+    //
+  });
+
+  ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent'], [], (entity, skipper, playerControl) => {
+    //
   });
 
   ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent'], [], (entity, aiControl, position) => {
     // TODO: add ai stuff
   });
 
+  ViewEntities(nextEntity, ['PlayerControlComponent', 'PositionComponent'], [], (entity, playerControl, position) => {
+    this.gameCameraPos.x = position.x;
+    this.gameCameraPos.y = position.y;
+  });
+
   ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
     position.x += Math.cos(rotation.value) * velocity.value;
     position.y += Math.sin(rotation.value) * velocity.value;
   });
-
 
   // Delay a small amount before starting the next turn
   this.time.addEvent({

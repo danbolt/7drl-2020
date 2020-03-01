@@ -29,7 +29,7 @@ Gameplay.prototype.create = function () {
   this.setupInput();
 
   // TODO: remove me later and add real ship placement (dummy setup)
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 30; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20)));
@@ -38,16 +38,29 @@ Gameplay.prototype.create = function () {
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(50 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
-
     if (i === 0) {
       AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());
-    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
+      AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
     } else {
       AddComponent(e, 'AIControlComponent', new AIControlComponent());
-    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
+      AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
     }
-
     this.entities.push(e);
+
+    let skipper = NewEntity();
+    AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(i));
+    AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
+    AddComponent(skipper, 'MaxSpeedComponent', new MaxSpeedComponent(8.0));
+    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(40));
+    if (HasComponent(e, 'PlayerControlComponent')) {
+      AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
+    } else {
+      AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
+    }
+    i++;
+    AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(i));
+    this.entities.push(skipper);
+
   }
 
   // Add entities with deterity to the turn order

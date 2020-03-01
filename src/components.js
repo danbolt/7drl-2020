@@ -62,6 +62,27 @@ const PlayerControlComponent = function() {};
 // TODO: Various types of AI control
 const AIControlComponent = function() {}
 
+const ShipReferenceComponent = function (index) {
+  if (index === undefined) {
+    throw new Error('ECS index value was undefined');
+  }
+
+  if (!Number.isInteger(index)) {
+    throw new Error('ECS index value was not an integer');
+  }
+
+  if (index < 0) {
+    throw new Error('ECS index value was negative');
+  }
+
+  this.index = index;
+};
+
+const SkipperComponent = function() {};
+const MaxSpeedComponent = function(speed) {
+  this.speed = speed ? speed : 0.0;
+};
+
 // --- RENDERING STUFF ---
 const MeshComponent = function() {
   this.mesh = null;
