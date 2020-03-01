@@ -11,6 +11,7 @@ let Gameplay = function () {
   this.gameCameraPos = new Phaser.Math.Vector2();
   this.gameCameraTheta = 0.0;
   this.gameCamera = null;
+  this.ROTScheduler = null;
 
   this.entities = [];
 };
@@ -26,15 +27,26 @@ Gameplay.prototype.create = function () {
   this.gameCameraTheta = 0.0;
   this.setupInput();
 
-  // TODO: remove me
+  // TODO: remove me later (dummy setup)
   for (let i = 0; i < 40; i++) {
     let e = NewEntity();
+    AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+    AddComponent(e, 'DexterityComponent', new DexterityComponent(50 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
     AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(Math.random() > 0.5 ? 0xFF00FF : 0xFF0000));
     this.entities.push(e);
   }
+
+  // Add entities with deterity to the turn order
+  this.ROTScheduler = new ROT.Scheduler.Speed();
+  ViewEntities(this.entities, ['DexterityComponent', 'ECSIndexComponent'], [], (entity, dex, ecsIndex) => {
+    this.ROTScheduler.add({
+      indComponent: ecsIndex,
+      getSpeed: () => { return dex.value; }
+    }, true);
+  });
 
   this.events.on('shutdown', this.shutdown, this);
 };
@@ -48,6 +60,7 @@ Gameplay.prototype.shutdown = function () {
   this.events.removeListener('shutdown');
 
   this.entities = [];
+  this.ROTScheduler = null;
 
   this.teardown3DScene();
 };
