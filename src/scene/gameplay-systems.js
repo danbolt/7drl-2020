@@ -15,8 +15,13 @@ Gameplay.prototype.doNextTurn = function() {
     //
   });
 
-  ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent'], [], (entity, skipper, playerControl) => {
-    //
+  ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, ai, shipRef) => {
+    // TODO: make better skipper AI
+    const shipIndex = shipRef.value;
+    const shipToControl = this.entities[shipIndex];
+
+    const rotation = GetComponent(shipToControl, 'RotationComponent');
+    rotation.value += 0.8;
   });
 
   ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent'], [], (entity, aiControl, position) => {
@@ -35,7 +40,7 @@ Gameplay.prototype.doNextTurn = function() {
 
   // Delay a small amount before starting the next turn
   this.time.addEvent({
-    delay: 500,
+    delay: 405,
     callback: () => {
       this.nextTurnReady = true;
     }
