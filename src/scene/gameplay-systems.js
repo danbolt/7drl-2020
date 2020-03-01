@@ -1,7 +1,7 @@
 Gameplay.prototype.updateSystems = function() {
   // If something needs a dummy 3D cube, add it
   ViewEntities(this.entities, ['MeshComponent', 'RequestDummy3DAppearanceComponent'], [], (entity, mesh, request3D) => {
-    mesh.mesh = new THREE.Mesh( DUMMY_3D_CUBE_GEOM, DUMMY_3D_CUBE_MATERIAL );
+    mesh.mesh = new THREE.Mesh( DUMMY_3D_CUBE_GEOM, new THREE.MeshBasicMaterial( { color: request3D.hexColor } ) );
     this.three.scene.add(mesh.mesh);
   });
   // TODO: add requests for GLTF models

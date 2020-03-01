@@ -11,4 +11,3 @@ const CAMERA_PAN_SPEED = 0.3;
 const DOUBLE_CAMERA_PAN_SPEED = CAMERA_PAN_SPEED * 2.0;
 
 const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
-const DUMMY_3D_CUBE_MATERIAL = new THREE.MeshBasicMaterial( { color: 0x00FF00 } );

@@ -29,10 +29,10 @@ Gameplay.prototype.create = function () {
   // TODO: remove me
   for (let i = 0; i < 40; i++) {
     let e = NewEntity();
-    AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30, Math.random() * 30));
+    AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'MeshComponent', new MeshComponent());
-    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent());
+    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(Math.random() > 0.5 ? 0xFF00FF : 0xFF0000));
     this.entities.push(e);
   }
 
