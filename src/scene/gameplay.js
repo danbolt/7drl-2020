@@ -31,6 +31,7 @@ Gameplay.prototype.create = function () {
   for (let i = 0; i < 40; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20)));
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));

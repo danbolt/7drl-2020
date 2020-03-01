@@ -33,6 +33,23 @@ const ForwardVelocityComponent = function(velocity) {
   this.value = velocity ? velocity : 0.0;
 };
 
+const HullHealthComponent = function(maxHealth, currentHealth) {
+  if (!maxHealth) {
+    throw new Error('No max health value');
+  }
+
+  if (!(typeof maxHealth === "number")) {
+    throw new Error('Max health is not a number');
+  }
+
+  if (maxHealth <= 0) {
+    throw new Error('Max health must be a positive non-zero number');
+  }
+
+  this.maxHealth = maxHealth;
+  this.health = currentHealth ? currentHealth : this.maxHealth;
+}
+
 const DexterityComponent = function(value) {
   this.value = value ? value : 1.0;
 };
