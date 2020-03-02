@@ -56,10 +56,13 @@ Gameplay.prototype.doNextTurn = function() {
     // TODO: add ai stuff
   });
 
+  /*
+  // Lock the camera on the player when it moves
   ViewEntities(nextEntity, ['PlayerControlComponent', 'PositionComponent'], [], (entity, playerControl, position) => {
     this.gameCameraPos.x = position.x;
     this.gameCameraPos.y = position.y;
   });
+  */
 
   ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
     position.x += Math.cos(rotation.value) * velocity.value;
@@ -93,7 +96,7 @@ Gameplay.prototype.doNextTurn = function() {
   // Delay a small amount before starting the next turn
   if (canDoNextTurn)
   this.time.addEvent({
-    delay: 405,
+    delay: 100,
     callback: () => {
       this.nextTurnReady = true;
     }
@@ -113,12 +116,16 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     });
   };
 
-  const questionText = this.add.bitmapText(16, 16, 'newsgeek', dialogue.question, DEFAULT_TEXT_SIZE);
+  const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'newsgeek', dialogue.question, DEFAULT_TEXT_SIZE);
+  questionText.setCenterAlign();
+  questionText.setOrigin(0.5);
   texts.push(questionText);
   for (let i = 0; i < dialogue.options.length; i++) {
     const option = dialogue.options[i];
 
-    let optionText = this.add.bitmapText(32, 32 + (DEFAULT_TEXT_SIZE * i), 'newsgeek', option.text, DEFAULT_TEXT_SIZE);
+    let optionText = this.add.bitmapText(GAME_WIDTH * 0.5, (GAME_HEIGHT * 0.5) + (DEFAULT_TEXT_SIZE * (i + 1.2)), 'newsgeek', option.text, DEFAULT_TEXT_SIZE);
+    optionText.setCenterAlign();
+    optionText.setOrigin(0.5);
     texts.push(optionText);
 
     let key = this.input.keyboard.addKey(option.keyCode);
@@ -131,11 +138,17 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
   this.lockPanning = true;
 
   const shipPostion  = GetComponent(shipEntityToRedirect, 'PositionComponent');
-  // Move the camera to our ship
-  this.gameCameraPos.x = shipPostion.x;
-  this.gameCameraPos.y = shipPostion.y;
 
-  let promptText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.25, 'newsgeek', 'Hold W or D to redirect.\n Press space to confirm.', DEFAULT_TEXT_SIZE);
+  // Move the camera to our ship
+  let t = this.add.tween({
+    targets: this.gameCameraPos,
+    x: shipPostion.x,
+    y: shipPostion.y,
+    duration: 300,
+    easing: Phaser.Math.Easing.Cubic.In
+  });
+
+  let promptText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.25, 'newsgeek', 'Hold A or D to redirect.\n Press enter to confirm.', DEFAULT_TEXT_SIZE);
   promptText.setCenterAlign();
 
   const shipRotation = GetComponent(shipEntityToRedirect, 'RotationComponent');
@@ -162,7 +175,7 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
   };
   this.events.addListener('update', updateArrowPerTick, this);
 
-  const confirmKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+  const confirmKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
   const confirmCallback = () => {
     this.events.removeListener('update', updateArrowPerTick, this);
     shipRotation.value = rotation;
@@ -183,6 +196,7 @@ Gameplay.prototype.updateViewSystems = function() {
   // If something needs a dummy 3D cube, add it
   ViewEntities(this.entities, ['MeshComponent', 'RequestDummy3DAppearanceComponent'], [], (entity, mesh, request3D) => {
     mesh.mesh = new THREE.Mesh( DUMMY_3D_CUBE_GEOM, new THREE.MeshBasicMaterial( { color: request3D.hexColor } ) );
+    mesh.mesh.userData.entity = entity;
     this.three.scene.add(mesh.mesh);
   });
   // TODO: add requests for GLTF models
@@ -197,9 +211,6 @@ Gameplay.prototype.updateViewSystems = function() {
   ViewEntities(this.entities, ['RotationComponent', 'MeshComponent'], [], (entity, rotation, mesh) => {
     mesh.mesh.rotation.set(0, 0, 0);
     mesh.mesh.setRotationFromAxisAngle(rotationSetViewVector, rotation.value);
-  });
-  ViewEntities(this.entities, ['MeshComponent'], ['RotationComponent'], (entity, mesh) => {
-    mesh.mesh.rotation.set(0, 0, 0);
   });
   // TODO: update mesh position/rotation for GLTFs
 };

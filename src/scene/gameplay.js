@@ -4,6 +4,7 @@ let Gameplay = function () {
     renderer: null,
     camera: null,
     view: null,
+    raycaster: null,
   };
 
   this.keys = null;
@@ -16,6 +17,10 @@ let Gameplay = function () {
   this.ROTScheduler = null;
   this.nextTurnReady = true;
 
+  this.currentlyPointingEntity = null;
+
+  this.playerShipUI = null;
+
   this.lockPanning = false;
 };
 Gameplay.prototype.preload = function () {
@@ -23,6 +28,96 @@ Gameplay.prototype.preload = function () {
   this.load.bitmapFont('newsgeek', 'asset/font/newsgeek.png', 'asset/font/newsgeek.fnt');
 
   this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
+};
+Gameplay.prototype.setupUI = function () {
+  const pixelToHullBarRatio = 1.8;
+
+  // Player ship UI (always on)
+  this.playerShipUI = this.add.group();
+  const hullBarBacking = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  hullBarBacking.setTint(0x000000);
+  hullBarBacking.setOrigin(0);
+  this.playerShipUI.add(hullBarBacking);
+  const hullBar = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  hullBar.setTint(0x00FF00);
+  hullBar.setOrigin(0);
+  this.playerShipUI.add(hullBar);
+  const updateHullBar = () => {
+    ViewEntities(this.entities, ['PlayerTeamComponent', 'HullHealthComponent', 'PlayerControlComponent'], [], function(entity, team, health, control) {
+      hullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
+      hullBar.displayWidth = health.health * pixelToHullBarRatio;
+    });
+  };
+  const hullText = this.add.bitmapText(2, 2, 'newsgeek', 'Hull Integrity', DEFAULT_TEXT_SIZE);
+  this.playerShipUI.add(hullText);
+
+  const updatePlayerShipUI = () => {
+    updateHullBar();
+  };
+  this.events.on('update', updatePlayerShipUI);
+  this.events.once('shutdown', () => {
+    this.events.removeListener('update', updatePlayerShipUI);
+  });
+
+  // Mouseover ship UI (sometimes on)
+  this.targetShipUI = this.add.group();
+  const targetHullBarBacking = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  targetHullBarBacking.setTint(0x000000);
+  targetHullBarBacking.setOrigin(0);
+  this.targetShipUI.add(targetHullBarBacking);
+  const targetHullBar = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  targetHullBar.setTint(0x00FF00);
+  targetHullBar.setOrigin(0);
+  this.targetShipUI.add(targetHullBar);
+  const updateTargetHullBar = (target) => {
+    if (HasComponent(target, 'HullHealthComponent')) {
+      const health = GetComponent(target, 'HullHealthComponent');
+      targetHullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
+      targetHullBar.displayWidth = health.health * pixelToHullBarRatio;
+    }
+  };
+  const targetNameText = this.add.bitmapText(2, 32, 'newsgeek', 'NAME', DEFAULT_TEXT_SIZE);
+  this.targetShipUI.add(targetNameText);
+  const targetAffiliationText = this.add.bitmapText(2, 32 + DEFAULT_TEXT_SIZE, 'newsgeek', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
+  this.targetShipUI.add(targetAffiliationText);
+  const updateTargetNameAndAffiliation = (target) => {
+    if (HasComponent(target, 'NameComponent')) {
+      targetNameText.text = GetComponent(target, 'NameComponent').value;
+    }
+
+    if (HasComponent(target, 'PlayerTeamComponent')) {
+      const team = GetComponent(target, 'PlayerTeamComponent');
+      targetAffiliationText.text = team.name;
+    } else if (HasComponent(target, 'GamilonTeamComponent')) {
+      const team = GetComponent(target, 'GamilonTeamComponent');
+      targetAffiliationText.text = team.name;
+    } else {
+      targetAffiliationText.text = '(unaffiliated)';
+    }
+  };
+
+  this.targetShipUI.children.iterate((child) => {
+    child.x += (GAME_WIDTH - 105);
+  });
+
+  const updateTargetShipUI = () => {
+    if (this.currentlyPointingEntity === null) {
+      this.targetShipUI.children.iterate((child) => {
+        child.setVisible(false);
+      });
+      return;
+    }
+
+    this.targetShipUI.children.iterate((child) => {
+      child.setVisible(true);
+    });
+    updateTargetHullBar(this.currentlyPointingEntity);
+    updateTargetNameAndAffiliation(this.currentlyPointingEntity);
+  };
+  this.events.on('update', updateTargetShipUI);
+  this.events.once('shutdown', () => {
+    this.events.removeListener('update', updateTargetShipUI);
+  });
 };
 Gameplay.prototype.create = function () {
   this.setup3DScene();
@@ -35,7 +130,7 @@ Gameplay.prototype.create = function () {
   for (let i = 0; i < 30; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
-    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20)));
+    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
@@ -44,9 +139,13 @@ Gameplay.prototype.create = function () {
     if (i === 0) {
       AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
+      AddComponent(e, 'PlayerTeamComponent', new PlayerTeamComponent());
+      AddComponent(e, 'NameComponent', new NameComponent('Argo Mk. IV'));
     } else {
       AddComponent(e, 'AIControlComponent', new AIControlComponent());
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
+      AddComponent(e, 'GamilonTeamComponent', new GamilonTeamComponent());
+      AddComponent(e, 'NameComponent', new NameComponent('L. Dry Battleship'));
     }
     this.entities.push(e);
 
@@ -54,7 +153,7 @@ Gameplay.prototype.create = function () {
     AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(i));
     AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
     AddComponent(skipper, 'MaxSpeedComponent', new MaxSpeedComponent(8.0));
-    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(90));
+    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(30));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
     } else {
@@ -78,6 +177,8 @@ Gameplay.prototype.create = function () {
 
   this.lockPanning = false;
 
+  this.setupUI();
+
   this.events.on('shutdown', this.shutdown, this);
 };
 Gameplay.prototype.update = function () {
@@ -98,6 +199,11 @@ Gameplay.prototype.shutdown = function () {
   this.nextTurnReady = true;
 
   this.lockPanning = false;
+
+  this.playerShipUI.destroy(true);
+  this.playerShipUI = null;
+
+  this.currentlyPointingEntity = null;
 
   this.teardown3DScene();
 };
@@ -126,7 +232,9 @@ Gameplay.prototype.setup3DScene = function () {
   this.three.scene = new THREE.Scene();
   this.three.renderer = new THREE.WebGLRenderer( { canvas: this.game.canvas, context: this.game.context, antialias: false } );
   this.three.renderer.autoClear = true;
-  this.three.renderer.setClearColor(new THREE.Color(0x330044), 1.0)
+  this.three.renderer.setClearColor(new THREE.Color(0x330044), 1.0);
+
+  this.three.raycaster = new THREE.Raycaster(undefined, undefined, 0.1, 150);
 
   this.three.view = this.add.extern();
   const that = this;
@@ -164,10 +272,29 @@ Gameplay.prototype.updateCameraFromInput = function () {
     this.gameCameraTheta -= CAMERA_TURN_SPEED;
   }
 };
+
+// Repeatedly used by update3DScene to minimize small allocations
+const threeMouseCoordsVector = new THREE.Vector2(0, 0);
+const arrayRaycastResults = [];
 Gameplay.prototype.update3DScene = function() {
   this.gameCamera.position.x = this.gameCameraPos.x + (Math.cos(this.gameCameraTheta) * CAMERA_DISTANCE);
   this.gameCamera.position.y = CAMERA_DISTANCE;
   this.gameCamera.position.z = this.gameCameraPos.y + (Math.sin(this.gameCameraTheta) * CAMERA_DISTANCE);
   this.gameCamera.lookAt(this.gameCameraPos.x, 0, this.gameCameraPos.y);
+
+  this.currentlyPointingEntity = null;
+  const mouseX = this.input.mousePointer.x / GAME_WIDTH;
+  const mouseY = 1.0 - (this.input.mousePointer.y / GAME_HEIGHT);
+  threeMouseCoordsVector.x = (mouseX * 2.0) - 1.0;
+  threeMouseCoordsVector.y = (mouseY * 2.0) - 1.0;
+  this.three.raycaster.setFromCamera(threeMouseCoordsVector, this.gameCamera);
+  this.three.raycaster.intersectObjects(this.three.scene.children, false, arrayRaycastResults);
+  if (arrayRaycastResults.length > 0) {
+    if (arrayRaycastResults[0].object.userData.entity !== undefined) {
+      this.currentlyPointingEntity = arrayRaycastResults[0].object.userData.entity;
+    }
+  }
+  // clear out the results
+  arrayRaycastResults.length = 0;
 };
 

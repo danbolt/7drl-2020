@@ -22,6 +22,20 @@ const ECSIndexComponent = function(value) {
   this.value = value;
 };
 
+const NameComponent = function(value) {
+  this.value = value ? value : "???";
+}
+
+const PlayerTeamComponent = function() {
+  this.name = 'Space Federation'
+};
+const GamilonTeamComponent = function() {
+  this.name = 'G&T Empire'
+};
+const ThirdTeamComponent = function() {
+  this.name = 'Guild of Explorers'
+};
+
 const PositionComponent = function (x, y) {
   this.x = x ? x : 0;
   this.y = y ? y : x;
@@ -56,12 +70,6 @@ const DexterityComponent = function(value) {
   this.value = value ? value : 1.0;
 };
 
-// --- INPUT CONTROL STUFF ---
-const PlayerControlComponent = function() {};
-
-// TODO: Various types of AI control
-const AIControlComponent = function() {}
-
 const ShipReferenceComponent = function (value) {
   if (value === undefined) {
     throw new Error('ECS index value was undefined');
@@ -78,9 +86,43 @@ const ShipReferenceComponent = function (value) {
   this.value = value;
 };
 
+const GunnerComponent = function() {};
+const AttackStrengthComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('attack strength value was undefined');
+  }
+
+  this.value = value;
+}
+const AttackRangeComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('attack range value was undefined');
+  }
+
+  if (value < 0) {
+    throw new Error('attack range value was negative');
+  }
+
+  this.value = value;
+};
+
 const SkipperComponent = function() {};
 const MaxSpeedComponent = function(speed) {
   this.speed = speed ? speed : 0.0;
+};
+
+// --- INPUT CONTROL STUFF ---
+
+const PlayerControlComponent = function() {};
+
+// TODO: Various types of AI control
+const AIControlComponent = function() {}
+
+const AttackCandidatesComponent = function(value) {
+  if (!((Array.isArray(value)) || (value === undefined))) {
+    throw new Error('attack candidates was not an array or undefined');
+  }
+  this.value = value ? value : [];
 };
 
 // --- RENDERING STUFF ---
