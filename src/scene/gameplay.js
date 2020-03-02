@@ -27,6 +27,9 @@ Gameplay.prototype.preload = function () {
   // TODO: load these in a preload game state
   this.load.bitmapFont('newsgeek', 'asset/font/newsgeek.png', 'asset/font/newsgeek.fnt');
 
+  this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
+  this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
+
   this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
 };
 Gameplay.prototype.setupUI = function () {
@@ -258,6 +261,22 @@ Gameplay.prototype.create = function () {
     this.entities.push(shieldOp);
   }
 
+  let testPlanet = NewEntity();
+  AddComponent(testPlanet, 'PositionComponent', new PositionComponent(0, 3));
+  AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
+  AddComponent(testPlanet, 'MeshComponent', new MeshComponent());
+  AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+  AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(this.entities.length));
+  this.entities.push(testPlanet);
+
+  let p2 = NewEntity();
+  AddComponent(p2, 'PositionComponent', new PositionComponent(8, 0));
+  AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(1.3, 0.3435, 0x44111, 0x775500, 0xeeaa88));
+  AddComponent(p2, 'MeshComponent', new MeshComponent());
+  AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+  AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(this.entities.length));
+  this.entities.push(p2);
+
   // Add entities with deterity to the turn order
   this.ROTScheduler = new ROT.Scheduler.Speed();
   ViewEntities(this.entities, ['DexterityComponent', 'ECSIndexComponent'], [], (entity, dex, ecsIndex) => {
@@ -356,8 +375,26 @@ Gameplay.prototype.setupInput = function () {
 };
 
 Gameplay.prototype.setup3DBackground = function () {
+  const vertexInfp = this.cache.shader.get('planet_vertex');
+  const vert = vertexInfp.fragmentSrc;
+
+  const fragmentInfo = this.cache.shader.get('planet_fragment');
+  const frag = fragmentInfo.fragmentSrc;
+
   const backgroundGeom = new THREE.IcosahedronBufferGeometry(900, 2);
-  const backgroundMaterial = new THREE.MeshBasicMaterial( { color: 0x130055, side: THREE.BackSide} );
+  const backgroundMaterial = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      vertexShader: vert,
+      fragmentShader: frag,
+      uniforms: {
+        color1: new THREE.Uniform(new THREE.Color(0x002244)),
+        color2: new THREE.Uniform(new THREE.Color(0x112233)),
+        color3: new THREE.Uniform(new THREE.Color(0x001133)),
+        scaleNoise: new THREE.Uniform(0.008),
+        deRes: new THREE.Uniform(0),
+        displayShadow: new THREE.Uniform(0)
+      }
+    });
   const backgroundHolder = new THREE.Group();
   const background = new THREE.Mesh( backgroundGeom, backgroundMaterial);
   backgroundHolder.add(background);

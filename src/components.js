@@ -120,6 +120,14 @@ const ShieldsUpComponent = function () {};
 
 const CruiseControlComponent = function () {};
 
+const PlanetViewDataComponent = function(radius, rotationSpeed, color1, color2, color3) {
+  this.radius = radius;
+  this.rotationSpeed = rotationSpeed; 
+  this.color1 = new THREE.Color(color1);
+  this.color2 = new THREE.Color(color2);
+  this.color3 = new THREE.Color(color3);
+};
+
 // --- INPUT CONTROL STUFF ---
 
 const PlayerControlComponent = function() {};
@@ -139,6 +147,8 @@ const AttackCandidatesComponent = function(value) {
 const MeshComponent = function() {
   this.mesh = null;
 };
+
+const RequestPlanetAppearanceComponent = function(radius, colors, noiseSeed) { };
 
 const RequestDummy3DAppearanceComponent = function(hexColor) {
   this.hexColor = hexColor ? hexColor : 0x00FF00;

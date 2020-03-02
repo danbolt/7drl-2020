@@ -19,6 +19,8 @@ const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
 const UNIT = 'paular'; // A scifi-sounding unit of measure for space in case people say parsecs or lightyears isn't realistic
 const UNIT_PLURAL = UNIT + 's';
 
+const PLANET_ROTATION_SPEED = 0.0038703;
+
 const ENEMY_SELECTION_KEYCODES = [
   Phaser.Input.Keyboard.KeyCodes.ONE,
   Phaser.Input.Keyboard.KeyCodes.TWO,

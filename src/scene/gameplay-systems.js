@@ -488,15 +488,58 @@ Gameplay.prototype.updateViewSystems = function() {
   // TODO: add requests for GLTF models
   RemoveComponentFromAllEntities(this.entities, 'RequestDummy3DAppearanceComponent');
 
+    // If something needs a dummy 3D cube, add it
+  ViewEntities(this.entities, ['MeshComponent', 'RequestPlanetAppearanceComponent', 'PlanetViewDataComponent'], [], (entity, mesh, request3D, viewData) => {
+    const vertexInfp = this.cache.shader.get('planet_vertex');
+    const vert = vertexInfp.fragmentSrc;
+
+    const fragmentInfo = this.cache.shader.get('planet_fragment');
+    const frag = fragmentInfo.fragmentSrc;
+
+    const geometry = new THREE.SphereBufferGeometry( viewData.radius, 9, 5 );
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: frag,
+      uniforms: {
+        color1: new THREE.Uniform(viewData.color1),
+        color2: new THREE.Uniform(viewData.color2),
+        color3: new THREE.Uniform(viewData.color3),
+        scaleNoise: new THREE.Uniform(2.0),
+        deRes: new THREE.Uniform(1),
+        displayShadow: new THREE.Uniform(1)
+      }
+    });
+
+    mesh.mesh = new THREE.Mesh( geometry, material );
+    mesh.mesh.userData.entity = entity;
+    this.three.scene.add(mesh.mesh);
+  });
+  // TODO: add requests for GLTF models
+  RemoveComponentFromAllEntities(this.entities, 'RequestPlanetAppearanceComponent');
+
   // Update dummy mesh positions
   ViewEntities(this.entities, ['PositionComponent', 'MeshComponent'], ['PositionTweenComponent'], (entity, position, mesh) => {
+    if (mesh.mesh === null) {
+      return;
+    }
+
     mesh.mesh.position.x = position.x;
     mesh.mesh.position.z = position.y;
   });
   // Update dummy mesh rotations
   ViewEntities(this.entities, ['RotationComponent', 'MeshComponent'], [], (entity, rotation, mesh) => {
+    if (mesh.mesh === null) {
+      return;
+    }
+
     mesh.mesh.rotation.set(0, 0, 0);
     mesh.mesh.setRotationFromAxisAngle(rotationSetViewVector, rotation.value);
   });
-  // TODO: update mesh position/rotation for GLTFs
+
+  ViewEntities(this.entities, ['MeshComponent', 'PlanetViewDataComponent'], [], (entity, mesh, viewData) => {
+    if (mesh.mesh === null) {
+      return;
+    }
+    mesh.mesh.rotation.y += PLANET_ROTATION_SPEED;
+  });
 };
