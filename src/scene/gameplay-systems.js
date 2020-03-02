@@ -78,38 +78,134 @@ Gameplay.prototype.doNextTurn = function() {
   }
   const nextEntity = [nextEntityCandidate];
 
+  // Turning logic
   ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], ['CruiseControlComponent'], (entity, skipper, playerControl, shipReference) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
       return;
     }
 
+    // We're going to have the skipper do "something"
     canDoNextTurn = false;
 
-    const dialogue = {
-      question: 'Should we change our course?',
-      options: [
-        {
-          text: '(n)o',
-          keyCode: Phaser.Input.Keyboard.KeyCodes.N,
-          action: () => {
-            // We're keeping course, so we don't need to rotate
-            this.nextTurnReady = true;
-          }
-        },
-        {
-          text: '(y)es',
-          keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
-          action: () => {
-            this.redirectShip(shipEntity, () => {
-              this.nextTurnReady = true;
-            });
-          }
-        }
-      ]
-    };
+    const hasArrivedAtPlanet = HasComponent(shipEntity, 'OrbitNotificationComponent');
+    const inOrbitAlready = HasComponent(shipEntity, 'ShipOrbitingPlanetComponent');
+    if (inOrbitAlready) {
+      const planetOrbitIndex = GetComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent').planetIndex;
+      const planetEntity = this.entities[planetOrbitIndex];
+      const planetName = HasComponent(planetEntity, 'NameComponent') ? GetComponent(planetEntity, 'NameComponent').value : '???';
 
-    this.showDialogue(dialogue);
+      const dialogue = {
+        question: 'Should we depart from planet ' + planetName + '?',
+        options: [
+          {
+            text: '(n)o',
+            keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+            action: () => {
+              // We're keeping course, so we don't need to rotate
+              this.nextTurnReady = true;
+            }
+          },
+          {
+            text: '(y)es',
+            keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+            action: () => {
+              // Undock the ship
+              const orbitInfo = RemoveComponent(shipEntity, 'ShipOrbitingPlanetComponent');
+
+              // Begin movement
+              const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
+
+              // Find the ship's engineer and set speed to 75%
+              let foundEngineer = false;
+              ViewEntities(this.entities, ['EngineerComponent', 'EngineComponent', 'ShipReferenceComponent'], [], (entity, engineer, engine, engineerShipRef) => {
+                //console.log('finding for ' + shipReference.value);
+                //console.log('checking ' + engineerShipRef.value);
+
+                // If this isn't the same ship, don't do anything
+                if (engineerShipRef.value !== shipReference.value) {
+                  return;
+                }
+
+
+                velocity.value = engine.minSpeed + ((engine.maxSpeed - engine.minSpeed) * 0.75);
+                foundEngineer = true;
+              });
+              if (!foundEngineer) {
+                throw new Error('unable to find engineer!!');
+              }
+
+
+              this.nextTurnReady = true;
+            }
+          }
+        ]
+      };
+
+      this.showDialogue(dialogue);
+    } else if (hasArrivedAtPlanet) {
+      RemoveComponent(shipEntity, 'OrbitNotificationComponent');
+      const planetOrbitIndex = GetComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent').planetIndex;
+      const planetEntity = this.entities[planetOrbitIndex];
+      const planetName = HasComponent(planetEntity, 'NameComponent') ? GetComponent(planetEntity, 'NameComponent').value : '???';
+
+      const dialogue = {
+        question: 'We\'re in range of planet ' + planetName + '\n' + 'Would we want to orbit for repairs and fortification?',
+        options: [
+            {
+              text: '(n)o',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+              action: () => {
+                // We're keeping course, so we don't need to rotate
+                this.nextTurnReady = true;
+              }
+            },
+            {
+              text: '(y)es',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+              action: () => {
+                // Dock the ship
+                const orbitInfo = AddComponent(shipEntity, 'ShipOrbitingPlanetComponent', new ShipOrbitingPlanetComponent(planetOrbitIndex));
+                orbitInfo.planetIndex = planetOrbitIndex;
+
+                // Stop all movement
+                const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
+                velocity.value = 0;
+
+                this.nextTurnReady = true;
+              }
+            }
+          ]
+        };
+
+        this.showDialogue(dialogue);
+    } else {
+      // Normal skipper check
+      const dialogue = {
+        question: 'Should we change our course?',
+        options: [
+          {
+            text: '(n)o',
+            keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+            action: () => {
+              // We're keeping course, so we don't need to rotate
+              this.nextTurnReady = true;
+            }
+          },
+          {
+            text: '(y)es',
+            keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+            action: () => {
+              this.redirectShip(shipEntity, () => {
+                this.nextTurnReady = true;
+              });
+            }
+          }
+        ]
+      };
+
+      this.showDialogue(dialogue);
+    }
   });
 
   ViewEntities(nextEntity, ['GunnerComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, gunner, playerControl, shipReference) => {
@@ -159,6 +255,14 @@ Gameplay.prototype.doNextTurn = function() {
     if (shipEntity === undefined) {
       return;
     }
+
+    // If the ship is orbiting, the engines are halted
+    if (HasComponent(shipEntity, 'ShipOrbitingPlanetComponent')) {
+      const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
+      velocity.value = 0;
+      return;
+    }
+
     canDoNextTurn = false;
 
     const minMaxSpeedDelta = engine.maxSpeed - engine.minSpeed;
@@ -301,6 +405,11 @@ Gameplay.prototype.doNextTurn = function() {
       return;
     }
 
+    // Don't bother trying to orbit
+    if (HasComponent(shipToControl, 'OrbitNotificationComponent')) {
+      RemoveComponent(shipToControl, 'OrbitNotificationComponent');
+    }
+
     const rotation = GetComponent(shipToControl, 'RotationComponent');
     rotation.value += 0.8;
   });
@@ -319,7 +428,7 @@ Gameplay.prototype.doNextTurn = function() {
     // TODO: add ai stuff
   });
 
-  ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
+  ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], ['ShipOrbitingPlanetComponent'], (entity, position, velocity, rotation) => {
     position.x += Math.cos(rotation.value) * velocity.value;
     position.y += Math.sin(rotation.value) * velocity.value;
 
@@ -375,9 +484,28 @@ Gameplay.prototype.doNextTurn = function() {
     shields.health = Math.min(shields.health + SHIELD_REGEN_RATE, shields.maxHealth);
   });
 
+  // Update repairing ships in orbit
+  ViewEntities(this.entities, ['ShipOrbitingPlanetComponent', 'HullHealthComponent'], [], (entity, orbiting, hull) => {
+    let engineerDexterity = FALLBACK_ENGINEER_DEXTERITY;
+
+    // Find the highest dex of an engineer that matches this ship
+    ViewEntities(this.entities, ['EngineerComponent', 'DexterityComponent', 'ShipReferenceComponent'], [], (entity, dex, shipRef) => {
+      const shipCandidate = this.entities[shipRef.value];
+      if (shipCandidate === undefined) {
+        return;
+      }
+      if (shipCandidate !== entity) {
+        return;
+      }
+
+      engineerDexterity = Math.max(engineerDexterity, dex.value);
+    });
+    hull.health = Math.min(hull.health + (PLANET_REPAIR_RATIO * engineerDexterity), hull.maxHealth);
+  });
+
   // Deal with destruction; remove meshes for entities that should be destroyed
   ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {
-    mesh.mesh.userData = {};
+    delete mesh.mesh.entityRef;
     this.three.scene.remove(mesh.mesh);
     RemoveComponent(entity, 'MeshComponent');
   });
@@ -518,7 +646,7 @@ Gameplay.prototype.updateViewSystems = function() {
   // If something needs a dummy 3D cube, add it
   ViewEntities(this.entities, ['MeshComponent', 'RequestDummy3DAppearanceComponent'], [], (entity, mesh, request3D) => {
     mesh.mesh = new THREE.Mesh( DUMMY_3D_CUBE_GEOM, new THREE.MeshBasicMaterial( { color: request3D.hexColor } ) );
-    mesh.mesh.userData.entity = entity;
+    mesh.mesh.entityRef = entity;
     this.three.scene.add(mesh.mesh);
   });
   // TODO: add requests for GLTF models
@@ -547,7 +675,7 @@ Gameplay.prototype.updateViewSystems = function() {
     });
 
     mesh.mesh = new THREE.Mesh( geometry, material );
-    mesh.mesh.userData.entity = entity;
+    mesh.mesh.entityRef = entity;
     this.three.scene.add(mesh.mesh);
   });
   // TODO: add requests for GLTF models

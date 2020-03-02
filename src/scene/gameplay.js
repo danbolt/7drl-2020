@@ -140,6 +140,8 @@ Gameplay.prototype.setupUI = function () {
   const updateTargetNameAndAffiliation = (target) => {
     if (HasComponent(target, 'NameComponent')) {
       targetNameText.text = GetComponent(target, 'NameComponent').value;
+    } else {
+      targetNameText.text = '???';
     }
 
     if (HasComponent(target, 'TeamComponent')) {
@@ -300,7 +302,6 @@ Gameplay.prototype.create = function () {
   this.lockPanning = false;
 
   this.keys.return_cam.on('down', () => {
-    console.log(this.entities[0]);
     ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent', 'PlayerControlComponent'], [], (entity, position, health, control) => {
       let t = this.add.tween({
         targets: this.gameCameraPos,
@@ -479,8 +480,8 @@ Gameplay.prototype.update3DScene = function() {
   this.three.raycaster.setFromCamera(threeMouseCoordsVector, this.gameCamera);
   this.three.raycaster.intersectObjects(this.three.scene.children, false, arrayRaycastResults);
   if (arrayRaycastResults.length > 0) {
-    if (arrayRaycastResults[0].object.userData.entity !== undefined) {
-      this.currentlyPointingEntity = arrayRaycastResults[0].object.userData.entity;
+    if (arrayRaycastResults[0].object.entityRef !== undefined) {
+      this.currentlyPointingEntity = arrayRaycastResults[0].object.entityRef;
     }
   }
   // clear out the results
