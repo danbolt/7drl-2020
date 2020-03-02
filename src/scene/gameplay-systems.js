@@ -64,6 +64,30 @@ Gameplay.prototype.doNextTurn = function() {
   ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
     position.x += Math.cos(rotation.value) * velocity.value;
     position.y += Math.sin(rotation.value) * velocity.value;
+
+    if (HasComponent(entity, 'MeshComponent')) {
+      const mesh = GetComponent(entity, 'MeshComponent');
+      let tween = this.add.tween({
+        targets: mesh.mesh.position,
+        x: position.x,
+        z: position.y,
+        duration: DEFAULT_POSITION_TWEEN_DURATION,
+        onComplete: () => {
+          RemoveComponent(entity, 'PositionTweenComponent');
+          tween.stop();
+        }
+      });
+
+      if (HasComponent(entity, 'PositionTweenComponent')) {
+        const positionTween = GetComponent(entity, 'PositionTweenComponent');
+        const oldTween = positionTween.value;
+
+        oldTween.stop();
+
+        RemoveComponent(entity, 'PositionTweenComponent');
+      }
+      AddComponent(entity, 'PositionTweenComponent', new PositionTweenComponent(tween));
+    }
   });
 
   // Delay a small amount before starting the next turn
@@ -165,7 +189,7 @@ Gameplay.prototype.updateViewSystems = function() {
   RemoveComponentFromAllEntities(this.entities, 'RequestDummy3DAppearanceComponent');
 
   // Update dummy mesh positions
-  ViewEntities(this.entities, ['PositionComponent', 'MeshComponent'], [], (entity, position, mesh) => {
+  ViewEntities(this.entities, ['PositionComponent', 'MeshComponent'], ['PositionTweenComponent'], (entity, position, mesh) => {
     mesh.mesh.position.x = position.x;
     mesh.mesh.position.z = position.y;
   });

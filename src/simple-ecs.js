@@ -16,6 +16,7 @@ const AddComponent = function (entity, componentName, data) {
   }
 
   entity[componentName] = data;
+  return entity[componentName];
 };
 
 const RemoveComponent = function(entity, componentName) {

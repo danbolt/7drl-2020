@@ -84,6 +84,7 @@ const MaxSpeedComponent = function(speed) {
 };
 
 // --- RENDERING STUFF ---
+
 const MeshComponent = function() {
   this.mesh = null;
 };
@@ -93,3 +94,19 @@ const RequestDummy3DAppearanceComponent = function(hexColor) {
 };
 // TODO: add a "request 3d appearance removal" component
 // TODO: request/remove for GLTF
+
+const PositionTweenComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('Position tween value was undefined');
+  }
+
+  this.value = value;
+};
+
+const RotationTweenComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('Rotation tween value was undefined');
+  }
+
+  this.value = value;
+};
