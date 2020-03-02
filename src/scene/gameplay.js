@@ -43,10 +43,13 @@ Gameplay.prototype.setupUI = function () {
   hullBar.setOrigin(0);
   this.playerShipUI.add(hullBar);
   let candidateFound = false;
+  let lerpHealth = 0;
   const updateHullBar = () => {
     ViewEntities(this.entities, ['HullHealthComponent', 'PlayerControlComponent'], [], function(entity, health, control) {
       hullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
-      hullBar.displayWidth = health.health * pixelToHullBarRatio;
+
+      lerpHealth = Phaser.Math.Interpolation.SmoothStep(0.3, lerpHealth, health.health);
+      hullBar.displayWidth = lerpHealth * pixelToHullBarRatio;
       candidateFound = true;
     });
   };
