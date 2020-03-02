@@ -216,7 +216,7 @@ Gameplay.prototype.create = function () {
     let gunner = NewEntity();
     AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
     AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(i - 1));
-    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(52));
+    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(100));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
     } else {
@@ -228,8 +228,8 @@ Gameplay.prototype.create = function () {
 
     let engineer = NewEntity();
     AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
-    AddComponent(engineer, 'EngineComponent', new EngineComponent(7.2));
-    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(55));
+    AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
+    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(30));
     AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(i - 2));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
@@ -237,7 +237,7 @@ Gameplay.prototype.create = function () {
       AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
     }
     i++;
-    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(i));
     this.entities.push(engineer);
   }
 

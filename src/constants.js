@@ -22,7 +22,7 @@ const UNIT_PLURAL = UNIT + 's';
 const ENEMY_SELECTION_KEYCODES = [
   Phaser.Input.Keyboard.KeyCodes.ONE,
   Phaser.Input.Keyboard.KeyCodes.TWO,
-  Phaser.Input.Keyboard.KeyCodes.THRE,
+  Phaser.Input.Keyboard.KeyCodes.THREE,
   Phaser.Input.Keyboard.KeyCodes.FOUR,
   Phaser.Input.Keyboard.KeyCodes.FIVE,
   Phaser.Input.Keyboard.KeyCodes.SIX,

@@ -135,7 +135,7 @@ Gameplay.prototype.doNextTurn = function() {
     }
 
     const dialogue = {
-      question: 'What speed should we set engines to?',
+      question: 'What speed should we set the engines to?',
       options: [
         {
           text: '(0) Keep the same speed',
@@ -153,9 +153,9 @@ Gameplay.prototype.doNextTurn = function() {
       if (speedValue < 0.01) {
         speedConfigName += 'Halt Engines';
       } else {
-        speedConfigName += (ratio * 100);
+        speedConfigName += ~~(ratio * 100);
         speedConfigName += '% - '
-        speedConfigName += (speedValue.toFixed(1) + ' ' + UNIT_PLURAL);
+        speedConfigName += (speedValue.toFixed(2) + ' ' + UNIT_PLURAL);
       }
       const key = ENEMY_SELECTION_KEYCODES[i];
       dialogue.options.push({
@@ -172,7 +172,14 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   ViewEntities(nextEntity, ['EngineerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, aiControl, shipReference, engine) => {
-    //
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+
+    // TODO: make AI engineers set engines intelligently
+    const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
+    velocity.value = engine.minSpeed + (Math.random() * (engine.maxSpeed - engine.minSpeed));
   });
 
   ViewEntities(nextEntity, ['GunnerComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, gunner, aiControl, shipReference) => {
