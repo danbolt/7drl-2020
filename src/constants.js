@@ -30,3 +30,8 @@ const ENEMY_SELECTION_KEYCODES = [
   Phaser.Input.Keyboard.KeyCodes.EIGHT,
   Phaser.Input.Keyboard.KeyCodes.NINE
 ];
+
+// TODO: data-drive this
+const SHIELD_BUFFER_RATIO = 0.6;
+const SHIELD_DEPLETE_RATE = 0.2;
+const SHIELD_REGEN_RATE = 0.4;

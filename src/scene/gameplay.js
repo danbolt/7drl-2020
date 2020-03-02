@@ -175,17 +175,17 @@ Gameplay.prototype.create = function () {
   this.setupInput();
 
   // TODO: remove me later and add real ship placement (dummy setup)
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 37; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
-    AddComponent(e, 'ShieldsComponent', new HullHealthComponent(10 + (Math.random() * 20))); // Shields are "health" but not
+    AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
-    AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(10));
+    AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
     AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
     if (i === 0) {
       AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());
@@ -229,7 +229,7 @@ Gameplay.prototype.create = function () {
     let engineer = NewEntity();
     AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
     AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
-    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(30));
+    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(40));
     AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(i - 2));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
@@ -239,6 +239,19 @@ Gameplay.prototype.create = function () {
     i++;
     AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(i));
     this.entities.push(engineer);
+
+    let shieldOp = NewEntity();
+    AddComponent(shieldOp, 'ShieldOperatorComponent', new ShieldOperatorComponent());
+    AddComponent(shieldOp, 'DexterityComponent', new DexterityComponent(50));
+    AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(i - 3));
+    if (HasComponent(e, 'PlayerControlComponent')) {
+      AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
+    } else {
+      AddComponent(shieldOp, 'AIControlComponent', new AIControlComponent());
+    }
+    i++;
+    AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(i));
+    this.entities.push(shieldOp);
   }
 
   // Add entities with deterity to the turn order

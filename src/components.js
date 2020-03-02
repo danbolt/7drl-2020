@@ -115,6 +115,9 @@ const EngineComponent = function(maxSpeed) {
   this.maxSpeed = maxSpeed;
 };
 
+const ShieldOperatorComponent = function () {};
+const ShieldsUpComponent = function () {};
+
 // --- INPUT CONTROL STUFF ---
 
 const PlayerControlComponent = function() {};

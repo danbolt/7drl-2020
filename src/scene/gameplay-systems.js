@@ -171,6 +171,64 @@ Gameplay.prototype.doNextTurn = function() {
     this.showDialogue(dialogue);
   });
 
+  ViewEntities(nextEntity, ['ShieldOperatorComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, shieldOperator, playerControl, shipReference) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    const areShieldsAlreadyRaised = HasComponent(shipEntity, 'ShieldsUpComponent');
+
+    canDoNextTurn = false;
+
+    if (!areShieldsAlreadyRaised) {
+        const dialogue = {
+          question: 'Should we raise the shields?',
+          options: [
+            {
+              text: '(n)o',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+              action: () => {
+                this.nextTurnReady = true;
+              }
+            },
+            {
+              text: '(y)es',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+              action: () => {
+                AddComponent(shipEntity, 'ShieldsUpComponent', new ShieldsUpComponent());
+                this.nextTurnReady = true;
+              }
+            }
+          ]
+        };
+    
+        this.showDialogue(dialogue);
+      } else {
+        const dialogue = {
+          question: 'Should we lower the shields to let them recharge?',
+          options: [
+            {
+              text: '(n)o',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+              action: () => {
+                this.nextTurnReady = true;
+              }
+            },
+            {
+              text: '(y)es',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+              action: () => {
+                RemoveComponent(shipEntity, 'ShieldsUpComponent');
+                this.nextTurnReady = true;
+              }
+            }
+          ]
+        };
+    
+        this.showDialogue(dialogue);
+      }
+  });
+
   ViewEntities(nextEntity, ['EngineerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, aiControl, shipReference, engine) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
@@ -209,6 +267,16 @@ Gameplay.prototype.doNextTurn = function() {
 
     const rotation = GetComponent(shipToControl, 'RotationComponent');
     rotation.value += 0.8;
+  });
+
+  ViewEntities(nextEntity, ['ShieldOperatorComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, shieldOperator, playerControl, shipReference) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    const areShieldsAlreadyRaised = HasComponent(shipEntity, 'ShieldsUpComponent');
+
+    // TODO: Make interesting shields AI 
   });
 
   ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent', 'ShipReferenceComponent'], [], (entity, aiControl, position, shipRef) => {
@@ -254,6 +322,22 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   //  --- Post-turn logic ---
+
+  // Update depleting shields
+  ViewEntities(this.entities, ['ShieldsComponent', 'ShieldsUpComponent'], [], (entity, shields) => {
+    shields.health = shields.health - SHIELD_DEPLETE_RATE;
+
+    // TODO: add notification that shields depleted
+    if (shields.health <= 0) {
+      shields.health = 0;
+      RemoveComponent(entity, 'ShieldsUpComponent');
+    }
+  });
+
+  // Update recharching shields
+  ViewEntities(this.entities, ['ShieldsComponent'], ['ShieldsUpComponent'], (entity, shields) => {
+    shields.health = Math.min(shields.health + SHIELD_REGEN_RATE, shields.maxHealth);
+  });
 
   // Deal with destruction; remove meshes for entities that should be destroyed
   ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {
@@ -312,12 +396,21 @@ Gameplay.prototype.showDialogue = function(dialogue) {
 };
 
 Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
-  const attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
+  let attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
 
   // TODO: add shields into damage calculation
-  const shieldPower = 0;
+  if (HasComponent(defendingEntity, 'ShieldsComponent') && HasComponent(defendingEntity, 'ShieldsUpComponent')) {
+    const shields = GetComponent(defendingEntity, 'ShieldsComponent');
+    if (shields.health >= (attackPower * SHIELD_BUFFER_RATIO)) {
+      shields.health -= (attackPower * SHIELD_BUFFER_RATIO);
+      attackPower = 0;
+    } else {
+      attackPower -= shields.health;
+      shields.health = 0;
+    }
+  }
 
-  const damage = Math.max(0, attackPower - shieldPower);
+  const damage = attackPower;
 
   const defenderHealthData = GetComponent(defendingEntity, 'HullHealthComponent');
   defenderHealthData.health -= damage;
