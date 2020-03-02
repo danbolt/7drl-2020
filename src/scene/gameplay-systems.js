@@ -4,13 +4,43 @@ Gameplay.prototype.doNextTurn = function() {
     throw new Error('Unable to perform a new turn yet!');
   }
 
+  // Refresh the attack candidates; this is probably O(n^2) and slow; it can probably be done on the my-turn
+  RemoveComponentFromAllEntities(this.entities, 'AttackCandidatesComponent');
+  ViewEntities(this.entities, ['PositionComponent', 'TeamComponent', 'AttackRangeComponent'], [], (entity, position, team, range) => {
+    const candidates = []; 
+    const attackRangeSquared = range.getSquaredRange();
+    const myTeam = team.value;
+
+    ViewEntities(this.entities, ['PositionComponent', 'TeamComponent', 'HullHealthComponent'], [], (targetEntity, targetPosition, targetTeam, targetHealth) => {
+      // Don't attack entities on the same team as us
+      if (targetTeam.value === myTeam) {
+        return;
+      }
+
+      // If it's close enough, we have a target
+      const distanceSq = Phaser.Math.Distance.Squared(position.x, position.y, targetPosition.x, targetPosition.y);
+      if (distanceSq <= attackRangeSquared) {
+        candidates.push(targetEntity);
+      }
+    });
+
+    if (candidates.length > 0) {
+      AddComponent(entity, 'AttackCandidatesComponent', new AttackCandidatesComponent(candidates));
+    }
+  });
+
   this.nextTurnReady = false;
 
   // Set this to false if you don't want to immediately do the next turn (eg: player input, cinematic, etc.)
   let canDoNextTurn = true;
 
-  const nextTurn = this.ROTScheduler.next();
-  const nextEntity = [this.entities[nextTurn.indComponent.value]];
+  let nextTurn = this.ROTScheduler.next();
+  let nextEntityCandidate = this.entities[nextTurn.indComponent.value];
+  while (nextEntityCandidate === undefined) {
+    nextTurn = this.ROTScheduler.next();
+    nextEntityCandidate = this.entities[nextTurn.indComponent.value];
+  }
+  const nextEntity = [nextEntityCandidate];
 
   ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, playerControl, shipReference) => {
     canDoNextTurn = false;
@@ -31,6 +61,10 @@ Gameplay.prototype.doNextTurn = function() {
           keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
           action: () => {
             const shipEntity = this.entities[shipReference.value];
+            if (shipEntity === undefined) {
+              this.nextTurnReady = true;
+              return;
+            }
 
             this.redirectShip(shipEntity, () => {
               this.nextTurnReady = true;
@@ -43,26 +77,74 @@ Gameplay.prototype.doNextTurn = function() {
     this.showDialogue(dialogue);
   });
 
+  ViewEntities(nextEntity, ['GunnerComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, gunner, playerControl, shipReference) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    if (!(HasComponent(shipEntity, 'AttackCandidatesComponent'))) {
+      return;
+    }
+    const candidates = GetComponent(shipEntity, 'AttackCandidatesComponent');
+    if (candidates.value.length < 1) {
+      return;
+    }
+    canDoNextTurn = false;
+
+    const dialogue = {
+      question: ('There ' + (candidates.value.length === 1 ? 'is ' : 'are ') + candidates.value.length + ((candidates.value.length === 1 ? ' enemy' : ' enemies')) + 'within range.\nShould we attack?'),
+      options: [
+        {
+          text: '(0) Don\'t attack anyone',
+          keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
+          action: () => {
+            // We're keeping course, so we don't need to rotate
+            this.nextTurnReady = true;
+          }
+        }
+      ]
+    };
+    candidates.value.forEach((candidate, i) => {
+      const targetName = HasComponent(candidate, 'NameComponent') ? GetComponent(candidate, 'NameComponent').value : '???';
+      dialogue.options.push({
+        text: '(' + (i + 1) + ') attack ' + targetName,
+        keyCode: ENEMY_SELECTION_KEYCODES[i],
+        action: () => {
+          this.performAttack(shipEntity, candidate);
+
+          this.nextTurnReady = true;
+        }
+      });
+    });
+
+    this.showDialogue(dialogue);
+  });
+
+  ViewEntities(nextEntity, ['GunnerComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, gunner, aiControl, shipReference) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    if (!(HasComponent(shipEntity, 'AttackCandidatesComponent'))) {
+      return;
+    }
+  });
+
   ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, ai, shipRef) => {
     // TODO: make better skipper AI
     const shipIndex = shipRef.value;
     const shipToControl = this.entities[shipIndex];
+    if (shipToControl === undefined) {
+      return;
+    }
 
     const rotation = GetComponent(shipToControl, 'RotationComponent');
     rotation.value += 0.8;
   });
 
-  ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent'], [], (entity, aiControl, position) => {
+  ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent', 'ShipReferenceComponent'], [], (entity, aiControl, position, shipRef) => {
     // TODO: add ai stuff
   });
-
-  /*
-  // Lock the camera on the player when it moves
-  ViewEntities(nextEntity, ['PlayerControlComponent', 'PositionComponent'], [], (entity, playerControl, position) => {
-    this.gameCameraPos.x = position.x;
-    this.gameCameraPos.y = position.y;
-  });
-  */
 
   ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], [], (entity, position, velocity, rotation) => {
     position.x += Math.cos(rotation.value) * velocity.value;
@@ -101,6 +183,26 @@ Gameplay.prototype.doNextTurn = function() {
       this.nextTurnReady = true;
     }
   });
+
+  // Post-turn logic
+
+  // Deal with destruction; remove meshes for entities that should be destroyed
+  ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {
+    mesh.mesh.userData = {};
+    this.three.scene.remove(mesh.mesh);
+    RemoveComponent(entity, 'MeshComponent');
+  });
+
+  // Set entities that don't exist anymore to undefined
+  for (let i = 0; i < this.entities.length; i++) {
+    if (this.entities[i] === undefined) {
+      continue;
+    }
+    
+    if (HasComponent(this.entities[i], 'DestroyedComponent')) {
+      this.entities[i] = undefined;
+    }
+  }
 };
 
 Gameplay.prototype.showDialogue = function(dialogue) {
@@ -116,14 +218,14 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     });
   };
 
-  const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'newsgeek', dialogue.question, DEFAULT_TEXT_SIZE);
+  const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.35, 'newsgeek', dialogue.question, DEFAULT_TEXT_SIZE);
   questionText.setCenterAlign();
   questionText.setOrigin(0.5);
   texts.push(questionText);
   for (let i = 0; i < dialogue.options.length; i++) {
     const option = dialogue.options[i];
 
-    let optionText = this.add.bitmapText(GAME_WIDTH * 0.5, (GAME_HEIGHT * 0.5) + (DEFAULT_TEXT_SIZE * (i + 1.2)), 'newsgeek', option.text, DEFAULT_TEXT_SIZE);
+    let optionText = this.add.bitmapText(GAME_WIDTH * 0.5, (GAME_HEIGHT * 0.35) + DEFAULT_TEXT_SIZE + (DEFAULT_TEXT_SIZE * (i + 1.2)), 'newsgeek', option.text, DEFAULT_TEXT_SIZE);
     optionText.setCenterAlign();
     optionText.setOrigin(0.5);
     texts.push(optionText);
@@ -131,6 +233,23 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     let key = this.input.keyboard.addKey(option.keyCode);
     key.once('down', () => { removeAllUIAndEvents(); option.action(); });
     keys.push(key);
+  }
+};
+
+Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
+  const attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
+
+  // TODO: add shields into damage calculation
+  const shieldPower = 0;
+
+  const damage = Math.max(0, attackPower - shieldPower);
+
+  const defenderHealthData = GetComponent(defendingEntity, 'HullHealthComponent');
+  defenderHealthData.health -= damage;
+
+  if (defenderHealthData.health <= 0) {
+    AddComponent(defendingEntity, 'DestroyedComponent', new DestroyedComponent());
+    console.log('enemy destroyed');
   }
 };
 

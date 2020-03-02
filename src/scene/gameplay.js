@@ -43,7 +43,7 @@ Gameplay.prototype.setupUI = function () {
   hullBar.setOrigin(0);
   this.playerShipUI.add(hullBar);
   const updateHullBar = () => {
-    ViewEntities(this.entities, ['PlayerTeamComponent', 'HullHealthComponent', 'PlayerControlComponent'], [], function(entity, team, health, control) {
+    ViewEntities(this.entities, ['HullHealthComponent', 'PlayerControlComponent'], [], function(entity, health, control) {
       hullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
       hullBar.displayWidth = health.health * pixelToHullBarRatio;
     });
@@ -85,12 +85,9 @@ Gameplay.prototype.setupUI = function () {
       targetNameText.text = GetComponent(target, 'NameComponent').value;
     }
 
-    if (HasComponent(target, 'PlayerTeamComponent')) {
-      const team = GetComponent(target, 'PlayerTeamComponent');
-      targetAffiliationText.text = team.name;
-    } else if (HasComponent(target, 'GamilonTeamComponent')) {
-      const team = GetComponent(target, 'GamilonTeamComponent');
-      targetAffiliationText.text = team.name;
+    if (HasComponent(target, 'TeamComponent')) {
+      const team = GetComponent(target, 'TeamComponent');
+      targetAffiliationText.text = team.value;
     } else {
       targetAffiliationText.text = '(unaffiliated)';
     }
@@ -132,19 +129,21 @@ Gameplay.prototype.create = function () {
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
-    AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
+    AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2) + (i === 0 ? 3 : 0)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
-    AddComponent(e, 'DexterityComponent', new DexterityComponent(50 + (Math.random() * 50)));
+    AddComponent(e, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
+    AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(999));
+    AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
     if (i === 0) {
       AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
-      AddComponent(e, 'PlayerTeamComponent', new PlayerTeamComponent());
+      AddComponent(e, 'TeamComponent', new TeamComponent('Space Federation'));
       AddComponent(e, 'NameComponent', new NameComponent('Argo Mk. IV'));
     } else {
       AddComponent(e, 'AIControlComponent', new AIControlComponent());
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
-      AddComponent(e, 'GamilonTeamComponent', new GamilonTeamComponent());
+      AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
       AddComponent(e, 'NameComponent', new NameComponent('L. Dry Battleship'));
     }
     this.entities.push(e);
@@ -153,7 +152,7 @@ Gameplay.prototype.create = function () {
     AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(i));
     AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
     AddComponent(skipper, 'MaxSpeedComponent', new MaxSpeedComponent(8.0));
-    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(30));
+    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(50));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
     } else {
@@ -163,6 +162,18 @@ Gameplay.prototype.create = function () {
     AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(i));
     this.entities.push(skipper);
 
+    let gunner = NewEntity();
+    AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
+    AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(i - 1));
+    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(50));
+    if (HasComponent(e, 'PlayerControlComponent')) {
+      AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
+    } else {
+      AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
+    }
+    i++;
+    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(i));
+    this.entities.push(gunner);
   }
 
   // Add entities with deterity to the turn order

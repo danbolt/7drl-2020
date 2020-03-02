@@ -15,3 +15,15 @@ const DOUBLE_CAMERA_PAN_SPEED = CAMERA_PAN_SPEED * 2.0;
 const DEFAULT_POSITION_TWEEN_DURATION = 400;
 
 const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
+
+const ENEMY_SELECTION_KEYCODES = [
+  Phaser.Input.Keyboard.KeyCodes.ONE,
+  Phaser.Input.Keyboard.KeyCodes.TWO,
+  Phaser.Input.Keyboard.KeyCodes.THRE,
+  Phaser.Input.Keyboard.KeyCodes.FOUR,
+  Phaser.Input.Keyboard.KeyCodes.FIVE,
+  Phaser.Input.Keyboard.KeyCodes.SIX,
+  Phaser.Input.Keyboard.KeyCodes.SEVEN,
+  Phaser.Input.Keyboard.KeyCodes.EIGHT,
+  Phaser.Input.Keyboard.KeyCodes.NINE
+];

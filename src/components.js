@@ -26,14 +26,9 @@ const NameComponent = function(value) {
   this.value = value ? value : "???";
 }
 
-const PlayerTeamComponent = function() {
-  this.name = 'Space Federation'
-};
-const GamilonTeamComponent = function() {
-  this.name = 'G&T Empire'
-};
-const ThirdTeamComponent = function() {
-  this.name = 'Guild of Explorers'
+// Teams are strings; they match on string equality
+const TeamComponent = function(value) {
+  this.value = value;
 };
 
 const PositionComponent = function (x, y) {
@@ -64,7 +59,9 @@ const HullHealthComponent = function(maxHealth, currentHealth) {
 
   this.maxHealth = maxHealth;
   this.health = currentHealth ? currentHealth : this.maxHealth;
-}
+};
+
+const DestroyedComponent = function () {};
 
 const DexterityComponent = function(value) {
   this.value = value ? value : 1.0;
@@ -86,13 +83,17 @@ const ShipReferenceComponent = function (value) {
   this.value = value;
 };
 
-const GunnerComponent = function() {};
+const GunnerComponent = function () {
+  //
+};
+
 const AttackStrengthComponent = function(value) {
   if (value === undefined) {
     throw new Error('attack strength value was undefined');
   }
 
-  this.value = value;
+  // Clamp attack strength to an integer
+  this.value = ~~value;
 }
 const AttackRangeComponent = function(value) {
   if (value === undefined) {
@@ -105,6 +106,9 @@ const AttackRangeComponent = function(value) {
 
   this.value = value;
 };
+AttackRangeComponent.prototype.getSquaredRange = function() {
+  return this.value * this.value;
+}
 
 const SkipperComponent = function() {};
 const MaxSpeedComponent = function(speed) {

@@ -60,6 +60,10 @@ const HasNoneComponents = function (entity, componentNames) {
 const RemoveComponentFromAllEntities = function (entities, componentName) {
   for (let i = 0; i < entities.length; i++) {
     const candidate = entities[i];
+    if (candidate === undefined) {
+      continue;
+    }
+
     if (HasComponent(candidate, componentName)) {
       RemoveComponent(candidate, componentName);
     }
@@ -76,6 +80,10 @@ const ViewEntities = function(entities, includeComponents, excludeComponents, vi
 
   for (let i = 0; i < entities.length; i++) {
     const candidate = entities[i];
+    if (candidate === undefined) {
+      continue;
+    }
+    
     const hasAllIncludes = HasAllComponents(candidate, includeComponents);
     const hasNoExcludes = HasNoneComponents(candidate, excludeComponents);
 
