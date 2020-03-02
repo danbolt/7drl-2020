@@ -42,17 +42,26 @@ Gameplay.prototype.setupUI = function () {
   hullBar.setTint(0x00FF00);
   hullBar.setOrigin(0);
   this.playerShipUI.add(hullBar);
+  let candidateFound = false;
   const updateHullBar = () => {
     ViewEntities(this.entities, ['HullHealthComponent', 'PlayerControlComponent'], [], function(entity, health, control) {
       hullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
       hullBar.displayWidth = health.health * pixelToHullBarRatio;
+      candidateFound = true;
     });
   };
   const hullText = this.add.bitmapText(2, 2, 'newsgeek', 'Hull Integrity', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(hullText);
 
   const updatePlayerShipUI = () => {
+    candidateFound = false;
     updateHullBar();
+    if (candidateFound === false) {
+      this.playerShipUI.children.iterate((child) => {
+        child.setVisible(false);
+      });
+      return;
+    }
   };
   this.events.on('update', updatePlayerShipUI);
   this.events.once('shutdown', () => {
@@ -117,6 +126,9 @@ Gameplay.prototype.setupUI = function () {
   });
 };
 Gameplay.prototype.create = function () {
+  const dummySeed = 10101;
+  ROT.RNG.setSeed(dummySeed);
+
   this.setup3DScene();
 
   this.gameCameraPos = new Phaser.Math.Vector2();
@@ -133,7 +145,7 @@ Gameplay.prototype.create = function () {
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
-    AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(999));
+    AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(10));
     AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
     if (i === 0) {
       AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());

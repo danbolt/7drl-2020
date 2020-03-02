@@ -43,6 +43,11 @@ Gameplay.prototype.doNextTurn = function() {
   const nextEntity = [nextEntityCandidate];
 
   ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, playerControl, shipReference) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+
     canDoNextTurn = false;
 
     const dialogue = {
@@ -60,12 +65,6 @@ Gameplay.prototype.doNextTurn = function() {
           text: '(y)es',
           keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
           action: () => {
-            const shipEntity = this.entities[shipReference.value];
-            if (shipEntity === undefined) {
-              this.nextTurnReady = true;
-              return;
-            }
-
             this.redirectShip(shipEntity, () => {
               this.nextTurnReady = true;
             });
@@ -98,7 +97,6 @@ Gameplay.prototype.doNextTurn = function() {
           text: '(0) Don\'t attack anyone',
           keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
           action: () => {
-            // We're keeping course, so we don't need to rotate
             this.nextTurnReady = true;
           }
         }
@@ -128,6 +126,13 @@ Gameplay.prototype.doNextTurn = function() {
     if (!(HasComponent(shipEntity, 'AttackCandidatesComponent'))) {
       return;
     }
+    const candidates = GetComponent(shipEntity, 'AttackCandidatesComponent');
+    if (candidates.value.length < 1) {
+      return;
+    }
+
+    const candidatePick = ~~(ROT.RNG.getUniform() * candidates.value.length);
+    this.performAttack(shipEntity, candidates.value[candidatePick]);
   });
 
   ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, ai, shipRef) => {
@@ -193,12 +198,18 @@ Gameplay.prototype.doNextTurn = function() {
     RemoveComponent(entity, 'MeshComponent');
   });
 
+  ViewEntities(this.entities, ['DestroyedComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, destroyed, playerControl, hullHealthComponent) => {
+    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'newsgeek', 'GAME OVER', 32);
+    questionText.setCenterAlign();
+    questionText.setOrigin(0.5);
+  });
+
   // Set entities that don't exist anymore to undefined
   for (let i = 0; i < this.entities.length; i++) {
     if (this.entities[i] === undefined) {
       continue;
     }
-    
+
     if (HasComponent(this.entities[i], 'DestroyedComponent')) {
       this.entities[i] = undefined;
     }
@@ -249,7 +260,6 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
 
   if (defenderHealthData.health <= 0) {
     AddComponent(defendingEntity, 'DestroyedComponent', new DestroyedComponent());
-    console.log('enemy destroyed');
   }
 };
 
