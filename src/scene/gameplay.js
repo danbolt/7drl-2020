@@ -17,9 +17,10 @@ let Gameplay = function () {
   this.nextTurnReady = true;
 };
 Gameplay.prototype.preload = function () {
-  this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
+  // TODO: load these in a preload game state
+  this.load.bitmapFont('newsgeek', 'asset/font/newsgeek.png', 'asset/font/newsgeek.fnt');
 
-  this.load.image(DEFAULT_IMAGE_SPRITE, 'asset/image/fromJesse.png');
+  this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
 };
 Gameplay.prototype.create = function () {
   this.setup3DScene();

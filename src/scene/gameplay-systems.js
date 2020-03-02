@@ -6,13 +6,60 @@ Gameplay.prototype.doNextTurn = function() {
 
   this.nextTurnReady = false;
 
-  const nextTurn = this.ROTScheduler.next();
-  console.log('the next turn is ' + nextTurn.indComponent.value + ' with a speed of ' + nextTurn.getSpeed());
+  // Set this to false if you don't want to immediately do the next turn (eg: player input, cinematic, etc.)
+  let canDoNextTurn = true;
 
+  const nextTurn = this.ROTScheduler.next();
   const nextEntity = [this.entities[nextTurn.indComponent.value]];
 
   ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent'], [], (entity, skipper, playerControl) => {
-    //
+    canDoNextTurn = false;
+
+    const dialogue = {
+      question: 'Should we keep course?',
+      options: [
+        {
+          text: '(y)es',
+          keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+          action: () => {
+            // We're keeping course, so we don't need to rotate
+            this.nextTurnReady = true;
+          }
+        },
+        {
+          text: '(n)o',
+          keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+          action: () => {
+            console.log('WE NEED TO ADD SHIP TURN UI');
+          }
+        }
+      ]
+    };
+
+    let texts = [];
+    let keys = [];
+    const removeAllUIAndEvents = () => {
+      keys.forEach((key) => {
+        key.removeAllListeners('down');
+      });
+
+      texts.forEach((text) => {
+        text.destroy();
+      });
+    };
+
+    const questionText = this.add.bitmapText(16, 16, 'newsgeek', dialogue.question, DEFAULT_TEXT_SIZE);
+    texts.push(questionText);
+    for (let i = 0; i < dialogue.options.length; i++) {
+      const option = dialogue.options[i];
+
+      let optionText = this.add.bitmapText(32, 32 + (DEFAULT_TEXT_SIZE * i), 'newsgeek', option.text, DEFAULT_TEXT_SIZE);
+      texts.push(optionText);
+
+      let key = this.input.keyboard.addKey(option.keyCode);
+      key.once('down', () => { removeAllUIAndEvents(); option.action(); });
+      keys.push(key);
+    }
   });
 
   ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, ai, shipRef) => {
@@ -39,6 +86,7 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   // Delay a small amount before starting the next turn
+  if (canDoNextTurn)
   this.time.addEvent({
     delay: 405,
     callback: () => {
