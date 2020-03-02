@@ -15,6 +15,8 @@ let Gameplay = function () {
   this.entities = [];
   this.ROTScheduler = null;
   this.nextTurnReady = true;
+
+  this.lockPanning = false;
 };
 Gameplay.prototype.preload = function () {
   // TODO: load these in a preload game state
@@ -52,7 +54,7 @@ Gameplay.prototype.create = function () {
     AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(i));
     AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
     AddComponent(skipper, 'MaxSpeedComponent', new MaxSpeedComponent(8.0));
-    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(40));
+    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(90));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
     } else {
@@ -74,6 +76,8 @@ Gameplay.prototype.create = function () {
   });
   this.nextTurnReady = true;
 
+  this.lockPanning = false;
+
   this.events.on('shutdown', this.shutdown, this);
 };
 Gameplay.prototype.update = function () {
@@ -92,6 +96,8 @@ Gameplay.prototype.shutdown = function () {
   this.entities = [];
   this.ROTScheduler = null;
   this.nextTurnReady = true;
+
+  this.lockPanning = false;
 
   this.teardown3DScene();
 };
@@ -134,20 +140,22 @@ Gameplay.prototype.teardown3DScene = function () {
 };
 
 Gameplay.prototype.updateCameraFromInput = function () {
-  if (this.keys.cam_right.isDown) {
-    this.gameCameraPos.x += CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.5));
-    this.gameCameraPos.y += CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.5));
-  } else if (this.keys.cam_left.isDown) {
-    this.gameCameraPos.x -= CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.5));
-    this.gameCameraPos.y -= CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.5));
-  } 
-  if (this.keys.cam_down.isDown) {
-    this.gameCameraPos.x += CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.0));
-    this.gameCameraPos.y += CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.0));
-  } else if (this.keys.cam_up.isDown) {
-    this.gameCameraPos.x -= CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.0));
-    this.gameCameraPos.y -= CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.0));
-  } 
+  if (!(this.lockPanning)) {
+    if (this.keys.cam_right.isDown) {
+      this.gameCameraPos.x += CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.5));
+      this.gameCameraPos.y += CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.5));
+    } else if (this.keys.cam_left.isDown) {
+      this.gameCameraPos.x -= CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.5));
+      this.gameCameraPos.y -= CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.5));
+    } 
+    if (this.keys.cam_down.isDown) {
+      this.gameCameraPos.x += CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.0));
+      this.gameCameraPos.y += CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.0));
+    } else if (this.keys.cam_up.isDown) {
+      this.gameCameraPos.x -= CAMERA_PAN_SPEED * Math.cos(this.gameCameraTheta - (Math.PI * 0.0));
+      this.gameCameraPos.y -= CAMERA_PAN_SPEED * Math.sin(this.gameCameraTheta - (Math.PI * 0.0));
+    } 
+  }
 
   if (this.keys.cam_turn_right.isDown) {
     this.gameCameraTheta += CAMERA_TURN_SPEED;
