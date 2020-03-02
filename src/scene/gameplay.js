@@ -25,7 +25,7 @@ let Gameplay = function () {
 };
 Gameplay.prototype.preload = function () {
   // TODO: load these in a preload game state
-  this.load.bitmapFont('newsgeek', 'asset/font/newsgeek.png', 'asset/font/newsgeek.fnt');
+  this.load.bitmapFont('miniset', 'asset/font/MiniSet.png', 'asset/font/MiniSet.fnt');
 
   this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
   this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
@@ -56,7 +56,7 @@ Gameplay.prototype.setupUI = function () {
       candidateFound = true;
     });
   };
-  const hullText = this.add.bitmapText(2, 2, 'newsgeek', 'Hull Integrity', DEFAULT_TEXT_SIZE);
+  const hullText = this.add.bitmapText(2, 2, 'miniset', 'Hull Integrity', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(hullText);
 
   const shieldsBarBacking = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
@@ -76,7 +76,7 @@ Gameplay.prototype.setupUI = function () {
       shieldsBar.displayWidth = lerpShields * pixelToHullBarRatio;
     });
   };
-  const shieldsText = this.add.bitmapText(2, 24, 'newsgeek', 'Shields', DEFAULT_TEXT_SIZE);
+  const shieldsText = this.add.bitmapText(2, 24, 'miniset', 'Shields', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(shieldsText);
 
   const updatePlayerShipUI = () => {
@@ -133,9 +133,9 @@ Gameplay.prototype.setupUI = function () {
     }
   };
 
-  const targetNameText = this.add.bitmapText(2, 48, 'newsgeek', 'NAME', DEFAULT_TEXT_SIZE);
+  const targetNameText = this.add.bitmapText(2, 48, 'miniset', 'NAME', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetNameText);
-  const targetAffiliationText = this.add.bitmapText(2, 48 + DEFAULT_TEXT_SIZE, 'newsgeek', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
+  const targetAffiliationText = this.add.bitmapText(2, 48 + DEFAULT_TEXT_SIZE, 'miniset', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetAffiliationText);
   const updateTargetNameAndAffiliation = (target) => {
     if (HasComponent(target, 'NameComponent')) {
@@ -176,7 +176,7 @@ Gameplay.prototype.setupUI = function () {
   });
 
   // TODO: make this a graphic
-  this.cruiseText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'newsgeek', 'CRUISE', 16);
+  this.cruiseText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'miniset', 'CRUISE', 16);
   this.cruiseText.setVisible(false);
 };
 Gameplay.prototype.create = function () {

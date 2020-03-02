@@ -119,9 +119,6 @@ Gameplay.prototype.doNextTurn = function() {
               // Find the ship's engineer and set speed to 75%
               let foundEngineer = false;
               ViewEntities(this.entities, ['EngineerComponent', 'EngineComponent', 'ShipReferenceComponent'], [], (entity, engineer, engine, engineerShipRef) => {
-                //console.log('finding for ' + shipReference.value);
-                //console.log('checking ' + engineerShipRef.value);
-
                 // If this isn't the same ship, don't do anything
                 if (engineerShipRef.value !== shipReference.value) {
                   return;
@@ -223,7 +220,7 @@ Gameplay.prototype.doNextTurn = function() {
     canDoNextTurn = false;
 
     const dialogue = {
-      question: ('There ' + (candidates.value.length === 1 ? 'is ' : 'are ') + candidates.value.length + ((candidates.value.length === 1 ? ' enemy' : ' enemies')) + 'within range.\nShould we attack?'),
+      question: ('There ' + (candidates.value.length === 1 ? 'is ' : 'are ') + candidates.value.length + ((candidates.value.length === 1 ? ' enemy' : ' enemies')) + ' within range.\nShould we attack?'),
       options: [
         {
           text: '(0) Don\'t attack anyone',
@@ -511,7 +508,7 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   ViewEntities(this.entities, ['DestroyedComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, destroyed, playerControl, hullHealthComponent) => {
-    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'newsgeek', 'GAME OVER', 32);
+    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'GAME OVER', 32);
     questionText.setCenterAlign();
     questionText.setOrigin(0.5);
   });
@@ -541,14 +538,14 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     });
   };
 
-  const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.35, 'newsgeek', dialogue.question, DEFAULT_TEXT_SIZE);
+  const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.35, 'miniset', dialogue.question, DEFAULT_TEXT_SIZE);
   questionText.setCenterAlign();
   questionText.setOrigin(0.5);
   texts.push(questionText);
   for (let i = 0; i < dialogue.options.length; i++) {
     const option = dialogue.options[i];
 
-    let optionText = this.add.bitmapText(GAME_WIDTH * 0.5, (GAME_HEIGHT * 0.35) + DEFAULT_TEXT_SIZE + (DEFAULT_TEXT_SIZE * (i + 1.2)), 'newsgeek', option.text, DEFAULT_TEXT_SIZE);
+    let optionText = this.add.bitmapText(GAME_WIDTH * 0.5, (GAME_HEIGHT * 0.35) + DEFAULT_TEXT_SIZE + (DEFAULT_TEXT_SIZE * (i + 1.2)), 'miniset', option.text, DEFAULT_TEXT_SIZE);
     optionText.setCenterAlign();
     optionText.setOrigin(0.5);
     texts.push(optionText);
@@ -598,7 +595,7 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
     easing: Phaser.Math.Easing.Cubic.In
   });
 
-  let promptText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.25, 'newsgeek', 'Hold A or D to redirect.\n Press enter to confirm.', DEFAULT_TEXT_SIZE);
+  let promptText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.25, 'miniset', 'Hold A or D to redirect.\n Press enter to confirm.', DEFAULT_TEXT_SIZE);
   promptText.setCenterAlign();
 
   const shipRotation = GetComponent(shipEntityToRedirect, 'RotationComponent');

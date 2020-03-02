@@ -1,7 +1,7 @@
 const GAME_WIDTH = 426;
 const GAME_HEIGHT = 240;
 
-const DEFAULT_TEXT_SIZE = 12;
+const DEFAULT_TEXT_SIZE = 8;
 
 const DEFAULT_IMAGE_MAP = 'test_sheet_image';
 const DEFAULT_IMAGE_SPRITE = DEFAULT_IMAGE_MAP + '_whole_image';
