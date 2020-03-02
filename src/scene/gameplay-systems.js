@@ -29,6 +29,42 @@ Gameplay.prototype.doNextTurn = function() {
     }
   });
 
+  // Update if users are in range of planets
+  ViewEntities(this.entities, ['PositionComponent', 'PlanetOrbitableComponent', 'ECSIndexComponent'], [], (entity, position, orbitable, index) => {
+    const squaredRange = orbitable.dockRange * orbitable.dockRange;
+
+    // Find ships within orbit range
+    ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent'], ['ShipOrbitingPlanetComponent', 'ShipInOrbitRangeOfPlanetComponent'], (shipEntity, shipPosition) => {
+      const distToPlanetSqared = Phaser.Math.Distance.Squared(position.x, position.y, shipPosition.x, shipPosition.y);
+      if (distToPlanetSqared <= squaredRange) {
+        AddComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent', new ShipInOrbitRangeOfPlanetComponent(index.value));
+        AddComponent(shipEntity, 'OrbitNotificationComponent', new OrbitNotificationComponent());
+      }
+    });
+  });
+
+  // Remove orbit information for planets that are out of range
+  ViewEntities(this.entities, ['PositionComponent', 'ShipInOrbitRangeOfPlanetComponent'], [], (entity, position, inOrbitRange) => {
+    const planet = this.entities[inOrbitRange.planetIndex];
+    if (!HasComponent(planet, 'PlanetOrbitableComponent')) {
+      console.warn('planet ' + inOrbitRange.planetIndex  + ' isn\'t orbitatble now?');
+      RemoveComponent(entity, 'ShipInOrbitRangeOfPlanetComponent');
+      return;
+    }
+
+    const planetOrbitInfo = GetComponent(planet, 'PlanetOrbitableComponent');
+    const planetOrbitRangeSquared = planetOrbitInfo.dockRange * planetOrbitInfo.dockRange;
+    const planetPosition = GetComponent(planet, 'PositionComponent');
+    const distToPlanetSqared = Phaser.Math.Distance.Squared(position.x, position.y, planetPosition.x, planetPosition.y);
+    if (distToPlanetSqared > planetOrbitRangeSquared) {
+      RemoveComponent(entity, 'ShipInOrbitRangeOfPlanetComponent');
+
+      if (HasComponent(entity, 'OrbitNotificationComponent')) {
+        RemoveComponent(entity, 'OrbitNotificationComponent');
+      }
+    }
+  });
+
   this.nextTurnReady = false;
 
   // Set this to false if you don't want to immediately do the next turn (eg: player input, cinematic, etc.)

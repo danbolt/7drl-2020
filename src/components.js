@@ -120,14 +120,6 @@ const ShieldsUpComponent = function () {};
 
 const CruiseControlComponent = function () {};
 
-const PlanetViewDataComponent = function(radius, rotationSpeed, color1, color2, color3) {
-  this.radius = radius;
-  this.rotationSpeed = rotationSpeed; 
-  this.color1 = new THREE.Color(color1);
-  this.color2 = new THREE.Color(color2);
-  this.color3 = new THREE.Color(color3);
-};
-
 // --- INPUT CONTROL STUFF ---
 
 const PlayerControlComponent = function() {};
@@ -141,6 +133,53 @@ const AttackCandidatesComponent = function(value) {
   }
   this.value = value ? value : [];
 };
+
+const OrbitNotificationComponent = function() {};
+
+const PlanetOrbitableComponent = function(range) {
+  if (range === undefined) {
+    throw new Error('Planet orbit range was undefined');
+  }
+
+  if (range < 0) {
+    throw new Error('Planet orbit range was negative');
+  }
+
+  this.dockRange = range;
+};
+
+const ShipInOrbitRangeOfPlanetComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('ECS index value was undefined');
+  }
+
+  if (!Number.isInteger(value)) {
+    throw new Error('ECS index value was not an integer');
+  }
+
+  if (value < 0) {
+    throw new Error('ECS index value was negative');
+  }
+  
+  this.planetIndex = value;
+};
+
+const ShipOrbitingPlanetComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('ECS index value was undefined');
+  }
+
+  if (!Number.isInteger(value)) {
+    throw new Error('ECS index value was not an integer');
+  }
+
+  if (value < 0) {
+    throw new Error('ECS index value was negative');
+  }
+
+  this.planetIndex = value;
+};
+
 
 // --- RENDERING STUFF ---
 
@@ -170,4 +209,12 @@ const RotationTweenComponent = function(value) {
   }
 
   this.value = value;
+};
+
+const PlanetViewDataComponent = function(radius, rotationSpeed, color1, color2, color3) {
+  this.radius = radius;
+  this.rotationSpeed = rotationSpeed; 
+  this.color1 = new THREE.Color(color1);
+  this.color2 = new THREE.Color(color2);
+  this.color3 = new THREE.Color(color3);
 };

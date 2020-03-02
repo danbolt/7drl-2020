@@ -118,12 +118,18 @@ Gameplay.prototype.setupUI = function () {
       const health = GetComponent(target, 'HullHealthComponent');
       targetHullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
       targetHullBar.displayWidth = health.health * pixelToHullBarRatio;
+    } else {
+      targetHullBarBacking.setVisible(false);
+      targetHullBar.setVisible(false);
     }
 
     if (HasComponent(target, 'ShieldsComponent')) {
       const health = GetComponent(target, 'ShieldsComponent');
       targetShieldsBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
       targetShieldsBar.displayWidth = health.health * pixelToHullBarRatio;
+    } else {
+      targetShieldsBarBacking.setVisible(false);
+      targetShieldsBar.setVisible(false);
     }
   };
 
@@ -264,17 +270,21 @@ Gameplay.prototype.create = function () {
   let testPlanet = NewEntity();
   AddComponent(testPlanet, 'PositionComponent', new PositionComponent(0, 3));
   AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
+  AddComponent(testPlanet, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(3.7));
   AddComponent(testPlanet, 'MeshComponent', new MeshComponent());
   AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
   AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(this.entities.length));
+  AddComponent(testPlanet, 'NameComponent', new NameComponent('Terra'));
+  AddComponent(testPlanet, 'TeamComponent', new TeamComponent('Space Federation'));
   this.entities.push(testPlanet);
 
   let p2 = NewEntity();
-  AddComponent(p2, 'PositionComponent', new PositionComponent(8, 0));
+  AddComponent(p2, 'PositionComponent', new PositionComponent(8, 7));
   AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(1.3, 0.3435, 0x44111, 0x775500, 0xeeaa88));
   AddComponent(p2, 'MeshComponent', new MeshComponent());
   AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
   AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(this.entities.length));
+  AddComponent(p2, 'NameComponent', new NameComponent('Darius II'));
   this.entities.push(p2);
 
   // Add entities with deterity to the turn order
@@ -290,6 +300,7 @@ Gameplay.prototype.create = function () {
   this.lockPanning = false;
 
   this.keys.return_cam.on('down', () => {
+    console.log(this.entities[0]);
     ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent', 'PlayerControlComponent'], [], (entity, position, health, control) => {
       let t = this.add.tween({
         targets: this.gameCameraPos,
