@@ -118,6 +118,8 @@ const EngineComponent = function(maxSpeed) {
 const ShieldOperatorComponent = function () {};
 const ShieldsUpComponent = function () {};
 
+const CruiseControlComponent = function () {};
+
 // --- INPUT CONTROL STUFF ---
 
 const PlayerControlComponent = function() {};

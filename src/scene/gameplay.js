@@ -163,6 +163,10 @@ Gameplay.prototype.setupUI = function () {
   this.events.once('shutdown', () => {
     this.events.removeListener('update', updateTargetShipUI);
   });
+
+  // TODO: make this a graphic
+  this.cruiseText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'newsgeek', 'CRUISE', 16);
+  this.cruiseText.setVisible(false);
 };
 Gameplay.prototype.create = function () {
   const dummySeed = 10101;
@@ -276,7 +280,26 @@ Gameplay.prototype.create = function () {
         easing: Phaser.Math.Easing.Cubic.In
       });
     });
-    
+  });
+
+  this.keys.cruise.on('down', () => {
+    if (!(this.cruiseText.visible)) {
+      ViewEntities(this.entities, ['SkipperComponent', 'PlayerControlComponent'], ['CruiseControlComponent'], (entity) => {
+        AddComponent(entity, 'CruiseControlComponent', new CruiseControlComponent());
+      });
+      ViewEntities(this.entities, ['EngineerComponent', 'PlayerControlComponent'], ['CruiseControlComponent'], (entity) => {
+        AddComponent(entity, 'CruiseControlComponent', new CruiseControlComponent());
+      });
+      this.cruiseText.setVisible(true);
+    } else {
+      ViewEntities(this.entities, ['SkipperComponent', 'PlayerControlComponent', 'CruiseControlComponent'], [], (entity) => {
+        RemoveComponent(entity, 'CruiseControlComponent');
+      });
+      ViewEntities(this.entities, ['EngineerComponent', 'PlayerControlComponent', 'CruiseControlComponent'], [], (entity) => {
+        RemoveComponent(entity, 'CruiseControlComponent');
+      });
+      this.cruiseText.setVisible(false);
+    }
   });
 
   this.setupUI();
@@ -304,6 +327,8 @@ Gameplay.prototype.shutdown = function () {
 
   this.playerShipUI.destroy(true);
   this.playerShipUI = null;
+  this.cruiseText.destroy();
+  this.cruiseText = null;
 
   this.currentlyPointingEntity = null;
 
@@ -324,7 +349,8 @@ Gameplay.prototype.setupInput = function () {
     'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
     'up': Phaser.Input.Keyboard.KeyCodes.UP,
 
-    'return_cam': Phaser.Input.Keyboard.KeyCodes.SPACE
+    'return_cam': Phaser.Input.Keyboard.KeyCodes.SPACE,
+    'cruise': Phaser.Input.Keyboard.KeyCodes.SHIFT
   };
   this.keys = this.input.keyboard.addKeys(keyConfigObject);
 };

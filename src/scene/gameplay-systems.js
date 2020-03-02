@@ -42,7 +42,7 @@ Gameplay.prototype.doNextTurn = function() {
   }
   const nextEntity = [nextEntityCandidate];
 
-  ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, playerControl, shipReference) => {
+  ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], ['CruiseControlComponent'], (entity, skipper, playerControl, shipReference) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
       return;
@@ -118,7 +118,7 @@ Gameplay.prototype.doNextTurn = function() {
     this.showDialogue(dialogue);
   });
 
-  ViewEntities(nextEntity, ['EngineerComponent', 'PlayerControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, playerControl, shipReference, engine) => {
+  ViewEntities(nextEntity, ['EngineerComponent', 'PlayerControlComponent', 'ShipReferenceComponent', 'EngineComponent'], ['CruiseControlComponent'], (entity, engineer, playerControl, shipReference, engine) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
       return;
