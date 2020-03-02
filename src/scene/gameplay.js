@@ -188,6 +188,19 @@ Gameplay.prototype.create = function () {
 
   this.lockPanning = false;
 
+  this.keys.return_cam.on('down', () => {
+    ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent', 'PlayerControlComponent'], [], (entity, position, health, control) => {
+      let t = this.add.tween({
+        targets: this.gameCameraPos,
+        x: position.x,
+        y: position.y,
+        duration: 150,
+        easing: Phaser.Math.Easing.Cubic.In
+      });
+    });
+    
+  });
+
   this.setupUI();
 
   this.events.on('shutdown', this.shutdown, this);
@@ -232,6 +245,8 @@ Gameplay.prototype.setupInput = function () {
     'left': Phaser.Input.Keyboard.KeyCodes.LEFT,
     'down': Phaser.Input.Keyboard.KeyCodes.DOWN,
     'up': Phaser.Input.Keyboard.KeyCodes.UP,
+
+    'return_cam': Phaser.Input.Keyboard.KeyCodes.SPACE
   };
   this.keys = this.input.keyboard.addKeys(keyConfigObject);
 };
