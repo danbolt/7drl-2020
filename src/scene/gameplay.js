@@ -355,6 +355,14 @@ Gameplay.prototype.setupInput = function () {
   this.keys = this.input.keyboard.addKeys(keyConfigObject);
 };
 
+Gameplay.prototype.setup3DBackground = function () {
+  const backgroundGeom = new THREE.IcosahedronBufferGeometry(900, 2);
+  const backgroundMaterial = new THREE.MeshBasicMaterial( { color: 0x130055, side: THREE.BackSide} );
+  const backgroundHolder = new THREE.Group();
+  const background = new THREE.Mesh( backgroundGeom, backgroundMaterial);
+  backgroundHolder.add(background);
+  this.three.scene.add(backgroundHolder);
+}
 Gameplay.prototype.setup3DScene = function () {
   this.gameCamera = new THREE.PerspectiveCamera( 70, GAME_WIDTH / GAME_HEIGHT,  0.1, 1000 );
   this.three.camera = this.gameCamera;
@@ -372,6 +380,9 @@ Gameplay.prototype.setup3DScene = function () {
     that.three.renderer.state.reset();
     that.three.renderer.render(that.three.scene, that.three.camera);
   }
+
+  this.setup3DBackground();
+
 };
 Gameplay.prototype.teardown3DScene = function () {
   //
