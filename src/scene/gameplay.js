@@ -56,9 +56,30 @@ Gameplay.prototype.setupUI = function () {
   const hullText = this.add.bitmapText(2, 2, 'newsgeek', 'Hull Integrity', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(hullText);
 
+  const shieldsBarBacking = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  shieldsBarBacking.setTint(0x000000);
+  shieldsBarBacking.setOrigin(0);
+  this.playerShipUI.add(shieldsBarBacking);
+  const shieldsBar = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  shieldsBar.setTint(0x36FFFF);
+  shieldsBar.setOrigin(0);
+  this.playerShipUI.add(shieldsBar);
+  let lerpShields = 0;
+  const updateShieldsBar = () => {
+    ViewEntities(this.entities, ['ShieldsComponent', 'PlayerControlComponent'], [], function(entity, shields, control) {
+      shieldsBarBacking.displayWidth = shields.maxHealth * pixelToHullBarRatio;
+
+      lerpShields = Phaser.Math.Interpolation.SmoothStep(0.3, lerpShields, shields.health);
+      shieldsBar.displayWidth = lerpShields * pixelToHullBarRatio;
+    });
+  };
+  const shieldsText = this.add.bitmapText(2, 24, 'newsgeek', 'Shields', DEFAULT_TEXT_SIZE);
+  this.playerShipUI.add(shieldsText);
+
   const updatePlayerShipUI = () => {
     candidateFound = false;
     updateHullBar();
+    updateShieldsBar();
     if (candidateFound === false) {
       this.playerShipUI.children.iterate((child) => {
         child.setVisible(false);
@@ -81,16 +102,31 @@ Gameplay.prototype.setupUI = function () {
   targetHullBar.setTint(0x00FF00);
   targetHullBar.setOrigin(0);
   this.targetShipUI.add(targetHullBar);
+  const targetShieldsBarBacking = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  targetShieldsBarBacking.setTint(0x000000);
+  targetShieldsBarBacking.setOrigin(0);
+  this.targetShipUI.add(targetShieldsBarBacking);
+  const targetShieldsBar = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  targetShieldsBar.setTint(0x36FFFF);
+  targetShieldsBar.setOrigin(0);
+  this.targetShipUI.add(targetShieldsBar);
   const updateTargetHullBar = (target) => {
     if (HasComponent(target, 'HullHealthComponent')) {
       const health = GetComponent(target, 'HullHealthComponent');
       targetHullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
       targetHullBar.displayWidth = health.health * pixelToHullBarRatio;
     }
+
+    if (HasComponent(target, 'ShieldsComponent')) {
+      const health = GetComponent(target, 'ShieldsComponent');
+      targetShieldsBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
+      targetShieldsBar.displayWidth = health.health * pixelToHullBarRatio;
+    }
   };
-  const targetNameText = this.add.bitmapText(2, 32, 'newsgeek', 'NAME', DEFAULT_TEXT_SIZE);
+
+  const targetNameText = this.add.bitmapText(2, 48, 'newsgeek', 'NAME', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetNameText);
-  const targetAffiliationText = this.add.bitmapText(2, 32 + DEFAULT_TEXT_SIZE, 'newsgeek', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
+  const targetAffiliationText = this.add.bitmapText(2, 48 + DEFAULT_TEXT_SIZE, 'newsgeek', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetAffiliationText);
   const updateTargetNameAndAffiliation = (target) => {
     if (HasComponent(target, 'NameComponent')) {
@@ -143,8 +179,9 @@ Gameplay.prototype.create = function () {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
+    AddComponent(e, 'ShieldsComponent', new HullHealthComponent(10 + (Math.random() * 20))); // Shields are "health" but not
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
-    AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2) + (i === 0 ? 3 : 0)));
+    AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(e, 'MeshComponent', new MeshComponent());
@@ -166,7 +203,6 @@ Gameplay.prototype.create = function () {
     let skipper = NewEntity();
     AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(i));
     AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
-    AddComponent(skipper, 'MaxSpeedComponent', new MaxSpeedComponent(8.0));
     AddComponent(skipper, 'DexterityComponent', new DexterityComponent(50));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
@@ -180,7 +216,7 @@ Gameplay.prototype.create = function () {
     let gunner = NewEntity();
     AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
     AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(i - 1));
-    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(50));
+    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(52));
     if (HasComponent(e, 'PlayerControlComponent')) {
       AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
     } else {
@@ -189,6 +225,20 @@ Gameplay.prototype.create = function () {
     i++;
     AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(i));
     this.entities.push(gunner);
+
+    let engineer = NewEntity();
+    AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
+    AddComponent(engineer, 'EngineComponent', new EngineComponent(7.2));
+    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(55));
+    AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(i - 2));
+    if (HasComponent(e, 'PlayerControlComponent')) {
+      AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
+    } else {
+      AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
+    }
+    i++;
+    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(i));
+    this.entities.push(engineer);
   }
 
   // Add entities with deterity to the turn order

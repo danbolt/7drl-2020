@@ -118,6 +118,63 @@ Gameplay.prototype.doNextTurn = function() {
     this.showDialogue(dialogue);
   });
 
+  ViewEntities(nextEntity, ['EngineerComponent', 'PlayerControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, playerControl, shipReference, engine) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    canDoNextTurn = false;
+
+    const minMaxSpeedDelta = engine.maxSpeed - engine.minSpeed;
+    let numberOfSpeedOptions = 7;
+    if (minMaxSpeedDelta < 8) {
+      numberOfSpeedOptions = 5;
+    }
+    if (minMaxSpeedDelta < 4) {
+      numberOfSpeedOptions = 3;
+    }
+
+    const dialogue = {
+      question: 'What speed should we set engines to?',
+      options: [
+        {
+          text: '(0) Keep the same speed',
+          keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
+          action: () => {
+            this.nextTurnReady = true;
+          }
+        }
+      ]
+    };
+    for (let i = 0; i <= numberOfSpeedOptions; i++) {
+      const ratio = i / numberOfSpeedOptions;
+      const speedValue = engine.minSpeed + (ratio * minMaxSpeedDelta);
+      let speedConfigName = '(' + (i+1) + ') ';
+      if (speedValue < 0.01) {
+        speedConfigName += 'Halt Engines';
+      } else {
+        speedConfigName += (ratio * 100);
+        speedConfigName += '% - '
+        speedConfigName += (speedValue.toFixed(1) + ' ' + UNIT_PLURAL);
+      }
+      const key = ENEMY_SELECTION_KEYCODES[i];
+      dialogue.options.push({
+        text: speedConfigName,
+        keyCode: key,
+        action: () => {
+          const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
+          velocity.value = speedValue;
+          this.nextTurnReady = true;
+        }
+      });
+    }
+    this.showDialogue(dialogue);
+  });
+
+  ViewEntities(nextEntity, ['EngineerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, aiControl, shipReference, engine) => {
+    //
+  });
+
   ViewEntities(nextEntity, ['GunnerComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, gunner, aiControl, shipReference) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
@@ -189,7 +246,7 @@ Gameplay.prototype.doNextTurn = function() {
     }
   });
 
-  // Post-turn logic
+  //  --- Post-turn logic ---
 
   // Deal with destruction; remove meshes for entities that should be destroyed
   ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {

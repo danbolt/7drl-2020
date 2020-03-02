@@ -83,10 +83,7 @@ const ShipReferenceComponent = function (value) {
   this.value = value;
 };
 
-const GunnerComponent = function () {
-  //
-};
-
+const GunnerComponent = function () {};
 const AttackStrengthComponent = function(value) {
   if (value === undefined) {
     throw new Error('attack strength value was undefined');
@@ -111,8 +108,11 @@ AttackRangeComponent.prototype.getSquaredRange = function() {
 }
 
 const SkipperComponent = function() {};
-const MaxSpeedComponent = function(speed) {
-  this.speed = speed ? speed : 0.0;
+
+const EngineerComponent = function () {};
+const EngineComponent = function(maxSpeed) {
+  this.minSpeed = 0;
+  this.maxSpeed = maxSpeed;
 };
 
 // --- INPUT CONTROL STUFF ---
