@@ -223,8 +223,8 @@ const ShipOrbitingPlanetComponent = function(value) {
 
 // --- RENDERING STUFF ---
 
-const MeshComponent = function() {
-  this.mesh = null;
+const MeshComponent = function(mesh) {
+  this.mesh = mesh ? mesh : null;
 };
 
 const RequestPlanetAppearanceComponent = function(radius, colors, noiseSeed) { };

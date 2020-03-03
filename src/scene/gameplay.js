@@ -259,6 +259,15 @@ Gameplay.prototype.create = function () {
 
   this.setupUI();
 
+  // If an entity has a loaded mesh, let's parent it to the current scene from the previous
+  ViewEntities(this.entities, ['MeshComponent'], [], (entity, mesh) => {
+    if (mesh.mesh === null) {
+      return;
+    }
+
+    this.three.scene.add(mesh.mesh);
+  });
+
   this.events.on('shutdown', this.shutdown, this);
 };
 Gameplay.prototype.update = function () {

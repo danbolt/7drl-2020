@@ -471,7 +471,7 @@ Gameplay.prototype.doNextTurn = function() {
     position.x += Math.cos(rotation.value) * velocity.value;
     position.y += Math.sin(rotation.value) * velocity.value;
 
-    if (HasComponent(entity, 'MeshComponent')) {
+    if (HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
       const mesh = GetComponent(entity, 'MeshComponent');
       let tween = this.add.tween({
         targets: mesh.mesh.position,
