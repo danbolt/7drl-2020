@@ -52,7 +52,8 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
     AddComponent(p2, 'MeshComponent', new MeshComponent());
     AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
     AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
-    AddComponent(p2, 'NameComponent', new NameComponent('planet with radius ' + planetRadius));
+    AddComponent(p2, 'NameComponent', new NameComponent('Radius ' + planetRadius.toFixed(2)));
+    AddComponent(p2, 'ClassComponent', new NameComponent('Wasteland Planet'));
     sector.entities.push(p2);
   }
 
@@ -67,6 +68,7 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
     AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
     AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
     AddComponent(testPlanet, 'NameComponent', new NameComponent('Terra'));
+    AddComponent(testPlanet, 'ClassComponent', new NameComponent('Homeworld'));
     AddComponent(testPlanet, 'TeamComponent', new TeamComponent('Space Federation'));
     sector.entities.push(testPlanet);
   }

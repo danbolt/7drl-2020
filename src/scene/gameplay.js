@@ -148,22 +148,22 @@ Gameplay.prototype.setupUI = function () {
 
   // Mouseover ship UI (sometimes on)
   this.targetShipUI = this.add.group();
-  const targetHullBarBacking = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  const targetHullBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 0), DEFAULT_IMAGE_MAP, 28);
   targetHullBarBacking.setTint(0x000000);
   targetHullBarBacking.setOrigin(0);
   targetHullBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBarBacking);
-  const targetHullBar = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  const targetHullBar = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 0), DEFAULT_IMAGE_MAP, 28);
   targetHullBar.setTint(0x00FF00);
   targetHullBar.setOrigin(0);
   targetHullBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBar);
-  const targetShieldsBarBacking = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  const targetShieldsBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 1), DEFAULT_IMAGE_MAP, 28);
   targetShieldsBarBacking.setTint(0x000000);
   targetShieldsBarBacking.setOrigin(0);
   targetShieldsBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetShieldsBarBacking);
-  const targetShieldsBar = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  const targetShieldsBar = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 1), DEFAULT_IMAGE_MAP, 28);
   targetShieldsBar.setTint(0x36FFFF);
   targetShieldsBar.setOrigin(0);
   targetShieldsBar.displayHeight = DEFAULT_TEXT_SIZE;
@@ -188,9 +188,11 @@ Gameplay.prototype.setupUI = function () {
     }
   };
 
-  const targetNameText = this.add.bitmapText(2, 48, 'miniset', 'NAME', DEFAULT_TEXT_SIZE);
+  const targetNameText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 2), 'miniset', 'NAME', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetNameText);
-  const targetAffiliationText = this.add.bitmapText(2, 48 + DEFAULT_TEXT_SIZE, 'miniset', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
+  const targetClassText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 3), 'miniset', 'CLASS', DEFAULT_TEXT_SIZE);
+  this.targetShipUI.add(targetClassText);
+  const targetAffiliationText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 4), 'miniset', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetAffiliationText);
   const updateTargetNameAndAffiliation = (target) => {
     if (HasComponent(target, 'NameComponent')) {
@@ -204,6 +206,13 @@ Gameplay.prototype.setupUI = function () {
       targetAffiliationText.text = team.value;
     } else {
       targetAffiliationText.text = '(unaffiliated)';
+    }
+
+    if (HasComponent(target, 'ClassComponent')) {
+      const team = GetComponent(target, 'ClassComponent');
+      targetClassText.text = team.value;
+    } else {
+      targetClassText.text = '(unknown)';
     }
   };
 

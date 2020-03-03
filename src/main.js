@@ -16,6 +16,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
     AddComponent(playerShip, 'TeamComponent', new TeamComponent('Space Federation'));
     AddComponent(playerShip, 'NameComponent', new NameComponent('Argo Mk. IV'));
+    AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer'));
     AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 300));
     entities.push(playerShip);
 
