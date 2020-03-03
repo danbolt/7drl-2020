@@ -24,7 +24,6 @@ let Gameplay = function () {
   this.lockPanning = false;
 };
 Gameplay.prototype.init = function (payload) {
-  console.log(payload);
   this.entities = payload.entities;
 }
 Gameplay.prototype.preload = function () {

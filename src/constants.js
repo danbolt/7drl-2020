@@ -14,6 +14,8 @@ const DOUBLE_CAMERA_PAN_SPEED = CAMERA_PAN_SPEED * 2.0;
 
 const DEFAULT_POSITION_TWEEN_DURATION = 2000;
 
+const DEFAULT_WORLD_SIZE_IN_SECTORS = 10;
+
 const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
 
 const UNIT = 'paular'; // A scifi-sounding unit of measure for space in case people say parsecs or lightyears isn't realistic

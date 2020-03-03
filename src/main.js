@@ -1,9 +1,66 @@
 
+const populateWithPlayerEntities = function (entities) {
+    // Add the player ship
+    let playerShip = NewEntity();
+    AddComponent(playerShip, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(playerShip, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
+    AddComponent(playerShip, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
+    AddComponent(playerShip, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
+    AddComponent(playerShip, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
+    AddComponent(playerShip, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+    AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
+    AddComponent(playerShip, 'MeshComponent', new MeshComponent());
+    AddComponent(playerShip, 'AttackStrengthComponent', new AttackStrengthComponent(4));
+    AddComponent(playerShip, 'AttackRangeComponent', new AttackRangeComponent(10));
+    AddComponent(playerShip, 'PlayerControlComponent', new PlayerControlComponent());
+    AddComponent(playerShip, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
+    AddComponent(playerShip, 'TeamComponent', new TeamComponent('Space Federation'));
+    AddComponent(playerShip, 'NameComponent', new NameComponent('Argo Mk. IV'));
+    AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(100, 50));
+    entities.push(playerShip);
 
-const dummyEntityPopulate = function (entities) {
-  for (let i = 0; i < 37; i++) {
+    // Add the skipper
+    let skipper = NewEntity();
+    AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
+    AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
+    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(50));
+    AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
+    AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(skipper);
+
+    // Add the gunner    
+    let gunner = NewEntity();
+    AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
+    AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 2));
+    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(100));
+    AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
+    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(gunner);
+
+    // Add the engineer
+    let engineer = NewEntity();
+    AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
+    AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
+    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(40));
+    AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
+    AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
+    AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(engineer);
+
+    // Add the shields operator
+    let shieldOp = NewEntity();
+    AddComponent(shieldOp, 'ShieldOperatorComponent', new ShieldOperatorComponent());
+    AddComponent(shieldOp, 'DexterityComponent', new DexterityComponent(50));
+    AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
+    AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
+    AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(shieldOp);
+};
+
+const dummyEnemiesPopulate = function (entities) {
+  for (let i = 0; i < 5; i++) {
     let e = NewEntity();
-    AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
     AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
@@ -13,71 +70,43 @@ const dummyEntityPopulate = function (entities) {
     AddComponent(e, 'MeshComponent', new MeshComponent());
     AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
     AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
-    if (i === 0) {
-      AddComponent(e, 'PlayerControlComponent', new PlayerControlComponent());
-      AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
-      AddComponent(e, 'TeamComponent', new TeamComponent('Space Federation'));
-      AddComponent(e, 'NameComponent', new NameComponent('Argo Mk. IV'));
-      AddComponent(e, 'SuppliesComponent', new SuppliesComponent(100, 50));
-    } else {
-      AddComponent(e, 'AIControlComponent', new AIControlComponent());
-      AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
-      AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
-      AddComponent(e, 'NameComponent', new NameComponent('L. Dry Battleship'));
-    }
+    AddComponent(e, 'AIControlComponent', new AIControlComponent());
+    AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
+    AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
+    AddComponent(e, 'NameComponent', new NameComponent('L. Dry Battleship'));
     entities.push(e);
 
     let skipper = NewEntity();
-    AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(i));
+    AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
     AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
     AddComponent(skipper, 'DexterityComponent', new DexterityComponent(50));
-    if (HasComponent(e, 'PlayerControlComponent')) {
-      AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
-    } else {
-      AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
-    }
-    i++;
-    AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
+    AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     entities.push(skipper);
 
     let gunner = NewEntity();
     AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
-    AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(i - 1));
+    AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 2));
     AddComponent(gunner, 'DexterityComponent', new DexterityComponent(100));
-    if (HasComponent(e, 'PlayerControlComponent')) {
-      AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
-    } else {
-      AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
-    }
-    i++;
-    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
+    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     entities.push(gunner);
 
     let engineer = NewEntity();
     AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
     AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
     AddComponent(engineer, 'DexterityComponent', new DexterityComponent(40));
-    AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(i - 2));
-    if (HasComponent(e, 'PlayerControlComponent')) {
-      AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
-    } else {
-      AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
-    }
-    i++;
-    AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
+    AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
+    AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     entities.push(engineer);
 
     let shieldOp = NewEntity();
     AddComponent(shieldOp, 'ShieldOperatorComponent', new ShieldOperatorComponent());
     AddComponent(shieldOp, 'DexterityComponent', new DexterityComponent(50));
-    AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(i - 3));
-    if (HasComponent(e, 'PlayerControlComponent')) {
-      AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
-    } else {
-      AddComponent(shieldOp, 'AIControlComponent', new AIControlComponent());
-    }
-    i++;
-    AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(i));
+    AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
+    AddComponent(shieldOp, 'AIControlComponent', new AIControlComponent());
+    AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     entities.push(shieldOp);
   }
 
@@ -135,7 +164,8 @@ let main = function() {
     };
 
     // TODO: remove me later and add real ship placement (dummy setup)
-    dummyEntityPopulate(payload.entities);
+    populateWithPlayerEntities(payload.entities);
+    dummyEnemiesPopulate(payload.entities);
 
     game.scene.start('Gameplay', payload);
 };
