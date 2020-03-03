@@ -4,6 +4,10 @@ Gameplay.prototype.doNextTurn = function() {
     throw new Error('Unable to perform a new turn yet!');
   }
 
+  if (this.exiting) {
+    return;
+  }
+
   // Refresh the attack candidates; this is probably O(n^2) and slow; it can probably be done on the my-turn
   RemoveComponentFromAllEntities(this.entities, 'AttackCandidatesComponent');
   ViewEntities(this.entities, ['PositionComponent', 'TeamComponent', 'AttackRangeComponent'], [], (entity, position, team, range) => {
@@ -593,6 +597,33 @@ Gameplay.prototype.doNextTurn = function() {
     if (HasComponent(this.entities[i], 'DestroyedComponent')) {
       this.entities[i] = undefined;
     }
+  }
+
+  // If we've survived this far and the player has moved outside the sector,
+  // then begin the gameplay again in the next sector
+  if (!(this.exiting)) {
+    ViewEntities(this.entities, ['PositionComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, position) => {
+      // TODO: go to different sectors depending on which side the player went off
+      if ((position.x < 0) || (position.x > SECTOR_WIDTH) || (position.y < 0) || (position.y > SECTOR_HEIGHT)) {
+        this.exiting = true;
+
+        // TODO: make the sector change depending on which side the player went off
+        World.currentPlayerSector.x++;
+
+
+        this.cameras.cameras[0].fade(4500);
+        this.time.addEvent({
+          delay: 5000,
+          callback: () => {
+
+            // TODO: Make this depend on where the player went off (alongside above TODO)
+            position.x = SECTOR_WIDTH * 0.5;
+            position.y = SECTOR_HEIGHT * 0.5;
+            this.scene.start('Gameplay', World.getCurrentSector());
+          }
+        })
+      }
+    });
   }
 };
 
