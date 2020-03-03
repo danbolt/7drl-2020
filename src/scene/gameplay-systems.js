@@ -479,8 +479,8 @@ Gameplay.prototype.doNextTurn = function() {
       const mesh = GetComponent(entity, 'MeshComponent');
       let tween = this.add.tween({
         targets: mesh.mesh.position,
-        x: position.x,
-        z: position.y,
+        x: Math.max(0, Math.min(position.x, SECTOR_WIDTH)),
+        z: Math.max(0, Math.min(position.y, SECTOR_HEIGHT)),
         duration: DEFAULT_POSITION_TWEEN_DURATION,
         onComplete: () => {
           RemoveComponent(entity, 'PositionTweenComponent');
@@ -497,6 +497,33 @@ Gameplay.prototype.doNextTurn = function() {
         RemoveComponent(entity, 'PositionTweenComponent');
       }
       AddComponent(entity, 'PositionTweenComponent', new PositionTweenComponent(tween));
+    }
+  });
+
+  // Ensure AI entities don't go off the sector
+  ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent'], ['PlayerControlComponent'], (entity, position, velocity) => {
+    const err = 0.001;
+
+    let flipped = false;
+
+    if (position.x < 0) {
+      position.x = err;
+      flipped = true;
+    } else if (position.x > SECTOR_WIDTH) {
+      position.x = SECTOR_WIDTH - err;
+      flipped = true;
+    }
+
+    if (position.y < 0) {
+      position.y = err;
+      flipped = true;
+    } else if (position.y > SECTOR_HEIGHT) {
+      position.y = SECTOR_HEIGHT - err;
+      flipped = true;
+    }
+
+    if (flipped) {
+      velocity.value += Math.PI;
     }
   });
 
@@ -603,22 +630,33 @@ Gameplay.prototype.doNextTurn = function() {
   // then begin the gameplay again in the next sector
   if (!(this.exiting)) {
     ViewEntities(this.entities, ['PositionComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, position) => {
-      // TODO: go to different sectors depending on which side the player went off
       if ((position.x < 0) || (position.x > SECTOR_WIDTH) || (position.y < 0) || (position.y > SECTOR_HEIGHT)) {
         this.exiting = true;
 
-        // TODO: make the sector change depending on which side the player went off
-        World.currentPlayerSector.x++;
-
+        const err = 0.001;
 
         this.cameras.cameras[0].fade(4500);
         this.time.addEvent({
           delay: 5000,
           callback: () => {
+            // Update the player to be in the correct sector and have the correct relative position
+            if (position.x < 0) {
+              position.x = SECTOR_WIDTH - err;
+              World.currentPlayerSector.x--;
+            } else if (position.x > SECTOR_WIDTH) {
+              position.x = err;
+              World.currentPlayerSector.x++;
+            } else if (position.y < 0) {
+              position.y = SECTOR_HEIGHT - err;
+              World.currentPlayerSector.y--;
+            } else if (position.y < SECTOR_HEIGHT) {
+              position.y = err;
+              World.currentPlayerSector.y++;
+            } else {
+              throw new Error('Player exited but is outside the bounds of the sector. This shouldn\t happen');
+            }
 
-            // TODO: Make this depend on where the player went off (alongside above TODO)
-            position.x = SECTOR_WIDTH * 0.5;
-            position.y = SECTOR_HEIGHT * 0.5;
+            // Start in the next sector
             this.scene.start('Gameplay', World.getCurrentSector());
           }
         })

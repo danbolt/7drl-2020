@@ -146,7 +146,7 @@ let main = function() {
                         height: GAME_HEIGHT,
                         type : Phaser.WEBGL,
                         pixelArt: true,
-                        antialias: false,
+                        antialias: true,
                         scaleMode: Phaser.Scale.ScaleModes.FIT,
                         autoCenter: Phaser.Scale.Center.CENTER_BOTH,
                         roundPixels: true,

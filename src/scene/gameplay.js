@@ -40,13 +40,18 @@ Gameplay.prototype.setupUI = function () {
 
   // Player ship UI (always on)
   this.playerShipUI = this.add.group();
-  const hullBarBacking = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+
+  const sectorInfo = this.add.bitmapText(2, 2, 'miniset', World.getCurrentSector().name, DEFAULT_TEXT_SIZE);
+
+  const hullBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE), DEFAULT_IMAGE_MAP, 28);
   hullBarBacking.setTint(0x000000);
   hullBarBacking.setOrigin(0);
+  hullBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(hullBarBacking);
-  const hullBar = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
+  const hullBar = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE), DEFAULT_IMAGE_MAP, 28);
   hullBar.setTint(0x00FF00);
   hullBar.setOrigin(0);
+  hullBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(hullBar);
   let candidateFound = false;
   let lerpHealth = 0;
@@ -59,16 +64,18 @@ Gameplay.prototype.setupUI = function () {
       candidateFound = true;
     });
   };
-  const hullText = this.add.bitmapText(2, 2, 'miniset', 'Hull Integrity', DEFAULT_TEXT_SIZE);
+  const hullText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE), 'miniset', 'Hull Integrity', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(hullText);
 
-  const shieldsBarBacking = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  const shieldsBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 2), DEFAULT_IMAGE_MAP, 28);
   shieldsBarBacking.setTint(0x000000);
   shieldsBarBacking.setOrigin(0);
+  shieldsBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(shieldsBarBacking);
-  const shieldsBar = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
+  const shieldsBar = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 2), DEFAULT_IMAGE_MAP, 28);
   shieldsBar.setTint(0x36FFFF);
   shieldsBar.setOrigin(0);
+  shieldsBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(shieldsBar);
   let lerpShields = 0;
   const updateShieldsBar = () => {
@@ -79,17 +86,19 @@ Gameplay.prototype.setupUI = function () {
       shieldsBar.displayWidth = lerpShields * pixelToHullBarRatio;
     });
   };
-  const shieldsText = this.add.bitmapText(2, 24, 'miniset', 'Shields', DEFAULT_TEXT_SIZE);
+  const shieldsText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 2), 'miniset', 'Shields', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(shieldsText);
 
-  const suppliesBarBacking = this.add.image(2, 48, DEFAULT_IMAGE_MAP, 28);
+  const suppliesBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 3), DEFAULT_IMAGE_MAP, 28);
   suppliesBarBacking.setTint(0x000000);
   suppliesBarBacking.setOrigin(0);
+  suppliesBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   suppliesBarBacking.displayWidth = SUPPLIES_BAR_WIDTH;
   this.playerShipUI.add(suppliesBarBacking);
-  const suppliesBar = this.add.image(2, 48, DEFAULT_IMAGE_MAP, 28);
+  const suppliesBar = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 3), DEFAULT_IMAGE_MAP, 28);
   suppliesBar.setTint(0xaaaaaa);
   suppliesBar.setOrigin(0);
+  suppliesBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(suppliesBar);
   let lerpSupplies = 0;
   const updatesuppliesBar = () => {
@@ -99,7 +108,7 @@ Gameplay.prototype.setupUI = function () {
       suppliesBar.displayWidth = (lerpSupplies / supplies.max) * SUPPLIES_BAR_WIDTH;
     });
   };
-  const suppliesText = this.add.bitmapText(2, 48, 'miniset', 'Supplies', DEFAULT_TEXT_SIZE);
+  const suppliesText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 3), 'miniset', 'Supplies', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(suppliesText);
 
   const updatePlayerShipUI = () => {
@@ -124,18 +133,22 @@ Gameplay.prototype.setupUI = function () {
   const targetHullBarBacking = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
   targetHullBarBacking.setTint(0x000000);
   targetHullBarBacking.setOrigin(0);
+  targetHullBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBarBacking);
   const targetHullBar = this.add.image(2, 2, DEFAULT_IMAGE_MAP, 28);
   targetHullBar.setTint(0x00FF00);
   targetHullBar.setOrigin(0);
+  targetHullBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBar);
   const targetShieldsBarBacking = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
   targetShieldsBarBacking.setTint(0x000000);
   targetShieldsBarBacking.setOrigin(0);
+  targetShieldsBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetShieldsBarBacking);
   const targetShieldsBar = this.add.image(2, 24, DEFAULT_IMAGE_MAP, 28);
   targetShieldsBar.setTint(0x36FFFF);
   targetShieldsBar.setOrigin(0);
+  targetShieldsBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetShieldsBar);
   const updateTargetHullBar = (target) => {
     if (HasComponent(target, 'HullHealthComponent')) {
@@ -204,6 +217,8 @@ Gameplay.prototype.setupUI = function () {
   this.cruiseText.setVisible(false);
 };
 Gameplay.prototype.create = function () {
+  this.exiting = false;
+
   const dummySeed = 10101;
   ROT.RNG.setSeed(dummySeed);
 
