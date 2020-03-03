@@ -501,7 +501,7 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   // Ensure AI entities don't go off the sector
-  ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent'], ['PlayerControlComponent'], (entity, position, velocity) => {
+  ViewEntities(nextEntity, ['PositionComponent', 'RotationComponent'], ['PlayerControlComponent'], (entity, position, rotation) => {
     const err = 0.001;
 
     let flipped = false;
@@ -524,6 +524,35 @@ Gameplay.prototype.doNextTurn = function() {
 
     if (flipped) {
       velocity.value += Math.PI;
+    }
+  });
+
+  // If the player is in the corners of the world, don't let them leave the map
+  ViewEntities(nextEntity, ['PositionComponent', 'RotationComponent', 'PlayerControlComponent'], [], (entity, position, rotation) => {
+    const err = 0.001;
+
+    let flipped = false;
+
+    const currentSector = World.getCurrentSector();
+
+    if ((position.x < 0) && (currentSector.x === 0)) {
+      position.x = err;
+      flipped = true;
+    } else if ((position.x > SECTOR_WIDTH) && (currentSector.x === (World.width - 1))) {
+      position.x = SECTOR_WIDTH - err;
+      flipped = true;
+    }
+
+    if ((position.y < 0) && (currentSector.y === 0)) {
+      position.y = err;
+      flipped = true;
+    } else if ((position.y > SECTOR_HEIGHT) && (currentSector.y === (World.height - 1))) {
+      position.y = SECTOR_HEIGHT - err;
+      flipped = true;
+    }
+
+    if (flipped) {
+      rotation.value += Math.PI;
     }
   });
 
@@ -629,7 +658,7 @@ Gameplay.prototype.doNextTurn = function() {
   // If we've survived this far and the player has moved outside the sector,
   // then begin the gameplay again in the next sector
   if (!(this.exiting)) {
-    ViewEntities(this.entities, ['PositionComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, position) => {
+    ViewEntities(this.entities, ['PositionComponent', 'PlayerControlComponent', 'HullHealthComponent', 'ForwardVelocityComponent'], [], (entity, position, playerControl, hullHealth, velocity) => {
       if ((position.x < 0) || (position.x > SECTOR_WIDTH) || (position.y < 0) || (position.y > SECTOR_HEIGHT)) {
         this.exiting = true;
 
@@ -642,19 +671,27 @@ Gameplay.prototype.doNextTurn = function() {
             // Update the player to be in the correct sector and have the correct relative position
             if (position.x < 0) {
               position.x = SECTOR_WIDTH - err;
+              position.y = SECTOR_HEIGHT * 0.5;
               World.currentPlayerSector.x--;
             } else if (position.x > SECTOR_WIDTH) {
               position.x = err;
+              position.y = SECTOR_HEIGHT * 0.5;
               World.currentPlayerSector.x++;
             } else if (position.y < 0) {
+              position.x = SECTOR_WIDTH * 0.5;
               position.y = SECTOR_HEIGHT - err;
               World.currentPlayerSector.y--;
-            } else if (position.y < SECTOR_HEIGHT) {
+            } else if (position.y > SECTOR_HEIGHT) {
+              position.x = SECTOR_WIDTH * 0.5;
               position.y = err;
               World.currentPlayerSector.y++;
             } else {
               throw new Error('Player exited but is outside the bounds of the sector. This shouldn\t happen');
             }
+
+            // Remove all temp components
+            RemoveComponentFromAllEntities(this.entities, 'ShipInOrbitRangeOfPlanetComponent');
+            RemoveComponentFromAllEntities(this.entities, 'CruiseControlComponent');
 
             // Start in the next sector
             this.scene.start('Gameplay', World.getCurrentSector());

@@ -43,6 +43,23 @@ Gameplay.prototype.setupUI = function () {
 
   const sectorInfo = this.add.bitmapText(2, 2, 'miniset', World.getCurrentSector().name, DEFAULT_TEXT_SIZE);
 
+  // TODO: make a better compass
+  const compassInfo = this.add.bitmapText(GAME_WIDTH * 0.5, 2, 'miniset', '. . N . .', DEFAULT_TEXT_SIZE);
+  let tick = 0;
+  const updateCompassInfo = () => {
+    tick++
+    if (tick > 3) {
+      tick = 0;
+    } else {
+      return;
+    }
+
+    const cameraAngle = this.gameCameraTheta;
+    const cameraAngle2PiClamped = Phaser.Math.Angle.Normalize(cameraAngle);
+    const cameraAngleIndex = ~~((cameraAngle2PiClamped / (Math.PI * 2.001)) * COMPASS_ANGLE_LETTERS.length);
+    compassInfo.text = '. . ' + COMPASS_ANGLE_LETTERS[cameraAngleIndex] + ' . .';
+  };
+
   const hullBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE), DEFAULT_IMAGE_MAP, 28);
   hullBarBacking.setTint(0x000000);
   hullBarBacking.setOrigin(0);
@@ -116,6 +133,7 @@ Gameplay.prototype.setupUI = function () {
     updateHullBar();
     updateShieldsBar();
     updatesuppliesBar();
+    updateCompassInfo();
     if (candidateFound === false) {
       this.playerShipUI.children.iterate((child) => {
         child.setVisible(false);
@@ -253,6 +271,7 @@ Gameplay.prototype.create = function () {
   });
 
   this.keys.cruise.on('down', () => {
+    console.log('cruise');
     if (!(this.cruiseText.visible)) {
       ViewEntities(this.entities, ['SkipperComponent', 'PlayerControlComponent'], ['CruiseControlComponent'], (entity) => {
         AddComponent(entity, 'CruiseControlComponent', new CruiseControlComponent());
