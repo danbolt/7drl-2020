@@ -16,7 +16,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
     AddComponent(playerShip, 'TeamComponent', new TeamComponent('Space Federation'));
     AddComponent(playerShip, 'NameComponent', new NameComponent('Argo Mk. IV'));
-    AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer'));
+    AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer Class'));
     AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 300));
     entities.push(playerShip);
 
@@ -62,7 +62,7 @@ const dummyEnemiesPopulate = function (entities) {
   for (let i = 0; i < 5; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
+    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(10));
     AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
     AddComponent(e, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
@@ -112,32 +112,6 @@ const dummyEnemiesPopulate = function (entities) {
   }
 };
 
-/*
-const dummyPopulatePlanets = function (entities) {
-  let testPlanet = NewEntity();
-  AddComponent(testPlanet, 'PositionComponent', new PositionComponent(0, 3));
-  AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
-  AddComponent(testPlanet, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(4.6));
-  AddComponent(testPlanet, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30))
-  AddComponent(testPlanet, 'MeshComponent', new MeshComponent());
-  AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
-  AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(testPlanet, 'NameComponent', new NameComponent('Terra'));
-  AddComponent(testPlanet, 'TeamComponent', new TeamComponent('Space Federation'));
-  entities.push(testPlanet);
-
-  let p2 = NewEntity();
-  AddComponent(p2, 'PositionComponent', new PositionComponent(8, 7));
-  AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(1.3, 0.3435, 0x44111, 0x775500, 0xeeaa88));
-  AddComponent(p2, 'MeshComponent', new MeshComponent());
-  AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
-  AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(p2, 'NameComponent', new NameComponent('Darius II'));
-  entities.push(p2);
-};
-*/
-
-
 let main = function() {
     // Expose bulletml's builder DSL to the global namespace.
     bulletml.dsl();
@@ -162,11 +136,15 @@ let main = function() {
                             }
                         },
                      });
+    game.scene.add('PointsSelectionScreen', PointsSelectionScreen, false);
     game.scene.add('Gameplay', Gameplay, false);
 
     // Create the player entities
     const playerEntities = [];
     populateWithPlayerEntities(playerEntities);
+    const playerBasePoints = new DefaultPlayerPointsConfiguration();
+    playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities);
+
 
     // Generate a new campaign
     World = new GameWorld(5, 5, Math.random());
