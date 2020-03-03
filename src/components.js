@@ -165,6 +165,18 @@ const AttackCandidatesComponent = function(value) {
 
 const OrbitNotificationComponent = function() {};
 
+const PlanetSuppliesComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('ECS index value was undefined');
+  }
+
+  if (value < 0) {
+    throw new Error('ECS index value was negative');
+  }
+
+  this.value = value;
+};
+
 const PlanetOrbitableComponent = function(range) {
   if (range === undefined) {
     throw new Error('Planet orbit range was undefined');

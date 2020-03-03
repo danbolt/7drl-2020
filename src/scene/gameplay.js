@@ -228,7 +228,7 @@ Gameplay.prototype.create = function () {
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
       AddComponent(e, 'TeamComponent', new TeamComponent('Space Federation'));
       AddComponent(e, 'NameComponent', new NameComponent('Argo Mk. IV'));
-      AddComponent(e, 'SuppliesComponent', new SuppliesComponent(100, 100));
+      AddComponent(e, 'SuppliesComponent', new SuppliesComponent(100, 50));
     } else {
       AddComponent(e, 'AIControlComponent', new AIControlComponent());
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
@@ -295,6 +295,7 @@ Gameplay.prototype.create = function () {
   AddComponent(testPlanet, 'PositionComponent', new PositionComponent(0, 3));
   AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
   AddComponent(testPlanet, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(4.6));
+  AddComponent(testPlanet, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30))
   AddComponent(testPlanet, 'MeshComponent', new MeshComponent());
   AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
   AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(this.entities.length));

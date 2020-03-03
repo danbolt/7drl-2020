@@ -108,7 +108,7 @@ Gameplay.prototype.doNextTurn = function() {
       const planetEntity = this.entities[planetOrbitIndex];
       const planetName = HasComponent(planetEntity, 'NameComponent') ? GetComponent(planetEntity, 'NameComponent').value : '???';
 
-      const dialogue = {
+      const departDialogue = {
         question: 'Should we depart from planet ' + planetName + '?',
         options: [
           {
@@ -152,7 +152,36 @@ Gameplay.prototype.doNextTurn = function() {
         ]
       };
 
-      this.showDialogue(dialogue);
+      // If the planet has supplies, give them to the player
+      if (HasComponent(planetEntity, 'PlanetSuppliesComponent')) {
+        const planetSupplies = GetComponent(planetEntity, 'PlanetSuppliesComponent');
+        const suppliesBonusQuantity = planetSupplies.value;
+        RemoveComponent(planetEntity, 'PlanetSuppliesComponent');
+        const notifySuppliesDialogue = {
+          question: 'We were able to find some supplies on planet ' + planetName + '!',
+          options: [
+            {
+              text: '(y)ay!',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+              action: () => {
+                this.time.addEvent({
+                  delay: 32,
+                  callback: () => {
+                    const supplies = GetComponent(shipEntity, 'SuppliesComponent');
+                    supplies.value = Math.min(supplies.value + suppliesBonusQuantity, supplies.max);
+                    this.showDialogue(departDialogue);
+                  }
+                })
+              }
+            }
+          ]
+        };
+        this.showDialogue(notifySuppliesDialogue);
+
+        // TODO: play a congratulatory sound effect
+      } else {
+        this.showDialogue(departDialogue);
+      }
     } else if (hasArrivedAtPlanet) {
       RemoveComponent(shipEntity, 'OrbitNotificationComponent');
       const planetOrbitIndex = GetComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent').planetIndex;
