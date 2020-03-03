@@ -143,8 +143,7 @@ let main = function() {
     const playerEntities = [];
     populateWithPlayerEntities(playerEntities);
     const playerBasePoints = new DefaultPlayerPointsConfiguration();
-    playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities);
-
+    playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities, true);
 
     // Generate a new campaign
     World = new GameWorld(5, 5, Math.random());

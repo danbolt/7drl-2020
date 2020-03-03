@@ -17,8 +17,13 @@ const PointsConfiguration = function() {
 
   this.shieldOperatorDexPoints = 0;
 };
-PointsConfiguration.prototype.applyToShipEntity = function(shipEntity, entities) {
+PointsConfiguration.prototype.applyToShipEntity = function(shipEntity, entities, fillHealth) {
+  fillHealth = fillHealth ? true : false;
+
   GetComponent(shipEntity, 'HullHealthComponent').maxHealth = (this.hullHealthPoints * HULL_HEALTH_PER_POINT);
+  if (fillHealth) {
+    GetComponent(shipEntity, 'HullHealthComponent').health = (this.hullHealthPoints * HULL_HEALTH_PER_POINT);
+  }
   GetComponent(shipEntity, 'ShieldsComponent').maxHealth = (this.shieldPoints * SHIELDS_PER_POINT);
   GetComponent(shipEntity, 'DexterityComponent').value = (this.shipDexPoints * SHIP_DEX_PER_POINT);
   GetComponent(shipEntity, 'AttackStrengthComponent').value = (this.atkStrengthPoints * ATK_STRENGTH_PER_POINT);
