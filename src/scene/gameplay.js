@@ -27,13 +27,7 @@ Gameplay.prototype.init = function (payload) {
   this.entities = payload.entities;
 }
 Gameplay.prototype.preload = function () {
-  // TODO: load these in a preload game state
-  this.load.bitmapFont('miniset', 'asset/font/MiniSet.png', 'asset/font/MiniSet.fnt');
-
-  this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
-  this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
-
-  this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
+  //
 };
 Gameplay.prototype.setupUI = function () {
   const pixelToHullBarRatio = 1.8;
