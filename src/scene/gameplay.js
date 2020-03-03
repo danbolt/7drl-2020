@@ -79,10 +79,31 @@ Gameplay.prototype.setupUI = function () {
   const shieldsText = this.add.bitmapText(2, 24, 'miniset', 'Shields', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(shieldsText);
 
+  const suppliesBarBacking = this.add.image(2, 48, DEFAULT_IMAGE_MAP, 28);
+  suppliesBarBacking.setTint(0x000000);
+  suppliesBarBacking.setOrigin(0);
+  suppliesBarBacking.displayWidth = SUPPLIES_BAR_WIDTH;
+  this.playerShipUI.add(suppliesBarBacking);
+  const suppliesBar = this.add.image(2, 48, DEFAULT_IMAGE_MAP, 28);
+  suppliesBar.setTint(0xaaaaaa);
+  suppliesBar.setOrigin(0);
+  this.playerShipUI.add(suppliesBar);
+  let lerpSupplies = 0;
+  const updatesuppliesBar = () => {
+    ViewEntities(this.entities, ['SuppliesComponent', 'PlayerControlComponent'], [], function(entity, supplies, control) {
+      
+      lerpSupplies = Phaser.Math.Interpolation.SmoothStep(0.3, lerpSupplies, supplies.value);
+      suppliesBar.displayWidth = (lerpSupplies / supplies.max) * SUPPLIES_BAR_WIDTH;
+    });
+  };
+  const suppliesText = this.add.bitmapText(2, 48, 'miniset', 'Supplies', DEFAULT_TEXT_SIZE);
+  this.playerShipUI.add(suppliesText);
+
   const updatePlayerShipUI = () => {
     candidateFound = false;
     updateHullBar();
     updateShieldsBar();
+    updatesuppliesBar();
     if (candidateFound === false) {
       this.playerShipUI.children.iterate((child) => {
         child.setVisible(false);
@@ -207,6 +228,7 @@ Gameplay.prototype.create = function () {
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
       AddComponent(e, 'TeamComponent', new TeamComponent('Space Federation'));
       AddComponent(e, 'NameComponent', new NameComponent('Argo Mk. IV'));
+      AddComponent(e, 'SuppliesComponent', new SuppliesComponent(100, 100));
     } else {
       AddComponent(e, 'AIControlComponent', new AIControlComponent());
       AddComponent(e, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0xFF3300));
@@ -272,7 +294,7 @@ Gameplay.prototype.create = function () {
   let testPlanet = NewEntity();
   AddComponent(testPlanet, 'PositionComponent', new PositionComponent(0, 3));
   AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
-  AddComponent(testPlanet, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(3.7));
+  AddComponent(testPlanet, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(4.6));
   AddComponent(testPlanet, 'MeshComponent', new MeshComponent());
   AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
   AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(this.entities.length));

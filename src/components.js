@@ -120,6 +120,35 @@ const ShieldsUpComponent = function () {};
 
 const CruiseControlComponent = function () {};
 
+const SuppliesComponent = function (maxValue, value) {
+  if (maxValue === undefined) {
+    throw new Error('Max supplies value was undefined');
+  }
+
+  if (!Number.isInteger(maxValue)) {
+    throw new Error('Max supplies value was not an integer');
+  }
+
+  if (maxValue < 0) {
+    throw new Error('Max supplies value was negative');
+  }
+
+  if (value === undefined) {
+    throw new Error('Supplies value was undefined');
+  }
+
+  if (!Number.isInteger(value)) {
+    throw new Error('Supplies value was not an integer');
+  }
+
+  if (value < 0) {
+    throw new Error('Supplies value was negative');
+  }
+
+  this.max = maxValue ? maxValue : DEFAULT_SUPPLIES;
+  this.value = value ? value : this.max;
+};
+
 // --- INPUT CONTROL STUFF ---
 
 const PlayerControlComponent = function() {};
@@ -179,7 +208,6 @@ const ShipOrbitingPlanetComponent = function(value) {
 
   this.planetIndex = value;
 };
-
 
 // --- RENDERING STUFF ---
 

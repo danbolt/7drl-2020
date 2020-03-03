@@ -78,6 +78,19 @@ Gameplay.prototype.doNextTurn = function() {
   }
   const nextEntity = [nextEntityCandidate];
 
+  // Deplete supplies
+  ViewEntities(nextEntity, ['HullHealthComponent', 'SuppliesComponent'], [], (entity, hullHealth, supplies) => {
+    supplies.value = Math.max(supplies.value - SUPPLIES_DEPLETION_PER_SHIP_TURN, 0);
+
+    // If we have enough supplies to continue, we're done here
+    if (supplies.value >= 1) {
+      return;
+    }
+
+    // If we're out of supplies, then "destroy the ship"
+    AddComponent(entity, 'DestroyedComponent', new DestroyedComponent());
+  });
+
   // Turning logic
   ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], ['CruiseControlComponent'], (entity, skipper, playerControl, shipReference) => {
     const shipEntity = this.entities[shipReference.value];
@@ -502,15 +515,44 @@ Gameplay.prototype.doNextTurn = function() {
 
   // Deal with destruction; remove meshes for entities that should be destroyed
   ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {
-    delete mesh.mesh.entityRef;
-    this.three.scene.remove(mesh.mesh);
+    // If we run out of supplies, don't bother removing the mesh from the scene, since it didn't blow up.
+    if (HasComponent(entity, 'SuppliesComponent')) {
+      const supplies = GetComponent(entity, 'SuppliesComponent');
+      if (supplies.value < 1) {
+        if (HasComponent(entity, 'PositionTweenComponent')) {
+          const positionTween = GetComponent(entity, 'PositionTweenComponent');
+
+          positionTween.value.stop();
+          RemoveComponent(entity, 'PositionTweenComponent');
+
+          let t = this.add.tween({
+            targets: mesh.mesh.rotation,
+            x: 0.6932 * (Math.random() < 0.5 ? 1 : -1),
+            duration: 21876
+          });
+        }
+
+        return;
+      }
+    } else {
+      delete mesh.mesh.entityRef;
+      this.three.scene.remove(mesh.mesh);
+    }
+    
     RemoveComponent(entity, 'MeshComponent');
   });
 
   ViewEntities(this.entities, ['DestroyedComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, destroyed, playerControl, hullHealthComponent) => {
-    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'GAME OVER', 32);
+    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'GAME OVER', DEFAULT_TEXT_SIZE * 2);
     questionText.setCenterAlign();
     questionText.setOrigin(0.5);
+
+    if (HasComponent(entity, 'SuppliesComponent')) {
+      const supplies = GetComponent(entity, 'SuppliesComponent');
+      if (supplies.value < 1) {
+        questionText.text = 'GAME OVER\nOut of Supplies';
+      }
+    }
   });
 
   // Set entities that don't exist anymore to undefined
