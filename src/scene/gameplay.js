@@ -335,6 +335,13 @@ Gameplay.prototype.setup3DBackground = function () {
   const background = new THREE.Mesh( backgroundGeom, backgroundMaterial);
   backgroundHolder.add(background);
   this.three.scene.add(backgroundHolder);
+
+  const sectorGeom = new THREE.PlaneGeometry( SECTOR_WIDTH, SECTOR_HEIGHT, 1, 1 );
+  const sectorMat = new THREE.MeshBasicMaterial( {color: 0x0033FF, wireframe: true } );
+  const sectorMesh = new THREE.Mesh( sectorGeom, sectorMat );
+  sectorMesh.position.set(SECTOR_WIDTH * 0.5, 0, SECTOR_HEIGHT * 0.5);
+  sectorMesh.rotation.x = Math.PI * 0.5;
+  this.three.scene.add( sectorMesh );
 }
 Gameplay.prototype.setup3DScene = function () {
   this.gameCamera = new THREE.PerspectiveCamera( 70, GAME_WIDTH / GAME_HEIGHT,  0.1, 1000 );

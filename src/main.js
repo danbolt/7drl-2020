@@ -5,7 +5,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(playerShip, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
     AddComponent(playerShip, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
-    AddComponent(playerShip, 'PositionComponent', new PositionComponent(Math.random() * 30 - 15, Math.random() * 30 - 15));
+    AddComponent(playerShip, 'PositionComponent', new PositionComponent(SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5)); // TODO: make this a better start spot
     AddComponent(playerShip, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(playerShip, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
@@ -109,7 +109,10 @@ const dummyEnemiesPopulate = function (entities) {
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     entities.push(shieldOp);
   }
+};
 
+/*
+const dummyPopulatePlanets = function (entities) {
   let testPlanet = NewEntity();
   AddComponent(testPlanet, 'PositionComponent', new PositionComponent(0, 3));
   AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
@@ -131,6 +134,7 @@ const dummyEnemiesPopulate = function (entities) {
   AddComponent(p2, 'NameComponent', new NameComponent('Darius II'));
   entities.push(p2);
 };
+*/
 
 
 let main = function() {
@@ -159,13 +163,16 @@ let main = function() {
                      });
     game.scene.add('Gameplay', Gameplay, false);
 
-    const payload = {
-        entities: []
-    };
+    // Create the player entities
+    const playerEntities = [];
+    populateWithPlayerEntities(playerEntities);
 
-    // TODO: remove me later and add real ship placement (dummy setup)
-    populateWithPlayerEntities(payload.entities);
-    dummyEnemiesPopulate(payload.entities);
+    // Generate a new campaign
+    World = new GameWorld(5, 5, Math.random());
+    while (!(World.isGenerated())) {
+      World.tickGenerate(playerEntities);
+    }
 
-    game.scene.start('Gameplay', payload);
+    // Start gameplay in the current sector
+    game.scene.start('Gameplay', World.getCurrentSector());
 };
