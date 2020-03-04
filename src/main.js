@@ -25,9 +25,11 @@ let main = function() {
                             }
                         },
                      });
+    game.scene.add('FirstLoadScreen', FirstLoadScreen, false);
     game.scene.add('PreloadScreen', PreloadScreen, false);
     game.scene.add('Gameplay', Gameplay, false);
     game.scene.add('PointsSelectionScreen', PointsSelectionScreen, false);
 
+    game.scene.start('FirstLoadScreen');
     game.scene.start('PreloadScreen');
 };

@@ -121,11 +121,23 @@ const MeshNamesToLoad = [
   'player_ship'
 ];
 
+const FirstLoadScreen = function () {
+  // body...
+};
+FirstLoadScreen.prototype.init = function() {
+  //
+};
+FirstLoadScreen.prototype.preload = function() {
+  this.load.image('preload', 'asset/image/preload.png');
+};
+FirstLoadScreen.prototype.create = function() {
+  this.add.image(~~(GAME_WIDTH * 0.5), ~~(GAME_HEIGHT * 0.5), 'preload');
+};
 
 const PreloadScreen = function () {
   // body...
 };
-PreloadScreen.prototype.init = function(payload) {
+PreloadScreen.prototype.init = function() {
   //
 };
 PreloadScreen.prototype.preload = function() {
@@ -152,6 +164,7 @@ PreloadScreen.prototype.create = function() {
   const playerBasePoints = new DefaultPlayerPointsConfiguration();
   playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities, true);
 
+  this.scene.stop('FirstLoadScreen');
   this.scene.start('PointsSelectionScreen', {
     pointsToSpend: 4,
     existingConfig: playerBasePoints,
