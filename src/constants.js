@@ -24,6 +24,8 @@ const PATH_LINE_COLOR = new THREE.LineBasicMaterial({
   color: 0xaaaaaa,
   linewidth: 4
 });
+const STARS_COLOR = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 1 } );
+const NUMBER_OF_STARS = 200;
 
 const COMPASS_ANGLE_LETTERS = ['E', 'NE', 'N', 'N', 'NW', 'W', 'W', 'SW', 'S', 'S', 'SE', 'E'];
 
@@ -57,7 +59,6 @@ const DEFAULT_SUPPLIES = 100;
 const SUPPLIES_DEPLETION_PER_SHIP_TURN = 1;
 
 const SUPPLIES_BAR_WIDTH = 96;
-
 
 // Spending R&D points
 const HULL_HEALTH_PER_POINT = 10;

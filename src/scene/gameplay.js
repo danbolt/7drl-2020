@@ -392,6 +392,26 @@ Gameplay.prototype.setup3DBackground = function () {
   sectorMesh.position.set(SECTOR_WIDTH * 0.5, 0, SECTOR_HEIGHT * 0.5);
   sectorMesh.rotation.x = Math.PI * 0.5;
   this.three.scene.add( sectorMesh );
+
+  // Generate starfield from:
+  // https://math.stackexchange.com/a/1585996
+  const starVerts = [];
+  const starfieldRadius = 200;
+  for (var i = 0; i < NUMBER_OF_STARS; i++) {
+    let x = (Math.random() * 2 - 1.0) + 0.0001;
+    let y = (Math.random() * 2 - 1.0) + 0.0001;
+    let z = (Math.random() * 2 - 1.0) + 0.0001;
+    const normalizeFactor = 1.0 / Math.sqrt((x*x) + (y*y) + (z*z));
+    x *= normalizeFactor * starfieldRadius;
+    y *= normalizeFactor * starfieldRadius;
+    z *= normalizeFactor * starfieldRadius;
+    starVerts.push(x, y, z);
+  }
+  const starGeom = new THREE.BufferGeometry();
+  starGeom.addAttribute( 'position', new THREE.Float32BufferAttribute( starVerts, 3 ) );
+  const stars = new THREE.Points(starGeom, STARS_COLOR);
+  this.three.scene.add(stars);
+
 }
 Gameplay.prototype.setup3DScene = function () {
   this.gameCamera = new THREE.PerspectiveCamera( 70, GAME_WIDTH / GAME_HEIGHT,  0.1, 1000 );
