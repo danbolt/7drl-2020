@@ -398,7 +398,7 @@ Gameplay.prototype.doNextTurn = function() {
     if (World.snoozeShields) {
       return;
     }
-    
+
     const areShieldsAlreadyRaised = HasComponent(shipEntity, 'ShieldsUpComponent');
 
     const shieldOpName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
@@ -513,6 +513,10 @@ Gameplay.prototype.doNextTurn = function() {
 
   ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent', 'ShipReferenceComponent'], [], (entity, aiControl, position, shipRef) => {
     // TODO: add ai stuff
+  });
+
+  ViewEntities(nextEntity, ['PositionComponent', 'ShipOrbitingPlanetComponent', 'RotationComponent'], [], (entity, position, orbiting, rotation) => {
+    // TODO Make nice rotation animation
   });
 
   ViewEntities(nextEntity, ['PositionComponent', 'ForwardVelocityComponent', 'RotationComponent'], ['ShipOrbitingPlanetComponent'], (entity, position, velocity, rotation) => {

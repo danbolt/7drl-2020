@@ -491,7 +491,6 @@ Gameplay.prototype.setup3DBackground = function () {
   this.attackRangeMarker.rotation.x = Math.PI * 0.5;
   this.attackRangeMarker.visible = false;
   this.three.scene.add(this.attackRangeMarker);
-
 }
 Gameplay.prototype.setup3DScene = function () {
   this.gameCamera = new THREE.PerspectiveCamera( 70, GAME_WIDTH / GAME_HEIGHT,  0.1, 1000 );
