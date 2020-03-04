@@ -499,7 +499,9 @@ Gameplay.prototype.doNextTurn = function() {
     position.x += Math.cos(rotation.value) * velocity.value;
     position.y += Math.sin(rotation.value) * velocity.value;
 
-    if (HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
+    const distToCameraSquared = Phaser.Math.Distance.Squared(position.x, position.y, this.gameCameraPos.x, this.gameCameraPos.y);
+
+    if (( distToCameraSquared < CAMERA_DIST_TWEEN_SNAP_SQUARED ) && HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
       const mesh = GetComponent(entity, 'MeshComponent');
 
       const lineGeom  = new THREE.BufferGeometry().setFromPoints( [mesh.mesh.position, new THREE.Vector3(position.x, 0, position.y)] );

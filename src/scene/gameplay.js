@@ -56,7 +56,7 @@ Gameplay.prototype.setupUI = function () {
   };
 
   const hullBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE), DEFAULT_IMAGE_MAP, 28);
-  hullBarBacking.setTint(0x000000);
+  hullBarBacking.setTint(0x333333);
   hullBarBacking.setOrigin(0);
   hullBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(hullBarBacking);
@@ -76,11 +76,11 @@ Gameplay.prototype.setupUI = function () {
       candidateFound = true;
     });
   };
-  const hullText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE), 'miniset', 'Hull Integrity', DEFAULT_TEXT_SIZE);
+  const hullText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE), 'miniset', 'Ship Health', DEFAULT_TEXT_SIZE);
   this.playerShipUI.add(hullText);
 
   const shieldsBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 2), DEFAULT_IMAGE_MAP, 28);
-  shieldsBarBacking.setTint(0x000000);
+  shieldsBarBacking.setTint(0x333333);
   shieldsBarBacking.setOrigin(0);
   shieldsBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(shieldsBarBacking);
@@ -102,7 +102,7 @@ Gameplay.prototype.setupUI = function () {
   this.playerShipUI.add(shieldsText);
 
   const suppliesBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 3), DEFAULT_IMAGE_MAP, 28);
-  suppliesBarBacking.setTint(0x000000);
+  suppliesBarBacking.setTint(0x333333);
   suppliesBarBacking.setOrigin(0);
   suppliesBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   suppliesBarBacking.displayWidth = SUPPLIES_BAR_WIDTH;
@@ -144,7 +144,7 @@ Gameplay.prototype.setupUI = function () {
   // Mouseover ship UI (sometimes on)
   this.targetShipUI = this.add.group();
   const targetHullBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 0), DEFAULT_IMAGE_MAP, 28);
-  targetHullBarBacking.setTint(0x000000);
+  targetHullBarBacking.setTint(0x333333);
   targetHullBarBacking.setOrigin(0);
   targetHullBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBarBacking);
@@ -154,7 +154,7 @@ Gameplay.prototype.setupUI = function () {
   targetHullBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBar);
   const targetShieldsBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 1), DEFAULT_IMAGE_MAP, 28);
-  targetShieldsBarBacking.setTint(0x000000);
+  targetShieldsBarBacking.setTint(0x333333);
   targetShieldsBarBacking.setOrigin(0);
   targetShieldsBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetShieldsBarBacking);
@@ -189,6 +189,12 @@ Gameplay.prototype.setupUI = function () {
   this.targetShipUI.add(targetClassText);
   const targetAffiliationText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 4), 'miniset', 'NAME OF TEAM', DEFAULT_TEXT_SIZE);
   this.targetShipUI.add(targetAffiliationText);
+  const targetAttackRangeText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 5), 'miniset', 'ATTACK RANGE', DEFAULT_TEXT_SIZE);
+  targetAttackRangeText.tint = 0xFF0000;
+  this.targetShipUI.add(targetAttackRangeText);
+  const targetAttackPowerText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 6), 'miniset', 'ATTACK PWR', DEFAULT_TEXT_SIZE);
+  targetAttackPowerText.tint = 0xFF5500;
+  this.targetShipUI.add(targetAttackPowerText);
   const updateTargetNameAndAffiliation = (target) => {
     if (HasComponent(target, 'NameComponent')) {
       targetNameText.text = GetComponent(target, 'NameComponent').value;
@@ -209,6 +215,20 @@ Gameplay.prototype.setupUI = function () {
     } else {
       targetClassText.text = '(unknown)';
     }
+
+    if (HasComponent(target, 'AttackRangeComponent')) {
+      const attackRange = GetComponent(target, 'AttackRangeComponent');
+      targetAttackRangeText.text = 'Cannons range: ' + attackRange.value;
+    } else {
+      targetAttackRangeText.text = '';
+    }
+
+    if (HasComponent(target, 'AttackStrengthComponent')) {
+      const attackRange = GetComponent(target, 'AttackStrengthComponent');
+      targetAttackPowerText.text = 'Cannons Strength: ' + attackRange.value;
+    } else {
+      targetAttackPowerText.text = '';
+    }
   };
 
   this.targetShipUI.children.iterate((child) => {
@@ -216,6 +236,10 @@ Gameplay.prototype.setupUI = function () {
   });
 
   const updateTargetShipUI = () => {
+    if (this.previousPointingEntity === this.currentlyPointingEntity) {
+      return;
+    } 
+
     if (this.currentlyPointingEntity === null) {
       this.targetShipUI.children.iterate((child) => {
         child.setVisible(false);
@@ -422,6 +446,13 @@ Gameplay.prototype.setup3DBackground = function () {
   const stars = new THREE.Points(starGeom, STARS_COLOR);
   this.three.scene.add(stars);
 
+  const attackRangeGeometry = new THREE.CircleBufferGeometry(1.0, 12);
+  const attackRangeMat = new THREE.MeshBasicMaterial( {color: 0xFF0000, wireframe: true } );
+  this.attackRangeMarker = new THREE.Mesh(attackRangeGeometry, attackRangeMat);
+  this.attackRangeMarker.rotation.x = Math.PI * 0.5;
+  this.attackRangeMarker.visible = false;
+  this.three.scene.add(this.attackRangeMarker);
+
 }
 Gameplay.prototype.setup3DScene = function () {
   this.gameCamera = new THREE.PerspectiveCamera( 70, GAME_WIDTH / GAME_HEIGHT,  0.1, 1000 );
@@ -493,6 +524,7 @@ Gameplay.prototype.update3DScene = function() {
   this.gameCamera.position.z = this.gameCameraPos.y + (Math.sin(this.gameCameraTheta) * cameraBackup);
   this.gameCamera.lookAt(this.gameCameraPos.x, 0, this.gameCameraPos.y);
 
+  this.previousPointingEntity = this.currentlyPointingEntity;
   this.currentlyPointingEntity = null;
   const mouseX = this.input.mousePointer.x / GAME_WIDTH;
   const mouseY = 1.0 - (this.input.mousePointer.y / GAME_HEIGHT);
@@ -500,10 +532,18 @@ Gameplay.prototype.update3DScene = function() {
   threeMouseCoordsVector.y = (mouseY * 2.0) - 1.0;
   this.three.raycaster.setFromCamera(threeMouseCoordsVector, this.gameCamera);
   this.three.raycaster.intersectObjects(this.three.scene.children, false, arrayRaycastResults);
-  if (arrayRaycastResults.length > 0) {
-    if (arrayRaycastResults[0].object.entityRef !== undefined) {
-      this.currentlyPointingEntity = arrayRaycastResults[0].object.entityRef;
+  if ((arrayRaycastResults.length > 0) && (arrayRaycastResults[0].object.entityRef !== undefined)) {
+    this.currentlyPointingEntity = arrayRaycastResults[0].object.entityRef;
+
+    if (HasComponent(this.currentlyPointingEntity, 'AttackRangeComponent')) {
+      const attackRange = GetComponent(this.currentlyPointingEntity, 'AttackRangeComponent').value;
+
+      this.attackRangeMarker.visible = true;
+      this.attackRangeMarker.position.set(arrayRaycastResults[0].object.position.x, arrayRaycastResults[0].object.position.y, arrayRaycastResults[0].object.position.z);
+      this.attackRangeMarker.scale.set(attackRange, attackRange, 1.0);
     }
+  } else {
+    this.attackRangeMarker.visible = false;
   }
   // clear out the results
   arrayRaycastResults.length = 0;

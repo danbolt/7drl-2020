@@ -1,12 +1,12 @@
 
 // TODO: real enemies plz
-const dummyEnemiesPopulate = function (entities, rng) {
+const dummyEnemiesPopulate = function (entities, rng, names) {
   for (let i = 0; i < 5; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(e, 'HullHealthComponent', new HullHealthComponent(10));
-    AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
-    AddComponent(e, 'PositionComponent', new PositionComponent(rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.1), rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.1)));
+    //AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
+    AddComponent(e, 'PositionComponent', new PositionComponent(rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.14), rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.14)));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
@@ -16,7 +16,8 @@ const dummyEnemiesPopulate = function (entities, rng) {
     AddComponent(e, 'AIControlComponent', new AIControlComponent());
     AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_medium'));
     AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
-    AddComponent(e, 'NameComponent', new NameComponent('L. Dry Battleship'));
+    AddComponent(e, 'NameComponent', new NameComponent('LS ' + names.generate()));
+    AddComponent(e, 'ClassComponent', new NameComponent('L. Dry Battleship'));
     entities.push(e);
 
     let skipper = NewEntity();
@@ -172,7 +173,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   // TODO: populate sector with other entities
   this.generatePlanetEntitiesForSector(newSector, this.rng);
 
-  dummyEnemiesPopulate(newSector.entities, this.rng);
+  dummyEnemiesPopulate(newSector.entities, this.rng, this.nameGenerator);
 
   // Move to the next generation index
   this.generationIndex.x++;
