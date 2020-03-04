@@ -235,8 +235,10 @@ const RequestPlanetAppearanceComponent = function(radius, colors, noiseSeed) { }
 const RequestDummy3DAppearanceComponent = function(hexColor) {
   this.hexColor = hexColor ? hexColor : 0x00FF00;
 };
-// TODO: add a "request 3d appearance removal" component
-// TODO: request/remove for GLTF
+
+const RequestGLTF3DAppearanceComponent = function(meshName) {
+  this.meshName = meshName;
+};
 
 const PositionTweenComponent = function(value) {
   if (value === undefined) {

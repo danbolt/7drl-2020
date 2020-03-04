@@ -14,9 +14,9 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'AttackStrengthComponent', new AttackStrengthComponent(4));
     AddComponent(playerShip, 'AttackRangeComponent', new AttackRangeComponent(10));
     AddComponent(playerShip, 'PlayerControlComponent', new PlayerControlComponent());
-    AddComponent(playerShip, 'RequestDummy3DAppearanceComponent', new RequestDummy3DAppearanceComponent(0x0044FF));
+    AddComponent(playerShip, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('player_ship'));
     AddComponent(playerShip, 'TeamComponent', new TeamComponent('Space Federation'));
-    AddComponent(playerShip, 'NameComponent', new NameComponent('Argo Mk. IV'));
+    AddComponent(playerShip, 'NameComponent', new NameComponent('Arlo Mk. IV'));
     AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer Class'));
     AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 300));
     entities.push(playerShip);
@@ -117,6 +117,10 @@ const dummyEnemiesPopulate = function (entities) {
   }
 };
 
+const MeshNamesToLoad = [
+  'player_ship'
+];
+
 
 const PreloadScreen = function () {
   // body...
@@ -125,6 +129,10 @@ PreloadScreen.prototype.init = function(payload) {
   //
 };
 PreloadScreen.prototype.preload = function() {
+  MeshNamesToLoad.forEach((meshName) => {
+    this.load.binary(meshName, 'asset/model/' + meshName + '.glb');
+  });
+
   this.load.bitmapFont('miniset', 'asset/font/MiniSet.png', 'asset/font/MiniSet.fnt');
 
   this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');

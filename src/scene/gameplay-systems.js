@@ -809,7 +809,7 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
   let rotation = shipRotation.value;
 
   // Poll for keys to rotate the arrow
-  const directionArrow = new THREE.ArrowHelper(new THREE.Vector3(1.0, 0.0, 0.0), new THREE.Vector3(shipPostion.x, 0.0, shipPostion.y), 3.2, 0xFF0000, 1.0, 1.0);
+  const directionArrow = new THREE.ArrowHelper(new THREE.Vector3(1.0, 0.0, 0.0), new THREE.Vector3(shipPostion.x, 0.0, shipPostion.y), 5.2, 0xFF0000, 1.0, 1.0);
   this.three.scene.add(directionArrow);
 
   const updateArrowDir = (theta) => {
@@ -844,6 +844,7 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
 // Used for lookAt calls without lots of per-frame garbage
 const rotationSetViewVector = new THREE.Vector3(0, 1, 0);
 
+const loader = new THREE.GLTFLoader();
 Gameplay.prototype.updateViewSystems = function() {
   // If something needs a dummy 3D cube, add it
   ViewEntities(this.entities, ['MeshComponent', 'RequestDummy3DAppearanceComponent'], [], (entity, mesh, request3D) => {
@@ -851,8 +852,17 @@ Gameplay.prototype.updateViewSystems = function() {
     mesh.mesh.entityRef = entity;
     this.three.scene.add(mesh.mesh);
   });
-  // TODO: add requests for GLTF models
   RemoveComponentFromAllEntities(this.entities, 'RequestDummy3DAppearanceComponent');
+
+  ViewEntities(this.entities, ['MeshComponent', 'RequestGLTF3DAppearanceComponent'], [], (entity, mesh, request3D) => {
+    const gltfBinary = this.cache.binary.get(request3D.meshName);
+    loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
+      mesh.mesh = gltfData.scene;
+      mesh.mesh.entityRef = entity;
+      this.three.scene.add(mesh.mesh);
+    });
+  });
+  RemoveComponentFromAllEntities(this.entities, 'RequestGLTF3DAppearanceComponent');
 
     // If something needs a dummy 3D cube, add it
   ViewEntities(this.entities, ['MeshComponent', 'RequestPlanetAppearanceComponent', 'PlanetViewDataComponent'], [], (entity, mesh, request3D, viewData) => {
