@@ -184,6 +184,8 @@ PointsSelectionScreen.prototype.create = function() {
     }
     dialogIsUp = true;
 
+    const backing = this.create9Slice(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.2, GAME_WIDTH * 0.5, GAME_HEIGHT  * 0.4);
+
     const confirmDialog = {
       question: 'Is this allocation for ' + shipName + ' okay?\n' + ((pointsToSpend <= 0) ? 'You\'ve spent all your R&D points' : ('You have ' + pointsToSpend + ' R&D points left.')),
       options: [
@@ -194,6 +196,7 @@ PointsSelectionScreen.prototype.create = function() {
             this.time.addEvent({
               delay: 32,
               callback: () => {
+                backing.destroy();
                 dialogIsUp = false;
                 // do nothing since the player changed their mind
               }
@@ -207,6 +210,7 @@ PointsSelectionScreen.prototype.create = function() {
             this.time.addEvent({
               delay: 32,
               callback: () => {
+                backing.destroy();
                 dialogIsUp = false;
                 
                 this.resultConfig = new PointsConfiguration();
