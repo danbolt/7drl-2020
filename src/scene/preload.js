@@ -98,6 +98,7 @@ PreloadScreen.prototype.preload = function() {
   this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
   this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
 
+  this.load.spritesheet('bars', 'asset/image/bars.png', { frameWidth: 128, frameHeight: 8 });
   this.load.spritesheet('window_9slice', 'asset/image/window_9slice.png', { frameWidth: 16, frameHeight: 16 });
   this.load.spritesheet('portraits', 'asset/image/portraits.png', { frameWidth: 32, frameHeight: 32 });
 
