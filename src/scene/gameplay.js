@@ -259,8 +259,10 @@ Gameplay.prototype.setupUI = function () {
   });
 
   // TODO: make this a graphic
-  this.cruiseText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'miniset', 'CRUISE', 16);
-  this.cruiseText.setVisible(false);
+  this.cruiseSkipperText = this.add.bitmapText(2, GAME_HEIGHT - 32, 'miniset', 'Cruise Skipper', DEFAULT_TEXT_SIZE);
+  this.cruiseGunnerText = this.add.bitmapText(2, GAME_HEIGHT - 24, 'miniset', 'Cruise Gunner', DEFAULT_TEXT_SIZE);
+  this.cruiseEngineerText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'miniset', 'Cruise Engineer', DEFAULT_TEXT_SIZE);
+  this.cruiseShieldsText = this.add.bitmapText(2, GAME_HEIGHT - 8, 'miniset', 'Cruise Shields', DEFAULT_TEXT_SIZE);
 };
 Gameplay.prototype.createPortraitAnimations = function() {
   this.anims.create({
@@ -317,26 +319,19 @@ Gameplay.prototype.create = function () {
   });
   tweenCameraToPlayer(400);
 
-  this.keys.cruise.on('down', () => {
-    console.log('cruise');
-    if (!(this.cruiseText.visible)) {
-      ViewEntities(this.entities, ['SkipperComponent', 'PlayerControlComponent'], ['CruiseControlComponent'], (entity) => {
-        AddComponent(entity, 'CruiseControlComponent', new CruiseControlComponent());
-      });
-      ViewEntities(this.entities, ['EngineerComponent', 'PlayerControlComponent'], ['CruiseControlComponent'], (entity) => {
-        AddComponent(entity, 'CruiseControlComponent', new CruiseControlComponent());
-      });
-      this.cruiseText.setVisible(true);
-    } else {
-      ViewEntities(this.entities, ['SkipperComponent', 'PlayerControlComponent', 'CruiseControlComponent'], [], (entity) => {
-        RemoveComponent(entity, 'CruiseControlComponent');
-      });
-      ViewEntities(this.entities, ['EngineerComponent', 'PlayerControlComponent', 'CruiseControlComponent'], [], (entity) => {
-        RemoveComponent(entity, 'CruiseControlComponent');
-      });
-      this.cruiseText.setVisible(false);
-    }
-  });
+  const flipSkipper = () => { World.snoozeSkipper = !(World.snoozeSkipper); };
+  this.keys.cruiseSkipper.on('down', flipSkipper);
+  this.events.once('shutdown', () => { this.keys.cruiseSkipper.remove(flipSkipper); });
+  const flipGunner = () => { World.snoozeGunner = !(World.snoozeGunner); };
+  this.keys.cruiseGunner.on('down', flipGunner);
+  this.events.once('shutdown', () => { this.keys.cruiseGunner.remove(flipGunner); });
+  const flipEngineer = () => { World.snoozeEngineer = !(World.snoozeEngineer); };
+  this.keys.cruiseEngineer.on('down', flipEngineer);
+  this.events.once('shutdown', () => { this.keys.cruiseEngineer.remove(flipEngineer); });
+  const flipShields = () => { World.snoozeShields = !(World.snoozeShields); };
+  this.keys.cruiseShields.on('down', flipShields);
+  this.events.once('shutdown', () => { this.keys.cruiseShields.remove(flipShields); });
+
 
   this.setupUI();
 
@@ -357,6 +352,11 @@ Gameplay.prototype.update = function () {
 
   this.updateViewSystems();
 
+  this.cruiseSkipperText.visible = World.snoozeSkipper;
+  this.cruiseGunnerText.visible = World.snoozeGunner;
+  this.cruiseEngineerText.visible = World.snoozeEngineer;
+  this.cruiseShieldsText.visible = World.snoozeShields;
+
   if (this.nextTurnReady) {
     this.doNextTurn();
   }
@@ -372,8 +372,6 @@ Gameplay.prototype.shutdown = function () {
 
   this.playerShipUI.destroy(true);
   this.playerShipUI = null;
-  this.cruiseText.destroy();
-  this.cruiseText = null;
 
   this.currentlyPointingEntity = null;
 
@@ -395,7 +393,11 @@ Gameplay.prototype.setupInput = function () {
     'up': Phaser.Input.Keyboard.KeyCodes.UP,
 
     'return_cam': Phaser.Input.Keyboard.KeyCodes.SPACE,
-    'cruise': Phaser.Input.Keyboard.KeyCodes.SHIFT
+
+    'cruiseSkipper': Phaser.Input.Keyboard.KeyCodes.Z,
+    'cruiseGunner': Phaser.Input.Keyboard.KeyCodes.X,
+    'cruiseEngineer': Phaser.Input.Keyboard.KeyCodes.C,
+    'cruiseShields': Phaser.Input.Keyboard.KeyCodes.V,
   };
   this.keys = this.input.keyboard.addKeys(keyConfigObject);
 };

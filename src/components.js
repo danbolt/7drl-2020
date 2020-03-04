@@ -121,8 +121,6 @@ const EngineComponent = function(maxSpeed) {
 const ShieldOperatorComponent = function () {};
 const ShieldsUpComponent = function () {};
 
-const CruiseControlComponent = function () {};
-
 const SuppliesComponent = function (maxValue, value) {
   if (maxValue === undefined) {
     throw new Error('Max supplies value was undefined');

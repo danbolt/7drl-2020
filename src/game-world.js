@@ -12,6 +12,9 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
     AddComponent(e, 'MeshComponent', new MeshComponent());
     AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
+
+    this.snoozeSkipper = false;
+    this.snoozeSkipper = false;
     AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
     AddComponent(e, 'AIControlComponent', new AIControlComponent());
     AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_medium'));
@@ -86,6 +89,11 @@ const GameWorld = function (width, height, seed) {
     }
   }
   this.generationIndex = { x: 0, y: 0 };
+
+  this.snoozeSkipper = false;
+  this.snoozeGunner = false;
+  this.snoozeEngineer = false;
+  this.snoozeShields = false;
 
   this.currentPlayerSector = { x: 0, y: 0 };
   this.iscandarSector = { x: (this.width - 1), y: (this.height - 1) };

@@ -103,9 +103,13 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   // Turning logic
-  ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], ['CruiseControlComponent'], (entity, skipper, playerControl, shipReference) => {
+  ViewEntities(nextEntity, ['SkipperComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, playerControl, shipReference) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
+      return;
+    }
+
+    if (World.snoozeSkipper) {
       return;
     }
 
@@ -276,6 +280,11 @@ Gameplay.prototype.doNextTurn = function() {
     if (candidates.value.length < 1) {
       return;
     }
+
+    if (World.snoozeGunner) {
+      return;
+    }
+
     canDoNextTurn = false;
 
     const gunnerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
@@ -312,9 +321,13 @@ Gameplay.prototype.doNextTurn = function() {
     this.showDialogue(dialogue);
   });
 
-  ViewEntities(nextEntity, ['EngineerComponent', 'PlayerControlComponent', 'ShipReferenceComponent', 'EngineComponent'], ['CruiseControlComponent'], (entity, engineer, playerControl, shipReference, engine) => {
+  ViewEntities(nextEntity, ['EngineerComponent', 'PlayerControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, playerControl, shipReference, engine) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
+      return;
+    }
+
+    if (World.snoozeEngineer) {
       return;
     }
 
@@ -381,6 +394,11 @@ Gameplay.prototype.doNextTurn = function() {
     if (shipEntity === undefined) {
       return;
     }
+
+    if (World.snoozeShields) {
+      return;
+    }
+    
     const areShieldsAlreadyRaised = HasComponent(shipEntity, 'ShieldsUpComponent');
 
     const shieldOpName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
@@ -722,7 +740,6 @@ Gameplay.prototype.doNextTurn = function() {
 
             // Remove all temp components
             RemoveComponentFromAllEntities(this.entities, 'ShipInOrbitRangeOfPlanetComponent');
-            RemoveComponentFromAllEntities(this.entities, 'CruiseControlComponent');
 
             // Start in the next sector
             this.scene.start('Gameplay', World.getCurrentSector());
