@@ -477,26 +477,29 @@ Gameplay.prototype.doNextTurn = function() {
 
     if (HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
       const mesh = GetComponent(entity, 'MeshComponent');
+      
+      const lineGeom  = new THREE.BufferGeometry().setFromPoints( [mesh.mesh.position, new THREE.Vector3(position.x, 0, position.y)] );
+      const pathLine = new THREE.Line(lineGeom, PATH_LINE_COLOR);
+      this.three.scene.add(pathLine);
+
       let tween = this.add.tween({
         targets: mesh.mesh.position,
         x: Math.max(0, Math.min(position.x, SECTOR_WIDTH)),
         z: Math.max(0, Math.min(position.y, SECTOR_HEIGHT)),
         duration: DEFAULT_POSITION_TWEEN_DURATION,
         onComplete: () => {
+          this.nextTurnReady = true;
           RemoveComponent(entity, 'PositionTweenComponent');
           tween.stop();
+          this.three.scene.remove(pathLine);
         }
       });
 
       if (HasComponent(entity, 'PositionTweenComponent')) {
-        const positionTween = GetComponent(entity, 'PositionTweenComponent');
-        const oldTween = positionTween.value;
-
-        oldTween.stop();
-
-        RemoveComponent(entity, 'PositionTweenComponent');
+        throw new Error('attempted to tween a mesh twice! this shouldn\'t happen');
       }
       AddComponent(entity, 'PositionTweenComponent', new PositionTweenComponent(tween));
+      canDoNextTurn = false;
     }
   });
 
