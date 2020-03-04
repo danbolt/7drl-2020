@@ -1,3 +1,60 @@
+
+// TODO: real enemies plz
+const dummyEnemiesPopulate = function (entities, rng) {
+  for (let i = 0; i < 5; i++) {
+    let e = NewEntity();
+    AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(10));
+    AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
+    AddComponent(e, 'PositionComponent', new PositionComponent(rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.1), rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.1)));
+    AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
+    AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+    AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
+    AddComponent(e, 'MeshComponent', new MeshComponent());
+    AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
+    AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
+    AddComponent(e, 'AIControlComponent', new AIControlComponent());
+    AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_medium'));
+    AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
+    AddComponent(e, 'NameComponent', new NameComponent('L. Dry Battleship'));
+    entities.push(e);
+
+    let skipper = NewEntity();
+    AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
+    AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
+    AddComponent(skipper, 'DexterityComponent', new DexterityComponent(2));
+    AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
+    AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(skipper);
+
+    let gunner = NewEntity();
+    AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
+    AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 2));
+    AddComponent(gunner, 'DexterityComponent', new DexterityComponent(2));
+    AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
+    AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(gunner);
+
+    let engineer = NewEntity();
+    AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
+    AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
+    AddComponent(engineer, 'DexterityComponent', new DexterityComponent(2));
+    AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
+    AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
+    AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(engineer);
+
+    let shieldOp = NewEntity();
+    AddComponent(shieldOp, 'ShieldOperatorComponent', new ShieldOperatorComponent());
+    AddComponent(shieldOp, 'DexterityComponent', new DexterityComponent(2));
+    AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
+    AddComponent(shieldOp, 'AIControlComponent', new AIControlComponent());
+    AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    entities.push(shieldOp);
+  }
+};
+
+
 const GameWorld = function (width, height, seed) {
   this.seed = seed ? seed : Math.random();
 
@@ -66,7 +123,7 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
   if (sector.x === this.currentPlayerSector.x && sector.y === this.currentPlayerSector.y) {
     // Generate the earth
     const earth = NewEntity();
-    AddComponent(earth, 'PositionComponent', new PositionComponent(SECTOR_WIDTH - 10, SECTOR_HEIGHT - 10));
+    AddComponent(earth, 'PositionComponent', new PositionComponent(10, 10));
     AddComponent(earth, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
     AddComponent(earth, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(7.0));
     AddComponent(earth, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
@@ -114,6 +171,8 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
 
   // TODO: populate sector with other entities
   this.generatePlanetEntitiesForSector(newSector, this.rng);
+
+  dummyEnemiesPopulate(newSector.entities, this.rng);
 
   // Move to the next generation index
   this.generationIndex.x++;

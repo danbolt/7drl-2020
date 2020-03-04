@@ -109,7 +109,7 @@ const DefaultPlayerPointsConfiguration = function() {
 
   this.skipperDexPoints = 2;
 
-  this.gunnerDexPoints = 2;
+  this.gunnerDexPoints = 5;
 
   this.engineerDexPoints = 2;
   this.engineMaxSpeedPoints = 4;
