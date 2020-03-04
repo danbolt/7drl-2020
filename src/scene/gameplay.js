@@ -261,17 +261,21 @@ Gameplay.prototype.create = function () {
 
   this.lockPanning = false;
 
-  this.keys.return_cam.on('down', () => {
+  const tweenCameraToPlayer = (duration) => {
     ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent', 'PlayerControlComponent'], [], (entity, position, health, control) => {
       let t = this.add.tween({
         targets: this.gameCameraPos,
         x: position.x,
         y: position.y,
-        duration: 150,
+        duration: duration,
         easing: Phaser.Math.Easing.Cubic.In
       });
     });
+  };
+  this.keys.return_cam.on('down', () => {
+    tweenCameraToPlayer(150);
   });
+  tweenCameraToPlayer(400);
 
   this.keys.cruise.on('down', () => {
     console.log('cruise');
