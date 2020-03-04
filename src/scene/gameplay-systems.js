@@ -36,6 +36,7 @@ Gameplay.prototype.doNextTurn = function() {
   // Update if users are in range of planets
   ViewEntities(this.entities, ['PositionComponent', 'PlanetOrbitableComponent', 'ECSIndexComponent'], [], (entity, position, orbitable, index) => {
     const squaredRange = orbitable.dockRange * orbitable.dockRange;
+    const isAVictoryPlanet = HasComponent(entity, 'PlanetGoalComponent');
 
     // Find ships within orbit range
     ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent'], ['ShipOrbitingPlanetComponent', 'ShipInOrbitRangeOfPlanetComponent'], (shipEntity, shipPosition) => {
@@ -43,6 +44,12 @@ Gameplay.prototype.doNextTurn = function() {
       if (distToPlanetSqared <= squaredRange) {
         AddComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent', new ShipInOrbitRangeOfPlanetComponent(index.value));
         AddComponent(shipEntity, 'OrbitNotificationComponent', new OrbitNotificationComponent());
+
+        // If the player is in orbit range of a planet with
+        if (isAVictoryPlanet && HasComponent(shipEntity, 'PlayerControlComponent')) {
+          this.scene.stop('Gameplay');
+          // TODO: Add a victory screen
+        }
       }
     });
   });
@@ -477,7 +484,7 @@ Gameplay.prototype.doNextTurn = function() {
 
     if (HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
       const mesh = GetComponent(entity, 'MeshComponent');
-      
+
       const lineGeom  = new THREE.BufferGeometry().setFromPoints( [mesh.mesh.position, new THREE.Vector3(position.x, 0, position.y)] );
       const pathLine = new THREE.Line(lineGeom, PATH_LINE_COLOR);
       this.three.scene.add(pathLine);

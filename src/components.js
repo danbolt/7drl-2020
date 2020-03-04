@@ -31,6 +31,9 @@ const TeamComponent = function(value) {
   this.value = value;
 };
 
+//If the player is within orbiting range of a planet with this, then the player wins
+const PlanetGoalComponent = function() {};
+
 const PositionComponent = function (x, y) {
   this.x = x ? x : 0;
   this.y = y ? y : x;

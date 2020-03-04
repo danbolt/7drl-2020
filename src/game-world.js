@@ -8,6 +8,11 @@ const GameWorld = function (width, height, seed) {
   this.rng = ROT.RNG.clone();
   this.rng.setSeed(this.seed);
 
+  this.nameGenerator = new ROT.StringGenerator();
+  for (let i = 0; i < MiddleNames.length; i++) {
+    this.nameGenerator.observe(MiddleNames[i]);
+  }
+
   this.sectors = [];
   for (let x = 0; x < this.width; x++) {
     this.sectors.push([]);
@@ -24,8 +29,8 @@ const GameWorld = function (width, height, seed) {
   }
   this.generationIndex = { x: 0, y: 0 };
 
-  this.currentPlayerSector = { x: 1, y: (this.height - 2) };
-  this.iscandarSector = { x: (this.width - 2), y: 1 };
+  this.currentPlayerSector = { x: 0, y: 0 };
+  this.iscandarSector = { x: (this.width - 1), y: (this.height - 1) };
 };
 GameWorld.prototype.isGenerated = function() {
   return (this.generationIndex.x === 0) && (this.generationIndex.y === (this.height));
@@ -52,25 +57,43 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
     AddComponent(p2, 'MeshComponent', new MeshComponent());
     AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
     AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
-    AddComponent(p2, 'NameComponent', new NameComponent('Radius ' + planetRadius.toFixed(2)));
+    AddComponent(p2, 'NameComponent', new NameComponent(this.nameGenerator.generate()));
     AddComponent(p2, 'ClassComponent', new NameComponent('Wasteland Planet'));
     sector.entities.push(p2);
   }
 
   // If we're generating the starting sector, add planet earth
   if (sector.x === this.currentPlayerSector.x && sector.y === this.currentPlayerSector.y) {
-    let testPlanet = NewEntity();
-    AddComponent(testPlanet, 'PositionComponent', new PositionComponent(20, 5));
-    AddComponent(testPlanet, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
-    AddComponent(testPlanet, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(4.6));
-    AddComponent(testPlanet, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30))
-    AddComponent(testPlanet, 'MeshComponent', new MeshComponent());
-    AddComponent(testPlanet, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
-    AddComponent(testPlanet, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
-    AddComponent(testPlanet, 'NameComponent', new NameComponent('Terra'));
-    AddComponent(testPlanet, 'ClassComponent', new NameComponent('Homeworld'));
-    AddComponent(testPlanet, 'TeamComponent', new TeamComponent('Space Federation'));
-    sector.entities.push(testPlanet);
+    // Generate the earth
+    const earth = NewEntity();
+    AddComponent(earth, 'PositionComponent', new PositionComponent(SECTOR_WIDTH - 10, SECTOR_HEIGHT - 10));
+    AddComponent(earth, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
+    AddComponent(earth, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(7.0));
+    AddComponent(earth, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
+    AddComponent(earth, 'MeshComponent', new MeshComponent());
+    AddComponent(earth, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+    AddComponent(earth, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
+    AddComponent(earth, 'NameComponent', new NameComponent('St. Terra'));
+    AddComponent(earth, 'ClassComponent', new NameComponent('Homeworld'));
+    AddComponent(earth, 'TeamComponent', new TeamComponent('Space Federation'));
+    sector.entities.push(earth);
+  }
+
+  if (sector.x === this.iscandarSector.x && sector.y === this.iscandarSector.y) {
+    // Generate Iscandar
+    const nayr = NewEntity();
+    AddComponent(nayr, 'PositionComponent', new PositionComponent(10, 10));
+    AddComponent(nayr, 'PlanetViewDataComponent', new PlanetViewDataComponent(5.4, 0.987, 0x102099, 0x109999, 0xaacccc));
+    AddComponent(nayr, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(12.0));
+    AddComponent(nayr, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
+    AddComponent(nayr, 'MeshComponent', new MeshComponent());
+    AddComponent(nayr, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+    AddComponent(nayr, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
+    AddComponent(nayr, 'NameComponent', new NameComponent('Nayr'));
+    AddComponent(nayr, 'ClassComponent', new NameComponent('Sacred Planet'));
+    AddComponent(nayr, 'TeamComponent', new TeamComponent('Space Federation'));
+    AddComponent(nayr, 'PlanetGoalComponent', new PlanetGoalComponent());
+    sector.entities.push(nayr);
   }
 };
 

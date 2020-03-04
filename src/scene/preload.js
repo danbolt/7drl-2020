@@ -6,9 +6,9 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(playerShip, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
     AddComponent(playerShip, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
-    AddComponent(playerShip, 'PositionComponent', new PositionComponent(SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5)); // TODO: make this a better start spot
+    AddComponent(playerShip, 'PositionComponent', new PositionComponent(SECTOR_WIDTH - 20, SECTOR_HEIGHT - 20)); // TODO: make this a better start spot
     AddComponent(playerShip, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
-    AddComponent(playerShip, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+    AddComponent(playerShip, 'RotationComponent', new RotationComponent((Math.PI) + (Math.PI * 0.25)));
     AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(playerShip, 'MeshComponent', new MeshComponent());
     AddComponent(playerShip, 'AttackStrengthComponent', new AttackStrengthComponent(4));
@@ -125,7 +125,6 @@ PreloadScreen.prototype.init = function(payload) {
   //
 };
 PreloadScreen.prototype.preload = function() {
-  //
   this.load.bitmapFont('miniset', 'asset/font/MiniSet.png', 'asset/font/MiniSet.fnt');
 
   this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
@@ -154,9 +153,10 @@ PreloadScreen.prototype.create = function() {
       // Combine the player-allocated points with the base points.
       const basePointsPlusExtra = CombineTwoPointsConfigurations(playerBasePoints, newConfigWithAllocatedPoints);
       basePointsPlusExtra.applyToShipEntity(playerEntities[0], playerEntities, true);
-      
+
       // Generate a new campaign
       World = new GameWorld(5, 5, Math.random());
+      ROT.RNG.setSeed(World.seed); // We have to set ROT's seed to ours to get deterministic markov names :/
       while (!(World.isGenerated())) {
         World.tickGenerate(playerEntities);
       }
