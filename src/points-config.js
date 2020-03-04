@@ -102,7 +102,7 @@ const DefaultPlayerPointsConfiguration = function() {
 
   this.hullHealthPoints = 6;
   this.shieldPoints = 5;
-  this.shipDexPoints = 5;
+  this.shipDexPoints = 9;
 
   this.atkStrengthPoints = 4;
   this.atkRangePoints = 5;
