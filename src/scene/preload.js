@@ -6,7 +6,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(playerShip, 'HullHealthComponent', new HullHealthComponent(30 + (Math.random() * 20), 30));
     AddComponent(playerShip, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
-    AddComponent(playerShip, 'PositionComponent', new PositionComponent(SECTOR_WIDTH - 20, SECTOR_HEIGHT - 20)); // TODO: make this a better start spot
+    AddComponent(playerShip, 'PositionComponent', new PositionComponent(SECTOR_WIDTH - 15, SECTOR_HEIGHT - 15)); // TODO: make this a better start spot
     AddComponent(playerShip, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(playerShip, 'RotationComponent', new RotationComponent((Math.PI) + (Math.PI * 0.25)));
     AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
@@ -28,7 +28,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(skipper, 'DexterityComponent', new DexterityComponent(50));
     AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(skipper, 'NameComponent', new NameComponent('SkipperName'));
+    AddComponent(skipper, 'NameComponent', new NameComponent('bryce'));
     entities.push(skipper);
 
     // Add the gunner    
@@ -38,7 +38,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(gunner, 'DexterityComponent', new DexterityComponent(100));
     AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(gunner, 'NameComponent', new NameComponent('GunnerName'));
+    AddComponent(gunner, 'NameComponent', new NameComponent('bryce'));
     entities.push(gunner);
 
     // Add the engineer
@@ -49,7 +49,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
     AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(engineer, 'NameComponent', new NameComponent('EngineerName'));
+    AddComponent(engineer, 'NameComponent', new NameComponent('bryce'));
     entities.push(engineer);
 
     // Add the shields operator
@@ -59,7 +59,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
     AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(shieldOp, 'NameComponent', new NameComponent('ShieldOpName'));
+    AddComponent(shieldOp, 'NameComponent', new NameComponent('bryce'));
     entities.push(shieldOp);
 };
 

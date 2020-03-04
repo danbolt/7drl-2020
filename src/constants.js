@@ -77,4 +77,8 @@ const ENGINE_MAX_SPEED_PER_POINT = 1;
 
 const SHIELD_OPERATOR_DEX_PER_POINT = 1;
 
+const PORTRAIT_FRAMES = {
+  'bryce': [0, 1]
+};
+
 

@@ -11,6 +11,7 @@ let Gameplay = function () {
 
   this.gameCameraPos = new Phaser.Math.Vector2();
   this.gameCameraTheta = 0.0;
+  this.gameCameraPhi = Math.PI * 0.25;
   this.gameCamera = null;
 
   this.entities = [];
@@ -237,16 +238,25 @@ Gameplay.prototype.setupUI = function () {
   this.cruiseText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'miniset', 'CRUISE', 16);
   this.cruiseText.setVisible(false);
 };
+Gameplay.prototype.createPortraitAnimations = function() {
+  this.anims.create({
+    key: 'bryce',
+    frames: [{ key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }],
+    frameRate: 10,
+    repeat: 0
+  });
+};
 Gameplay.prototype.create = function () {
   this.exiting = false;
 
   const dummySeed = 10101;
   ROT.RNG.setSeed(dummySeed);
 
+  this.createPortraitAnimations();
+
   this.setup3DScene();
 
   this.gameCameraPos = new Phaser.Math.Vector2();
-  this.gameCameraTheta = 0.0;
   this.setupInput();
 
   // Add entities with deterity to the turn order
@@ -456,11 +466,18 @@ Gameplay.prototype.updateCameraFromInput = function () {
     } 
   }
 
-  if (this.keys.cam_turn_right.isDown) {
+  if (this.keys.cam_turn_right.isDown || this.keys.right.isDown) {
     this.gameCameraTheta += CAMERA_TURN_SPEED;
   }
-  if (this.keys.cam_turn_left.isDown) {
+  if (this.keys.cam_turn_left.isDown || this.keys.left.isDown) {
     this.gameCameraTheta -= CAMERA_TURN_SPEED;
+  }
+
+  if (this.keys.up.isDown) {
+    this.gameCameraPhi = Math.min(this.gameCameraPhi - CAMERA_TURN_SPEED, Math.PI * 0.45);
+  }
+  if (this.keys.down.isDown) {
+    this.gameCameraPhi = Math.max(this.gameCameraPhi + CAMERA_TURN_SPEED, 0);
   }
 };
 
@@ -468,9 +485,12 @@ Gameplay.prototype.updateCameraFromInput = function () {
 const threeMouseCoordsVector = new THREE.Vector2(0, 0);
 const arrayRaycastResults = [];
 Gameplay.prototype.update3DScene = function() {
-  this.gameCamera.position.x = this.gameCameraPos.x + (Math.cos(this.gameCameraTheta) * CAMERA_DISTANCE);
-  this.gameCamera.position.y = CAMERA_DISTANCE;
-  this.gameCamera.position.z = this.gameCameraPos.y + (Math.sin(this.gameCameraTheta) * CAMERA_DISTANCE);
+  const cameraHeight = Math.sin(this.gameCameraPhi) * CAMERA_DISTANCE;
+  const cameraBackup = Math.cos(this.gameCameraPhi) * CAMERA_DISTANCE;
+
+  this.gameCamera.position.x = this.gameCameraPos.x + (Math.cos(this.gameCameraTheta) * cameraBackup);
+  this.gameCamera.position.y = cameraHeight;
+  this.gameCamera.position.z = this.gameCameraPos.y + (Math.sin(this.gameCameraTheta) * cameraBackup);
   this.gameCamera.lookAt(this.gameCameraPos.x, 0, this.gameCameraPos.y);
 
   this.currentlyPointingEntity = null;

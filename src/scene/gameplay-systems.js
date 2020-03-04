@@ -109,6 +109,8 @@ Gameplay.prototype.doNextTurn = function() {
       return;
     }
 
+    const skipperName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
+
     // We're going to have the skipper do "something"
     canDoNextTurn = false;
 
@@ -121,6 +123,7 @@ Gameplay.prototype.doNextTurn = function() {
 
       const departDialogue = {
         question: 'Should we depart from planet ' + planetName + '?',
+        portrait: skipperName,
         options: [
           {
             text: '(n)o',
@@ -170,6 +173,7 @@ Gameplay.prototype.doNextTurn = function() {
         RemoveComponent(planetEntity, 'PlanetSuppliesComponent');
         const notifySuppliesDialogue = {
           question: 'We were able to find some supplies on planet ' + planetName + '!',
+          portrait: skipperName,
           options: [
             {
               text: '(y)ay!',
@@ -201,6 +205,7 @@ Gameplay.prototype.doNextTurn = function() {
 
       const dialogue = {
         question: 'We\'re in range of planet ' + planetName + '\n' + 'Would we want to orbit for repairs and fortification?',
+        portrait: skipperName,
         options: [
             {
               text: '(n)o',
@@ -233,6 +238,7 @@ Gameplay.prototype.doNextTurn = function() {
       // Normal skipper check
       const dialogue = {
         question: 'Should we change our course?',
+        portrait: skipperName,
         options: [
           {
             text: '(n)o',
@@ -272,11 +278,14 @@ Gameplay.prototype.doNextTurn = function() {
     }
     canDoNextTurn = false;
 
+    const gunnerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
+
     const dialogue = {
       question: ('There ' + (candidates.value.length === 1 ? 'is ' : 'are ') + candidates.value.length + ((candidates.value.length === 1 ? ' enemy' : ' enemies')) + ' within range.\nShould we attack?'),
       options: [
         {
           text: '(0) Don\'t attack anyone',
+          portrait: gunnerName,
           keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
           action: () => {
             this.nextTurnReady = true;
@@ -288,6 +297,7 @@ Gameplay.prototype.doNextTurn = function() {
       const targetName = HasComponent(candidate, 'NameComponent') ? GetComponent(candidate, 'NameComponent').value : '???';
       dialogue.options.push({
         text: '(' + (i + 1) + ') attack ' + targetName,
+        portrait: gunnerName,
         keyCode: ENEMY_SELECTION_KEYCODES[i],
         action: () => {
           this.performAttack(shipEntity, candidate);
@@ -313,6 +323,8 @@ Gameplay.prototype.doNextTurn = function() {
       return;
     }
 
+    const engineerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
+
     canDoNextTurn = false;
 
     const minMaxSpeedDelta = engine.maxSpeed - engine.minSpeed;
@@ -326,6 +338,7 @@ Gameplay.prototype.doNextTurn = function() {
 
     const dialogue = {
       question: 'What speed should we set the engines to?',
+      portrait: engineerName,
       options: [
         {
           text: '(0) Keep the same speed',
@@ -368,11 +381,14 @@ Gameplay.prototype.doNextTurn = function() {
     }
     const areShieldsAlreadyRaised = HasComponent(shipEntity, 'ShieldsUpComponent');
 
+    const shieldOpName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
+
     canDoNextTurn = false;
 
     if (!areShieldsAlreadyRaised) {
         const dialogue = {
           question: 'Should we raise the shields?',
+          portrait: shieldOpName,
           options: [
             {
               text: '(n)o',
@@ -396,6 +412,7 @@ Gameplay.prototype.doNextTurn = function() {
       } else {
         const dialogue = {
           question: 'Should we lower the shields to let them recharge?',
+          portrait: shieldOpName,
           options: [
             {
               text: '(n)o',
@@ -716,7 +733,7 @@ Gameplay.prototype.showDialogue = function(dialogue) {
   let texts = [];
   let keys = [];
 
-  const backing = PointsSelectionScreen.prototype.create9Slice.call(this, GAME_WIDTH * 0.25, GAME_HEIGHT * 0.2, GAME_WIDTH * 0.5, GAME_HEIGHT  * 0.4 + ((dialogue.options.length - 2) * DEFAULT_TEXT_SIZE));
+  const backing = PointsSelectionScreen.prototype.create9Slice.call(this, GAME_WIDTH * 0.25, GAME_HEIGHT * 0.2 + (dialogue.portrait ? -16 : 0), GAME_WIDTH * 0.5, GAME_HEIGHT  * 0.4 + ((dialogue.options.length - 2) * DEFAULT_TEXT_SIZE) +  + (dialogue.portrait ? 16 : 0));
   backing.scaleY = 0;
   const t = this.add.tween({
     targets: backing,
@@ -724,6 +741,8 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     duration: 300,
     easing: Phaser.Math.Easing.Cubic.In
   });
+
+  let portrait = null;
 
   const removeAllUIAndEvents = () => {
     keys.forEach((key) => {
@@ -734,6 +753,10 @@ Gameplay.prototype.showDialogue = function(dialogue) {
       text.destroy();
     });
 
+    if (portrait !== null) {
+      portrait.destroy();
+    }
+
     const t = this.add.tween({
       targets: backing,
       scaleY: 0.0,
@@ -742,6 +765,12 @@ Gameplay.prototype.showDialogue = function(dialogue) {
       onComplete: () => { backing.destroy(); }
     })
   };
+
+  if (dialogue.portrait) {
+    portrait = this.add.sprite(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.2 + 8, 'portraits', frames[0]);
+    portrait.anims.load(dialogue.portrait);
+    portrait.anims.play(dialogue.portrait);
+  }
 
   const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.35, 'miniset', dialogue.question, DEFAULT_TEXT_SIZE);
   questionText.setCenterAlign();
@@ -857,7 +886,8 @@ Gameplay.prototype.updateViewSystems = function() {
   ViewEntities(this.entities, ['MeshComponent', 'RequestGLTF3DAppearanceComponent'], [], (entity, mesh, request3D) => {
     const gltfBinary = this.cache.binary.get(request3D.meshName);
     loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
-      mesh.mesh = gltfData.scene;
+      // The mesh must be the only object in the scene
+      mesh.mesh = gltfData.scene.children[0];
       mesh.mesh.entityRef = entity;
       this.three.scene.add(mesh.mesh);
     });
