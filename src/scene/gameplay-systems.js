@@ -279,13 +279,15 @@ Gameplay.prototype.doNextTurn = function() {
     canDoNextTurn = false;
 
     const gunnerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
+    console.log(gunnerName);
 
     const dialogue = {
       question: ('There ' + (candidates.value.length === 1 ? 'is ' : 'are ') + candidates.value.length + ((candidates.value.length === 1 ? ' enemy' : ' enemies')) + ' within range.\nShould we attack?'),
+      portrait: gunnerName,
       options: [
         {
           text: '(0) Don\'t attack anyone',
-          portrait: gunnerName,
+          
           keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
           action: () => {
             this.nextTurnReady = true;

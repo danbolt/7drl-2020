@@ -57,7 +57,7 @@ PointsSelectionScreen.prototype.pushOptionsView = function(options, existingConf
     },
     {
       name: 'Cannons Range',
-      configKey: 'atkStrengthPoints'
+      configKey: 'atkRangePoints'
     },
     {
       name: 'Cannons Dexterity',

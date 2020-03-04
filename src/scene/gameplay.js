@@ -269,6 +269,12 @@ Gameplay.prototype.createPortraitAnimations = function() {
     frameRate: 10,
     repeat: 0
   });
+  this.anims.create({
+    key: 'jenny',
+    frames: [{ key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }],
+    frameRate: 10,
+    repeat: 0
+  });
 };
 Gameplay.prototype.create = function () {
   this.exiting = false;

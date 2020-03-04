@@ -38,7 +38,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(gunner, 'DexterityComponent', new DexterityComponent(100));
     AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(gunner, 'NameComponent', new NameComponent('bryce'));
+    AddComponent(gunner, 'NameComponent', new NameComponent('jenny'));
     entities.push(gunner);
 
     // Add the engineer
