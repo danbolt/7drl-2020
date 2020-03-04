@@ -842,7 +842,7 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
 };
 
 // Used for lookAt calls without lots of per-frame garbage
-const rotationSetViewVector = new THREE.Vector3(0, 1, 0);
+const rotationSetViewVector = new THREE.Vector3(0, 0, 0);
 
 const loader = new THREE.GLTFLoader();
 Gameplay.prototype.updateViewSystems = function() {
@@ -908,8 +908,9 @@ Gameplay.prototype.updateViewSystems = function() {
       return;
     }
 
-    mesh.mesh.rotation.set(0, 0, 0);
-    mesh.mesh.setRotationFromAxisAngle(rotationSetViewVector, rotation.value);
+    rotationSetViewVector.set(mesh.mesh.position.x + Math.cos(rotation.value), 0, mesh.mesh.position.z + Math.sin(rotation.value));
+
+    mesh.mesh.lookAt(rotationSetViewVector);
   });
 
   ViewEntities(this.entities, ['MeshComponent', 'PlanetViewDataComponent'], [], (entity, mesh, viewData) => {
