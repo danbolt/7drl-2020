@@ -1,5 +1,5 @@
 const PointsConfiguration = function() {
-  // Warning: set these to nonzero!
+  // Warning: set these to nonzero for a real ingame ship
 
   this.hullHealthPoints = 0;
   this.shieldPoints = 0;

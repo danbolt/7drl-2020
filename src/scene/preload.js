@@ -28,6 +28,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(skipper, 'DexterityComponent', new DexterityComponent(50));
     AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(skipper, 'NameComponent', new NameComponent('SkipperName'));
     entities.push(skipper);
 
     // Add the gunner    
@@ -37,6 +38,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(gunner, 'DexterityComponent', new DexterityComponent(100));
     AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(gunner, 'NameComponent', new NameComponent('GunnerName'));
     entities.push(gunner);
 
     // Add the engineer
@@ -47,6 +49,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
     AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(engineer, 'NameComponent', new NameComponent('EngineerName'));
     entities.push(engineer);
 
     // Add the shields operator
@@ -56,6 +59,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
     AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(shieldOp, 'NameComponent', new NameComponent('ShieldOpName'));
     entities.push(shieldOp);
 };
 
@@ -128,29 +132,39 @@ PreloadScreen.prototype.preload = function() {
   this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
 
   this.load.spritesheet('window_9slice', 'asset/image/window_9slice.png', { frameWidth: 16, frameHeight: 16 });
+  this.load.spritesheet('portraits', 'asset/image/portraits.png', { frameWidth: 32, frameHeight: 32 });
 
   this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
 };
 PreloadScreen.prototype.create = function() {
   this.scene.stop('PreloadScreen', {});
 
-  //
-  // Create the player entities
+  // Create the player entities for worldgen and allocation
   const playerEntities = [];
   populateWithPlayerEntities(playerEntities);
   const playerBasePoints = new DefaultPlayerPointsConfiguration();
   playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities, true);
 
-  // Generate a new campaign
-  World = new GameWorld(5, 5, Math.random());
-  while (!(World.isGenerated())) {
-    World.tickGenerate(playerEntities);
-  }
+  this.scene.start('PointsSelectionScreen', {
+    pointsToSpend: 4,
+    existingConfig: playerBasePoints,
+    playerEntities: playerEntities,
+    shipIndex: 0,
+    onComplete: (newConfigWithAllocatedPoints) => {
+      // Combine the player-allocated points with the base points.
+      const basePointsPlusExtra = CombineTwoPointsConfigurations(playerBasePoints, newConfigWithAllocatedPoints);
+      basePointsPlusExtra.applyToShipEntity(playerEntities[0], playerEntities, true);
+      
+      // Generate a new campaign
+      World = new GameWorld(5, 5, Math.random());
+      while (!(World.isGenerated())) {
+        World.tickGenerate(playerEntities);
+      }
 
-  this.scene.start('PointsSelectionScreen');
-
-  // Start gameplay in the current sector
-  this.scene.start('Gameplay', World.getCurrentSector());
+      // Start gameplay in the current sector
+      this.scene.start('Gameplay', World.getCurrentSector());
+    }
+  });
 
   // Add the shutdown event
   this.events.once('shutdown', this.shutdown, this);
