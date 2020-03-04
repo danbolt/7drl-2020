@@ -99,14 +99,25 @@ PointsSelectionScreen.prototype.create = function() {
   const shipName = HasComponent(shipEntity, 'NameComponent') ? GetComponent(shipEntity, 'NameComponent').value : '???';
 
   let dialogWindow = this.create9Slice(GAME_WIDTH * 0.1, 32, GAME_WIDTH * 0.2 * 4, GAME_HEIGHT - 64);
+  dialogWindow.scaleY = 0;
+  const t = this.add.tween({
+    targets: dialogWindow,
+    scaleY: 1.0,
+    duration: 300,
+    easing: Phaser.Math.Easing.Cubic.In
+  });
+
+  const textsToKill = [];
 
   const headingText = this.add.bitmapText(GAME_WIDTH * 0.5, 48, 'miniset', '', DEFAULT_TEXT_SIZE);
   headingText.setCenterAlign();
   headingText.setOrigin(0.5);
+  textsToKill.push(headingText);
 
   const confirmText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT - 48, 'miniset', 'Use the arrow keys to allocate points. Press enter when you\'re ready.', DEFAULT_TEXT_SIZE);
   confirmText.setCenterAlign();
   confirmText.setOrigin(0.5);
+  textsToKill.push(confirmText);
 
   const existingConfig = this.payload.existingConfig;
 
@@ -118,9 +129,13 @@ PointsSelectionScreen.prototype.create = function() {
 
   options.forEach((option, i) => {
     option.text = this.add.bitmapText(GAME_WIDTH * 0.1 + 32, 64 + (i * (DEFAULT_TEXT_SIZE * 1.8)), 'miniset', '', DEFAULT_TEXT_SIZE);
+    textsToKill.push(option.text);
     option.textCurrent = this.add.bitmapText(GAME_WIDTH * 0.1 + 132, 64 + (i * (DEFAULT_TEXT_SIZE * 1.8)), 'miniset', '', DEFAULT_TEXT_SIZE);
+    textsToKill.push(option.textCurrent);
     option.textToAdd = this.add.bitmapText(GAME_WIDTH * 0.1 + 196, 64 + (i * (DEFAULT_TEXT_SIZE * 1.8)), 'miniset', '', DEFAULT_TEXT_SIZE);
+    textsToKill.push(option.textToAdd);
     option.textTotal = this.add.bitmapText(GAME_WIDTH * 0.1 + 243, 64 + (i * (DEFAULT_TEXT_SIZE * 1.8)), 'miniset', '', DEFAULT_TEXT_SIZE);
+    textsToKill.push(option.textTotal);
   });
   let refreshOptions = () => {
     options.forEach((option, i) => {
@@ -184,8 +199,6 @@ PointsSelectionScreen.prototype.create = function() {
     }
     dialogIsUp = true;
 
-    const backing = this.create9Slice(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.2, GAME_WIDTH * 0.5, GAME_HEIGHT  * 0.4);
-
     const confirmDialog = {
       question: 'Is this allocation for ' + shipName + ' okay?\n' + ((pointsToSpend <= 0) ? 'You\'ve spent all your R&D points' : ('You have ' + pointsToSpend + ' R&D points left.')),
       options: [
@@ -196,7 +209,6 @@ PointsSelectionScreen.prototype.create = function() {
             this.time.addEvent({
               delay: 32,
               callback: () => {
-                backing.destroy();
                 dialogIsUp = false;
                 // do nothing since the player changed their mind
               }
@@ -210,14 +222,24 @@ PointsSelectionScreen.prototype.create = function() {
             this.time.addEvent({
               delay: 32,
               callback: () => {
-                backing.destroy();
-                dialogIsUp = false;
-                
-                this.resultConfig = new PointsConfiguration();
-                options.forEach((option) => {
-                  this.resultConfig[option.configKey] += option.toAdd;
+
+                textsToKill.forEach((text) => {
+                  text.destroy();
                 });
-                this.scene.stop('PointsSelectionScreen');
+
+                const t = this.add.tween({
+                  targets: dialogWindow,
+                  scaleY: 0.0,
+                  duration: 300,
+                  easing: Phaser.Math.Easing.Cubic.In,
+                  onComplete: () => {
+                    this.resultConfig = new PointsConfiguration();
+                    options.forEach((option) => {
+                      this.resultConfig[option.configKey] += option.toAdd;
+                    });
+                    this.scene.stop('PointsSelectionScreen');
+                  }
+                });
               }
             })
           }

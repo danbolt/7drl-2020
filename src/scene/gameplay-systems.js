@@ -705,6 +705,16 @@ Gameplay.prototype.doNextTurn = function() {
 Gameplay.prototype.showDialogue = function(dialogue) {
   let texts = [];
   let keys = [];
+
+  const backing = PointsSelectionScreen.prototype.create9Slice.call(this, GAME_WIDTH * 0.25, GAME_HEIGHT * 0.2, GAME_WIDTH * 0.5, GAME_HEIGHT  * 0.4 + ((dialogue.options.length - 2) * DEFAULT_TEXT_SIZE));
+  backing.scaleY = 0;
+  const t = this.add.tween({
+    targets: backing,
+    scaleY: 1.0,
+    duration: 300,
+    easing: Phaser.Math.Easing.Cubic.In
+  });
+
   const removeAllUIAndEvents = () => {
     keys.forEach((key) => {
       key.removeAllListeners('down');
@@ -713,6 +723,14 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     texts.forEach((text) => {
       text.destroy();
     });
+
+    const t = this.add.tween({
+      targets: backing,
+      scaleY: 0.0,
+      duration: 200,
+      easing: Phaser.Math.Easing.Cubic.In,
+      onComplete: () => { backing.destroy(); }
+    })
   };
 
   const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.35, 'miniset', dialogue.question, DEFAULT_TEXT_SIZE);
