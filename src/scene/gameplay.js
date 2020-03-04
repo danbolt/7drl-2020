@@ -308,6 +308,12 @@ Gameplay.prototype.createPortraitAnimations = function() {
     frameRate: 10,
     repeat: 0
   });
+  this.anims.create({
+    key: 'paska',
+    frames: [{ key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }],
+    frameRate: 10,
+    repeat: 0
+  });
 };
 Gameplay.prototype.create = function () {
   this.exiting = false;

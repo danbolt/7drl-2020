@@ -59,7 +59,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
     AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(shieldOp, 'NameComponent', new NameComponent('bryce'));
+    AddComponent(shieldOp, 'NameComponent', new NameComponent('paska'));
     entities.push(shieldOp);
 };
 
