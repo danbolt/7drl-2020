@@ -1082,13 +1082,19 @@ Gameplay.prototype.updateViewSystems = function() {
     mesh.mesh.visible = HasComponent(otherEntity, 'ShieldsUpComponent');
   });
 
+  ViewEntities(this.entities, ['RotationComponent', 'LerpRotationComponent'], [], (entity, rotation, lerp) => {
+    lerp.value = Phaser.Math.Interpolation.SmoothStep(0.1, lerp.value, rotation.value);
+  });
+
   // Update dummy mesh rotations
   ViewEntities(this.entities, ['RotationComponent', 'MeshComponent'], [], (entity, rotation, mesh) => {
     if (mesh.mesh === null) {
       return;
     }
 
-    rotationSetViewVector.set(mesh.mesh.position.x + Math.cos(rotation.value), 0, mesh.mesh.position.z + Math.sin(rotation.value));
+    const theta = HasComponent(entity, 'LerpRotationComponent') ? GetComponent(entity, 'LerpRotationComponent').value : rotation.value;
+
+    rotationSetViewVector.set(mesh.mesh.position.x + Math.cos(theta), 0, mesh.mesh.position.z + Math.sin(theta));
 
     mesh.mesh.lookAt(rotationSetViewVector);
   });

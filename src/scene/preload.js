@@ -9,6 +9,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'PositionComponent', new PositionComponent(15, 15)); 
     AddComponent(playerShip, 'ForwardVelocityComponent', new ForwardVelocityComponent(4.0));
     AddComponent(playerShip, 'RotationComponent', new RotationComponent(Math.PI * 0.25));
+    AddComponent(playerShip, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(playerShip, 'RotationComponent').value));
     AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(playerShip, 'MeshComponent', new MeshComponent());
     AddComponent(playerShip, 'AttackStrengthComponent', new AttackStrengthComponent(4));

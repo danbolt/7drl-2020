@@ -270,6 +270,14 @@ const PositionTweenComponent = function(value) {
   this.value = value;
 };
 
+const LerpRotationComponent = function(value) {
+    if (value === undefined) {
+    throw new Error('Lerp rotation value was undefined');
+  }
+
+  this.value = value ? value : 0;
+};
+
 const RotationTweenComponent = function(value) {
   if (value === undefined) {
     throw new Error('Rotation tween value was undefined');

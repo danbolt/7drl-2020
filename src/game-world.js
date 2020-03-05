@@ -9,6 +9,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'PositionComponent', new PositionComponent(rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.14), rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.14)));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+    AddComponent(e, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(e, 'RotationComponent').value));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
     AddComponent(e, 'MeshComponent', new MeshComponent());
     AddComponent(e, 'PortraitComponent', new NameComponent('gamilon3'));
