@@ -536,7 +536,7 @@ Gameplay.prototype.doNextTurn = function() {
         targets: mesh.mesh.position,
         x: Math.max(0, Math.min(position.x, SECTOR_WIDTH)),
         z: Math.max(0, Math.min(position.y, SECTOR_HEIGHT)),
-        duration: DEFAULT_POSITION_TWEEN_DURATION,
+        duration: 650 * velocity.value,
         onComplete: () => {
           this.nextTurnReady = true;
           RemoveComponent(entity, 'PositionTweenComponent');
@@ -721,6 +721,7 @@ Gameplay.prototype.doNextTurn = function() {
         this.time.addEvent({
           delay: 5000,
           callback: () => {
+            const oldSector = { x: World.currentPlayerSector.x, y: World.currentPlayerSector.y };
             // Update the player to be in the correct sector and have the correct relative position
             if (position.x < 0) {
               position.x = SECTOR_WIDTH - err;
@@ -745,8 +746,10 @@ Gameplay.prototype.doNextTurn = function() {
             // Remove all temp components
             RemoveComponentFromAllEntities(this.entities, 'ShipInOrbitRangeOfPlanetComponent');
 
-            // Start in the next sector
-            this.scene.start('Gameplay', World.getCurrentSector());
+            // Go to the next sector
+            this.scene.start('WorldMapScreen', {
+              previousPlayerSector: oldSector
+            });
           }
         })
       }

@@ -134,8 +134,9 @@ PreloadScreen.prototype.create = function() {
         World.tickGenerate(playerEntities);
       }
 
-      // Start gameplay in the current sector
-      this.scene.start('Gameplay', World.getCurrentSector());
+      this.scene.start('WorldMapScreen', {
+        previousPlayerSector: {x: -2, y: -1}
+      });
     }
   });
 
