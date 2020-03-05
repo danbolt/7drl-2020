@@ -65,6 +65,7 @@ const populateWithPlayerEntities = function (entities) {
 
 const MeshNamesToLoad = [
   'player_ship',
+  'gamilon_large',
   'gamilon_medium',
   'gamilon_small',
   'gamilon_mini'
