@@ -226,6 +226,14 @@ const ShipOrbitingPlanetComponent = function(value) {
   this.planetIndex = value;
 };
 
+const MessageOnceInAttackRangeComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('Message value was undefined');
+  }
+
+  this.value = value;
+};
+
 // --- RENDERING STUFF ---
 
 const MeshComponent = function(mesh) {

@@ -526,9 +526,45 @@ Gameplay.prototype.doNextTurn = function() {
     position.x += Math.cos(rotation.value) * velocity.value;
     position.y += Math.sin(rotation.value) * velocity.value;
 
+    let skipTween = false;
+    if (HasComponent(entity, 'MessageOnceInAttackRangeComponent') && HasComponent(entity, 'AttackCandidatesComponent') && HasComponent(entity, 'AIControlComponent')) {
+      let foundTarget = false;
+      GetComponent(entity, 'AttackCandidatesComponent').value.forEach((candidate) => {
+        if (HasComponent(candidate, 'PlayerControlComponent')) {
+          foundTarget = true;
+        }
+      });
+
+      if (foundTarget) {
+        skipTween = true;
+        canDoNextTurn = false;
+        const message = GetComponent(entity, 'MessageOnceInAttackRangeComponent').value;
+        RemoveComponent(entity, 'MessageOnceInAttackRangeComponent');
+        const dialogue = {
+          question: message,
+          portrait: (HasComponent(entity, 'PortraitComponent') ? GetComponent(entity, 'PortraitComponent').value : undefined),
+          options: [
+            {
+              text: '[y] OK',
+              keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+              action: () => {
+                this.time.addEvent({
+                  delay: 32,
+                  callback: () => {
+                    this.nextTurnReady = true;
+                  }
+                })
+              }
+            }
+          ]
+        };
+        this.showDialogue(dialogue);
+      }
+    }
+
     const distToCameraSquared = Phaser.Math.Distance.Squared(position.x, position.y, this.gameCameraPos.x, this.gameCameraPos.y);
 
-    if (( distToCameraSquared < CAMERA_DIST_TWEEN_SNAP_SQUARED ) && HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
+    if ((!skipTween) && ( distToCameraSquared < CAMERA_DIST_TWEEN_SNAP_SQUARED ) && HasComponent(entity, 'MeshComponent') && (GetComponent(entity, 'MeshComponent').mesh !== null)) {
       const mesh = GetComponent(entity, 'MeshComponent');
 
       const lineGeom  = new THREE.BufferGeometry().setFromPoints( [mesh.mesh.position, new THREE.Vector3(position.x, 0, position.y)] );

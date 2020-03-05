@@ -13,7 +13,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'MeshComponent', new MeshComponent());
     AddComponent(e, 'PortraitComponent', new NameComponent('gamilon3'));
     AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
-    AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
+    AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(30));
     AddComponent(e, 'AIControlComponent', new AIControlComponent());
     AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_medium2'));
     AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
@@ -21,6 +21,10 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'ClassComponent', new NameComponent('L. Dry Battleship'));
     AddComponent(e, 'MassComponent', new MassComponent(4.3));
     entities.push(e);
+
+    if (i === 0) {
+      AddComponent(e, 'MessageOnceInAttackRangeComponent', new MessageOnceInAttackRangeComponent('Hey, you\'re not allowed in here!'));
+    }
 
     let skipper = NewEntity();
     AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
