@@ -78,6 +78,7 @@ const MeshNamesToLoad = [
   'player_ship',
   'gamilon_large',
   'gamilon_medium',
+  'gamilon_medium2',
   'gamilon_small',
   'gamilon_mini',
   'old_god'

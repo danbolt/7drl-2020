@@ -15,7 +15,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
     AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
     AddComponent(e, 'AIControlComponent', new AIControlComponent());
-    AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_large'));
+    AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_medium2'));
     AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));
     AddComponent(e, 'NameComponent', new NameComponent('LS ' + names.generate()));
     AddComponent(e, 'ClassComponent', new NameComponent('L. Dry Battleship'));
