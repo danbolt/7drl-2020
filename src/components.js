@@ -234,8 +234,20 @@ const MeshComponent = function(mesh) {
 
 const RequestPlanetAppearanceComponent = function(radius, colors, noiseSeed) { };
 
+const MeshPositionMatchComponent = function(matchIndex) {
+  this.matchIndex = matchIndex;
+};
+
+const VisibleIfShieldsUpComponent = function(index) {
+  this.index = index;
+}
+
 const RequestDummy3DAppearanceComponent = function(hexColor) {
   this.hexColor = hexColor ? hexColor : 0x00FF00;
+};
+
+const RequestShield3DAppearanceComponent = function(radius) {
+  this.radius = radius ? radius : 2.0;
 };
 
 const RequestGLTF3DAppearanceComponent = function(meshName) {

@@ -546,7 +546,7 @@ Gameplay.prototype.setup3DScene = function () {
   const explosionMats = [ new THREE.MeshBasicMaterial( {color: 0xFF0000} ), new THREE.MeshBasicMaterial( {color: 0xFFAA00} ) ]; 
   for (let i = 0; i < EXPLOSION_BUFFER_COUNT; i++) {
     const m = new THREE.Mesh(explosionGeom, explosionMats[i % explosionMats.length]);
-    m.position.set(i, 0, 0);
+    m.position.set(i, -99999999, 0);
     this.explosions.push(m);
     this.three.scene.add(m);
   }

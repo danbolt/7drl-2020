@@ -61,6 +61,17 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(shieldOp, 'NameComponent', new NameComponent('paska'));
     entities.push(shieldOp);
+
+    if (HasComponent(playerShip, 'ShieldsComponent')) {
+      let shieldMesh = NewEntity();
+      AddComponent(shieldMesh, 'MeshComponent', new MeshComponent());
+      AddComponent(shieldMesh, 'MeshPositionMatchComponent', new MeshPositionMatchComponent(entities.length - 5));
+      AddComponent(shieldMesh, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+      AddComponent(shieldMesh, 'RequestShield3DAppearanceComponent', new RequestShield3DAppearanceComponent(3.0));
+      AddComponent(shieldMesh, 'PlanetViewDataComponent', new PlanetViewDataComponent(0.0, 0.3435, 0x44111, 0x775500, 0xeeaa88)); // dummy planet data for that spin
+      AddComponent(shieldMesh, 'VisibleIfShieldsUpComponent', new VisibleIfShieldsUpComponent(entities.length - 5));
+      entities.push(shieldMesh);
+    }
 };
 
 const MeshNamesToLoad = [
@@ -133,6 +144,10 @@ PreloadScreen.prototype.create = function() {
       while (!(World.isGenerated())) {
         World.tickGenerate(playerEntities);
       }
+
+      // TODO: remove me
+      this.scene.start('Gameplay', World.getCurrentSector());
+      return;
 
       this.scene.start('WorldMapScreen', {
         previousPlayerSector: {x: -2, y: -1}

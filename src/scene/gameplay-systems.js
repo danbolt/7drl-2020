@@ -930,6 +930,14 @@ Gameplay.prototype.updateViewSystems = function() {
   });
   RemoveComponentFromAllEntities(this.entities, 'RequestDummy3DAppearanceComponent');
 
+  ViewEntities(this.entities, ['MeshComponent', 'RequestShield3DAppearanceComponent'], [], (entity, mesh, request3D) => {
+    mesh.mesh = new THREE.Mesh( SHIELDS_GEOM, SHIELDS_MAT );
+    mesh.mesh.scale.set(request3D.radius, request3D.radius, request3D.radius);
+    mesh.mesh.entityRef = entity;
+    this.three.scene.add(mesh.mesh);
+  });
+  RemoveComponentFromAllEntities(this.entities, 'RequestShield3DAppearanceComponent');
+
   ViewEntities(this.entities, ['MeshComponent', 'RequestGLTF3DAppearanceComponent'], [], (entity, mesh, request3D) => {
     const gltfBinary = this.cache.binary.get(request3D.meshName);
     loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
@@ -941,7 +949,6 @@ Gameplay.prototype.updateViewSystems = function() {
   });
   RemoveComponentFromAllEntities(this.entities, 'RequestGLTF3DAppearanceComponent');
 
-    // If something needs a dummy 3D cube, add it
   ViewEntities(this.entities, ['MeshComponent', 'RequestPlanetAppearanceComponent', 'PlanetViewDataComponent'], [], (entity, mesh, request3D, viewData) => {
     const vertexInfp = this.cache.shader.get('planet_vertex');
     const vert = vertexInfp.fragmentSrc;
@@ -979,6 +986,40 @@ Gameplay.prototype.updateViewSystems = function() {
     mesh.mesh.position.x = position.x;
     mesh.mesh.position.z = position.y;
   });
+
+  ViewEntities(this.entities, ['MeshComponent', 'MeshPositionMatchComponent'], [], (entity, mesh, match) => {
+    const otherEntity = this.entities[match.matchIndex];
+    if (!otherEntity) {
+      RemoveComponent(entity, 'MeshPositionMatchComponent');
+      return;
+    }
+    if (!(mesh.mesh)) {
+      return;
+    }
+    if (!HasComponent(otherEntity, 'MeshComponent')) {
+      return;
+    }
+    const otherMesh = GetComponent(otherEntity, 'MeshComponent');
+    if (otherMesh.mesh === null) {
+      return;
+    }
+    mesh.mesh.position.x = otherMesh.mesh.position.x;
+    mesh.mesh.position.y = otherMesh.mesh.position.y;
+    mesh.mesh.position.z = otherMesh.mesh.position.z;
+  });
+
+  ViewEntities(this.entities, ['MeshComponent', 'VisibleIfShieldsUpComponent'], [], (entity, mesh, visibleCheck) => {
+    const otherEntity = this.entities[visibleCheck.index];
+    if (!otherEntity) {
+      RemoveComponent(entity, 'VisibleIfShieldsUpComponent');
+      return;
+    }
+    if (!(mesh.mesh)) {
+      return;
+    }
+    mesh.mesh.visible = HasComponent(otherEntity, 'ShieldsUpComponent');
+  });
+
   // Update dummy mesh rotations
   ViewEntities(this.entities, ['RotationComponent', 'MeshComponent'], [], (entity, rotation, mesh) => {
     if (mesh.mesh === null) {

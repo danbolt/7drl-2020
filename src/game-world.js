@@ -54,6 +54,17 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(shieldOp, 'AIControlComponent', new AIControlComponent());
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     entities.push(shieldOp);
+
+    if (HasComponent(e, 'ShieldsComponent')) {
+      let shieldMesh = NewEntity();
+      AddComponent(shieldMesh, 'MeshComponent', new MeshComponent());
+      AddComponent(shieldMesh, 'MeshPositionMatchComponent', new MeshPositionMatchComponent(entities.length - 5));
+      AddComponent(shieldMesh, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+      AddComponent(shieldMesh, 'RequestShield3DAppearanceComponent', new RequestShield3DAppearanceComponent(4.4));
+      AddComponent(shieldMesh, 'PlanetViewDataComponent', new PlanetViewDataComponent(0.0, 0.3435, 0x44111, 0x775500, 0xeeaa88)); // dummy planet data for that spin
+      AddComponent(shieldMesh, 'VisibleIfShieldsUpComponent', new VisibleIfShieldsUpComponent(entities.length - 5));
+      entities.push(shieldMesh);
+    }
   }
 };
 
