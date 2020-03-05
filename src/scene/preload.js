@@ -66,7 +66,8 @@ const populateWithPlayerEntities = function (entities) {
 const MeshNamesToLoad = [
   'player_ship',
   'gamilon_medium',
-  'gamilon_small'
+  'gamilon_small',
+  'gamilon_mini'
 ];
 
 const FirstLoadScreen = function () {
