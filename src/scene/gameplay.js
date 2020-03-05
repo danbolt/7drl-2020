@@ -22,6 +22,8 @@ let Gameplay = function () {
 
   this.playerShipUI = null;
 
+  this.explosions = [];
+
   this.lockPanning = false;
 };
 Gameplay.prototype.init = function (payload) {
@@ -538,6 +540,16 @@ Gameplay.prototype.setup3DScene = function () {
 
   this.setup3DBackground();
 
+  this.explosions = [];
+  this.currentExplosionIndex = 0;
+  const explosionGeom = new THREE.SphereBufferGeometry( 1, 5, 4 );
+  const explosionMats = [ new THREE.MeshBasicMaterial( {color: 0xFF0000} ), new THREE.MeshBasicMaterial( {color: 0xFFAA00} ) ]; 
+  for (let i = 0; i < EXPLOSION_BUFFER_COUNT; i++) {
+    const m = new THREE.Mesh(explosionGeom, explosionMats[i % explosionMats.length]);
+    m.position.set(i, 0, 0);
+    this.explosions.push(m);
+    this.three.scene.add(m);
+  }
 };
 Gameplay.prototype.teardown3DScene = function () {
   //

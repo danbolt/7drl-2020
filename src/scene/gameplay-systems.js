@@ -677,6 +677,24 @@ Gameplay.prototype.doNextTurn = function() {
         return;
       }
     } else {
+      for (let i = 0; i < 3; i++) {
+        const m = this.explosions[this.currentExplosionIndex];
+        this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
+
+        m.position.set(mesh.mesh.position.x + (Math.random() * 1.5 - 0.75), mesh.mesh.position.y + (Math.random() * 0.76), mesh.mesh.position.z + (Math.random() * 1.5 - 0.75));
+        m.scale.set(0, 0, 0);
+        const t = this.add.tween({
+          targets: m.scale,
+          x: 2,
+          y: 2,
+          z: 2,
+          yoyo: true,
+          duration: 500,
+          ease: 'Power2',
+          delay: (i * 167)
+        });
+      }
+
       delete mesh.mesh.entityRef;
       this.three.scene.remove(mesh.mesh);
     }

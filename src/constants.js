@@ -18,6 +18,8 @@ const DEFAULT_WORLD_SIZE_IN_SECTORS = 10;
 const SECTOR_WIDTH = 70;
 const SECTOR_HEIGHT = 70;
 
+const EXPLOSION_BUFFER_COUNT = 15;
+
 const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
 
 const PATH_LINE_COLOR = new THREE.LineBasicMaterial({
