@@ -1,7 +1,4 @@
 let main = function() {
-    // Expose bulletml's builder DSL to the global namespace.
-    bulletml.dsl();
-
     let game = new Phaser.Game({
                         width: GAME_WIDTH,
                         height: GAME_HEIGHT,
