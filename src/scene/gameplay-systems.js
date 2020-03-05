@@ -684,6 +684,40 @@ Gameplay.prototype.doNextTurn = function() {
     }
   });
 
+  // Deal with destruction; remove meshes for entities that should be destroyed
+  ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {
+    // Wait until a mesh is loaded
+    if (mesh.mesh === null) {
+      return;
+    }
+
+    // If we run out of supplies, don't bother removing the mesh from the scene, since it didn't blow up.
+    if (HasComponent(entity, 'SuppliesComponent') && (GetComponent(entity, 'SuppliesComponent').value < 1)) {
+      const supplies = GetComponent(entity, 'SuppliesComponent');
+      if (supplies.value < 1) {
+        if (HasComponent(entity, 'PositionTweenComponent')) {
+          const positionTween = GetComponent(entity, 'PositionTweenComponent');
+
+          positionTween.value.stop();
+          RemoveComponent(entity, 'PositionTweenComponent');
+
+          let t = this.add.tween({
+            targets: mesh.mesh.rotation,
+            x: 0.6932 * (Math.random() < 0.5 ? 1 : -1),
+            duration: 21876
+          });
+        }
+
+        return;
+      }
+    } else {
+      delete mesh.mesh.entityRef;
+      this.three.scene.remove(mesh.mesh);
+    }
+    
+    RemoveComponent(entity, 'MeshComponent');
+  });
+
   // Delay a small amount before starting the next turn
   if (canDoNextTurn)
   this.time.addEvent({
@@ -966,6 +1000,31 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
   }
 
   if (defenderHealthData.health <= 0) {
+    const explosionMass = HasComponent(defendingEntity, 'MassComponent') ? GetComponent(defendingEntity, 'MassComponent').value : 2;
+    for (let i = 0; i < 3; i++) {
+      const m = this.explosions[this.currentExplosionIndex];
+      this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
+
+      m.position.set(defendingEntityPosition.x + (Math.random() * 1.5 - 0.75) + (explosionMass * 0.5), 0 + (Math.random() * 0.76 - 0.3412), defendingEntityPosition.y + (Math.random() * 1.5 - 0.75 + (explosionMass * 0.5)));
+      m.scale.set(0.001, 0.001, 0.001);
+      const t = this.add.tween({
+        targets: m.scale,
+        x: explosionMass,
+        y: explosionMass,
+        z: explosionMass,
+        yoyo: true,
+        duration: 500,
+        ease: 'Power2',
+        delay: (i * 167)
+      });
+    }
+
+    if (HasComponent(defendingEntity, 'MeshComponent')) {
+      const mesh = GetComponent(defendingEntity, 'MeshComponent');
+      if (mesh.mesh !== null) {
+        mesh.mesh.visible = false;
+      }
+    }
     AddComponent(defendingEntity, 'DestroyedComponent', new DestroyedComponent());
   }
 };
@@ -1114,59 +1173,6 @@ Gameplay.prototype.updateViewSystems = function() {
     mesh.mesh.position.x = otherMesh.mesh.position.x;
     mesh.mesh.position.y = otherMesh.mesh.position.y;
     mesh.mesh.position.z = otherMesh.mesh.position.z;
-  });
-
-  // Deal with destruction; remove meshes for entities that should be destroyed
-  ViewEntities(this.entities, ['DestroyedComponent', 'MeshComponent'], [], (entity, destroyed, mesh) => {
-    // Wait until a mesh is loaded
-    if (mesh.mesh === null) {
-      return;
-    }
-    
-    // If we run out of supplies, don't bother removing the mesh from the scene, since it didn't blow up.
-    if (HasComponent(entity, 'SuppliesComponent')) {
-      const supplies = GetComponent(entity, 'SuppliesComponent');
-      if (supplies.value < 1) {
-        if (HasComponent(entity, 'PositionTweenComponent')) {
-          const positionTween = GetComponent(entity, 'PositionTweenComponent');
-
-          positionTween.value.stop();
-          RemoveComponent(entity, 'PositionTweenComponent');
-
-          let t = this.add.tween({
-            targets: mesh.mesh.rotation,
-            x: 0.6932 * (Math.random() < 0.5 ? 1 : -1),
-            duration: 21876
-          });
-        }
-
-        return;
-      }
-    } else {
-      const explosionMass = HasComponent(entity, 'MassComponent') ? GetComponent(entity, 'MassComponent').value : 2;
-      for (let i = 0; i < 3; i++) {
-        const m = this.explosions[this.currentExplosionIndex];
-        this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
-
-        m.position.set(mesh.mesh.position.x + (Math.random() * 1.5 - 0.75) + (explosionMass * 0.5), mesh.mesh.position.y + (Math.random() * 0.76 - 0.3412), mesh.mesh.position.z + (Math.random() * 1.5 - 0.75 + (explosionMass * 0.5)));
-        m.scale.set(0.001, 0.001, 0.001);
-        const t = this.add.tween({
-          targets: m.scale,
-          x: explosionMass,
-          y: explosionMass,
-          z: explosionMass,
-          yoyo: true,
-          duration: 500,
-          ease: 'Power2',
-          delay: (i * 167)
-        });
-      }
-
-      delete mesh.mesh.entityRef;
-      this.three.scene.remove(mesh.mesh);
-    }
-    
-    RemoveComponent(entity, 'MeshComponent');
   });
 
   ViewEntities(this.entities, ['MeshComponent', 'VisibleIfShieldsUpComponent'], [], (entity, mesh, visibleCheck) => {
