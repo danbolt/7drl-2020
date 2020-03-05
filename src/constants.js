@@ -22,7 +22,7 @@ const EXPLOSION_BUFFER_COUNT = 15;
 
 const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
 const SHIELDS_GEOM = new THREE.OctahedronBufferGeometry(1, 1);
-const SHIELDS_MAT = new THREE.MeshBasicMaterial({ color: 0x53FEFF, wireframe: true });
+const SHIELDS_MAT = new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: 0x53FEFF, wireframe: true });
 
 const PATH_LINE_COLOR = new THREE.LineBasicMaterial({
   color: 0xaaaaaa,
@@ -86,6 +86,24 @@ const CAMERA_DIST_TWEEN_SNAP_SQUARED = CAMERA_DIST_TWEEN_SNAP * CAMERA_DIST_TWEE
 
 const PORTRAIT_FRAMES = {
   'bryce': [0, 1]
+};
+
+// taken from
+// https://gist.github.com/nikolas/b0cce2261f1382159b507dd492e1ceef
+const lerpColor = function(a, b, amount) {
+    const ar = a >> 16,
+          ag = a >> 8 & 0xff,
+          ab = a & 0xff,
+
+          br = b >> 16,
+          bg = b >> 8 & 0xff,
+          bb = b & 0xff,
+
+          rr = ar + amount * (br - ar),
+          rg = ag + amount * (bg - ag),
+          rb = ab + amount * (bb - ab);
+
+    return (rr << 16) + (rg << 8) + (rb | 0);
 };
 
 

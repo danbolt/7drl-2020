@@ -118,19 +118,33 @@ Gameplay.prototype.setupUI = function () {
   shieldsBar.setOrigin(0);
   shieldsBar.displayHeight = DEFAULT_TEXT_SIZE;
   this.playerShipUI.add(shieldsBar);
-  let lerpShields = 0;
-  const updateShieldsBar = () => {
-    ViewEntities(this.entities, ['ShieldsComponent', 'PlayerControlComponent'], [], function(entity, shields, control) {
-      shieldsBarBacking.displayWidth = shields.maxHealth * pixelToHullBarRatio;
-
-      lerpShields = Phaser.Math.Interpolation.SmoothStep(0.3, lerpShields, shields.health);
-      shieldsBar.displayWidth = lerpShields * pixelToHullBarRatio;
-    });
-  };
   const shieldsText = this.add.image(0, (DEFAULT_TEXT_SIZE * 2), 'bars', 2);
   shieldsText.setOrigin(0);
   shieldsText.blendMode = Phaser.BlendModes.ERASE;
   this.playerShipUI.add(shieldsText);
+  let lerpShields = 0;
+  const updateShieldsBar = () => {
+    ViewEntities(this.entities, ['ShieldsComponent', 'PlayerControlComponent'], [], (entity, shields, control) => {
+      shieldsBarBacking.displayWidth = shields.maxHealth * pixelToHullBarRatio;
+
+      lerpShields = Phaser.Math.Interpolation.SmoothStep(0.3, lerpShields, shields.health);
+      shieldsBar.displayWidth = lerpShields * pixelToHullBarRatio;
+      shieldsBar.displayHeight = DEFAULT_TEXT_SIZE;
+
+      const hasShieldsUp = HasComponent(entity, 'ShieldsUpComponent');
+      const flashVal = ((Math.sin(this.time.now * 0.01) * 0.5) + 0.5);
+      if (hasShieldsUp) {
+        shieldsBar.displayWidth += flashVal * 2.0;
+        shieldsBar.displayHeight += flashVal * 2.0;
+        shieldsText.displayHeight = shieldsBar.displayHeight;
+        shieldsText.scaleX = shieldsText.scaleY;
+      } else {
+        shieldsText.scaleX = 1.0;
+        shieldsText.scaleY = 1.0;
+      }
+      shieldsBar.setTint(hasShieldsUp ? lerpColor(0xDDFFFF, 0x10FFFF, flashVal) : 0x36FFFF);
+    });
+  };
 
   const suppliesBarBacking = this.add.image(0, 0, DEFAULT_IMAGE_MAP, 28);
   suppliesBarBacking.setTint(0x251111);
