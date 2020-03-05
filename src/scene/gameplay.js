@@ -296,24 +296,22 @@ Gameplay.prototype.setupUI = function () {
   this.cruiseShieldsText = this.add.bitmapText(2, GAME_HEIGHT - 8, 'miniset', 'Cruise Shields', DEFAULT_TEXT_SIZE);
 };
 Gameplay.prototype.createPortraitAnimations = function() {
-  this.anims.create({
-    key: 'bryce',
-    frames: [{ key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }, { key: 'portraits', frame: 1 }, { key: 'portraits', frame: 0 }],
-    frameRate: 10,
-    repeat: 0
-  });
-  this.anims.create({
-    key: 'jenny',
-    frames: [{ key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }, { key: 'portraits', frame: 3 }, { key: 'portraits', frame: 2 }],
-    frameRate: 10,
-    repeat: 0
-  });
-  this.anims.create({
-    key: 'paska',
-    frames: [{ key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }, { key: 'portraits', frame: 5 }, { key: 'portraits', frame: 4 }],
-    frameRate: 10,
-    repeat: 0
-  });
+  const generate = (name, a, b, repeat) => {
+    this.anims.create({
+      key: name,
+      frames: [{ key: 'portraits', frame: a }, { key: 'portraits', frame: b }, { key: 'portraits', frame: a }, { key: 'portraits', frame: b }, { key: 'portraits', frame: a }, { key: 'portraits', frame: b }, { key: 'portraits', frame: a }, { key: 'portraits', frame: b }, { key: 'portraits', frame: a }],
+      frameRate: 10,
+      repeat: repeat
+    });
+  };
+
+  generate('bryce', 0, 1, 0);
+  generate('jenny', 2, 3, 0);
+  generate('paska', 4, 5, 0);
+  generate('ella', 6, 7, 0);
+  generate('gamilon1', 8, 9, 0);
+  generate('gamilon2', 10, 11, 0);
+  generate('old_god', 12, 13, -1);
 };
 Gameplay.prototype.create = function () {
   this.exiting = false;

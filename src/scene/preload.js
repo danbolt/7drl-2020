@@ -49,7 +49,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
     AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(engineer, 'NameComponent', new NameComponent('bryce'));
+    AddComponent(engineer, 'NameComponent', new NameComponent('ella'));
     entities.push(engineer);
 
     // Add the shields operator
