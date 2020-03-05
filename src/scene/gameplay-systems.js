@@ -288,7 +288,6 @@ Gameplay.prototype.doNextTurn = function() {
     canDoNextTurn = false;
 
     const gunnerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
-    console.log(gunnerName);
 
     const dialogue = {
       question: ('There ' + (candidates.value.length === 1 ? 'is ' : 'are ') + candidates.value.length + ((candidates.value.length === 1 ? ' enemy' : ' enemies')) + ' within range.\nShould we attack?'),
@@ -683,7 +682,7 @@ Gameplay.prototype.doNextTurn = function() {
         this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
 
         m.position.set(mesh.mesh.position.x + (Math.random() * 1.5 - 0.75) + (explosionMass * 0.5), mesh.mesh.position.y + (Math.random() * 0.76 - 0.3412), mesh.mesh.position.z + (Math.random() * 1.5 - 0.75 + (explosionMass * 0.5)));
-        m.scale.set(0, 0, 0);
+        m.scale.set(0.001, 0.001, 0.001);
         const t = this.add.tween({
           targets: m.scale,
           x: explosionMass,
@@ -839,23 +838,46 @@ Gameplay.prototype.showDialogue = function(dialogue) {
 
 Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
   let attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
+  let damage = attackPower;
 
   // TODO: add shields into damage calculation
   if (HasComponent(defendingEntity, 'ShieldsComponent') && HasComponent(defendingEntity, 'ShieldsUpComponent')) {
     const shields = GetComponent(defendingEntity, 'ShieldsComponent');
     if (shields.health >= (attackPower * SHIELD_BUFFER_RATIO)) {
       shields.health -= (attackPower * SHIELD_BUFFER_RATIO);
-      attackPower = 0;
+      damage = 0;
     } else {
-      attackPower -= shields.health;
+      damage -= shields.health;
       shields.health = 0;
     }
   }
 
-  const damage = attackPower;
-
   const defenderHealthData = GetComponent(defendingEntity, 'HullHealthComponent');
   defenderHealthData.health -= damage;
+
+  const attackingEntityPosition = GetComponent(attackingEntity, 'PositionComponent');
+  const defendingEntityPosition = GetComponent(defendingEntity, 'PositionComponent');
+  for (let i = 0; i < Math.ceil(damage * 2); i++) {
+    const nextLaser = this.lasers[this.currentLaserIndex];
+    this.currentLaserIndex = (this.currentLaserIndex + 1) % this.lasers.length;
+
+    nextLaser.position.set(attackingEntityPosition.x+ ((Math.random() * 2) - 1.0), 1.5, attackingEntityPosition.y + ((Math.random() * 2) - 1.0));
+    const targetX = defendingEntityPosition.x + ((Math.random() * 2) - 1.0);
+    const targetY = (Math.random() * 2.0) - 0.5;
+    const targetZ = defendingEntityPosition.y + ((Math.random() * 2) - 1.0);
+    nextLaser.lookAt(targetX, targetY, targetZ);
+    let t = this.add.tween({
+      targets: nextLaser.position,
+      x: targetX,
+      y: targetY,
+      z: targetZ,
+      duration: (400),
+      delay: (i * 152),
+      easing: Phaser.Math.Easing.Cubic.Out,
+      onStart: () => { nextLaser.visible = true; },
+      onComplete: () => { nextLaser.visible = false }
+    });
+  }
 
   if (defenderHealthData.health <= 0) {
     AddComponent(defendingEntity, 'DestroyedComponent', new DestroyedComponent());

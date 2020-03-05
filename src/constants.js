@@ -19,6 +19,7 @@ const SECTOR_WIDTH = 70;
 const SECTOR_HEIGHT = 70;
 
 const EXPLOSION_BUFFER_COUNT = 15;
+const LASER_BUFFER_COUNT = 50;
 
 const DUMMY_3D_CUBE_GEOM = new THREE.BoxBufferGeometry( 1, 1, 1 );
 const SHIELDS_GEOM = new THREE.OctahedronBufferGeometry(1, 1);

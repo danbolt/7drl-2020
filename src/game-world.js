@@ -4,7 +4,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
   for (let i = 0; i < 5; i++) {
     let e = NewEntity();
     AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(1));
+    AddComponent(e, 'HullHealthComponent', new HullHealthComponent(10));
     //AddComponent(e, 'ShieldsComponent', new HullHealthComponent(50 + (Math.random() * 20))); // Shields are "health" but not
     AddComponent(e, 'PositionComponent', new PositionComponent(rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.14), rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.14)));
     AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(0.3 + (Math.random() * 3.2)));
@@ -13,7 +13,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'MeshComponent', new MeshComponent());
     AddComponent(e, 'PortraitComponent', new NameComponent('gamilon3'));
     AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
-    AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
+    AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(20));
     AddComponent(e, 'AIControlComponent', new AIControlComponent());
     AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_large'));
     AddComponent(e, 'TeamComponent', new TeamComponent('G&T Empire'));

@@ -564,6 +564,18 @@ Gameplay.prototype.setup3DScene = function () {
     this.explosions.push(m);
     this.three.scene.add(m);
   }
+
+  this.lasers = [];
+  this.currentLaserIndex = 0;
+  const laserMaterial = new THREE.LineBasicMaterial({ linewidth: 4, color: 0xCFCF00 });
+  const laserPoints = [ new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1) ];
+  const laserGeom = new THREE.BufferGeometry().setFromPoints( laserPoints );
+  for (let i = 0; i < LASER_BUFFER_COUNT; i++) {
+    const laser = new THREE.Line( laserGeom, laserMaterial );
+    laser.visible = false;
+    this.lasers.push(laser);
+    this.three.scene.add(laser);
+  }
 };
 Gameplay.prototype.teardown3DScene = function () {
   //
