@@ -331,6 +331,7 @@ Gameplay.prototype.createPortraitAnimations = function() {
   generate('gamilon2', 10, 11, 0);
   generate('old_god', 12, 13, -1);
   generate('gamilon_mini', 14, 15, 0);
+  generate('gamilon3', 16, 17, 0);
 };
 Gameplay.prototype.create = function () {
   this.exiting = false;
