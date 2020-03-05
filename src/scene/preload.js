@@ -68,7 +68,8 @@ const MeshNamesToLoad = [
   'gamilon_large',
   'gamilon_medium',
   'gamilon_small',
-  'gamilon_mini'
+  'gamilon_mini',
+  'old_god'
 ];
 
 const FirstLoadScreen = function () {
