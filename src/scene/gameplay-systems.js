@@ -677,17 +677,18 @@ Gameplay.prototype.doNextTurn = function() {
         return;
       }
     } else {
+      const explosionMass = HasComponent(entity, 'MassComponent') ? GetComponent(entity, 'MassComponent').value : 2;
       for (let i = 0; i < 3; i++) {
         const m = this.explosions[this.currentExplosionIndex];
         this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
 
-        m.position.set(mesh.mesh.position.x + (Math.random() * 1.5 - 0.75), mesh.mesh.position.y + (Math.random() * 0.76), mesh.mesh.position.z + (Math.random() * 1.5 - 0.75));
+        m.position.set(mesh.mesh.position.x + (Math.random() * 1.5 - 0.75) + (explosionMass * 0.5), mesh.mesh.position.y + (Math.random() * 0.76 - 0.3412), mesh.mesh.position.z + (Math.random() * 1.5 - 0.75 + (explosionMass * 0.5)));
         m.scale.set(0, 0, 0);
         const t = this.add.tween({
           targets: m.scale,
-          x: 2,
-          y: 2,
-          z: 2,
+          x: explosionMass,
+          y: explosionMass,
+          z: explosionMass,
           yoyo: true,
           duration: 500,
           ease: 'Power2',

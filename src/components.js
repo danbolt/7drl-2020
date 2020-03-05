@@ -43,6 +43,10 @@ const RotationComponent = function(rotation) {
   this.value = rotation ? rotation : 0;
 };
 
+const MassComponent = function(mass) {
+  this.value = mass ? mass : 2;
+};
+
 const ForwardVelocityComponent = function(velocity) {
   this.value = velocity ? velocity : 0.0;
 };
