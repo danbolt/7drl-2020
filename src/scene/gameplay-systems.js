@@ -314,9 +314,7 @@ Gameplay.prototype.doNextTurn = function() {
         portrait: gunnerName,
         keyCode: ENEMY_SELECTION_KEYCODES[i],
         action: () => {
-          this.performAttack(shipEntity, candidate);
-
-          this.nextTurnReady = true;
+          this.performAttack(shipEntity, candidate, () => { this.nextTurnReady = true; });
         }
       });
     });
@@ -483,8 +481,9 @@ Gameplay.prototype.doNextTurn = function() {
       return;
     }
 
+    canDoNextTurn = false;
     const candidatePick = ~~(ROT.RNG.getUniform() * candidates.value.length);
-    this.performAttack(shipEntity, candidates.value[candidatePick]);
+    this.performAttack(shipEntity, candidates.value[candidatePick], () => { this.nextTurnReady = true; });
   });
 
   ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, ai, shipRef) => {
@@ -913,7 +912,7 @@ Gameplay.prototype.showDialogue = function(dialogue) {
   }
 };
 
-Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
+Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, onComplete) {
   let attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
   let damage = attackPower;
 
@@ -934,7 +933,8 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
 
   const attackingEntityPosition = GetComponent(attackingEntity, 'PositionComponent');
   const defendingEntityPosition = GetComponent(defendingEntity, 'PositionComponent');
-  for (let i = 0; i < Math.ceil(damage * 2); i++) {
+  const numberOfLasersToFire = Math.ceil(damage * 2);
+  for (let i = 0; i < numberOfLasersToFire; i++) {
     const nextLaser = this.lasers[this.currentLaserIndex];
     this.currentLaserIndex = (this.currentLaserIndex + 1) % this.lasers.length;
 
@@ -943,6 +943,8 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
     const targetY = (Math.random() * 2.0) - 0.5;
     const targetZ = defendingEntityPosition.y + ((Math.random() * 2) - 1.0);
     nextLaser.lookAt(targetX, targetY, targetZ);
+    const ind = i;
+
     let t = this.add.tween({
       targets: nextLaser.position,
       x: targetX,
@@ -952,7 +954,15 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity) {
       delay: (i * 152),
       easing: Phaser.Math.Easing.Cubic.Out,
       onStart: () => { nextLaser.visible = true; },
-      onComplete: () => { nextLaser.visible = false }
+      onComplete: () => {
+        nextLaser.visible = false;
+        if (ind === (numberOfLasersToFire - 1)) {
+          this.time.addEvent({
+            delay: 140,
+            callback: () => { onComplete(); }
+          });
+        }
+      }
     });
   }
 

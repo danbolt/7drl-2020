@@ -21,6 +21,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'NameComponent', new NameComponent('LS ' + names.generate()));
     AddComponent(e, 'ClassComponent', new NameComponent('L. Dry Battleship'));
     AddComponent(e, 'MassComponent', new MassComponent(4.3));
+    AddComponent(e, 'RNDBountyComponent', new RNDBountyComponent(3));
     entities.push(e);
 
     if (i === 0) {

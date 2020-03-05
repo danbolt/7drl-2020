@@ -147,6 +147,10 @@ PreloadScreen.prototype.create = function() {
         World.tickGenerate(playerEntities);
       }
 
+      // TODO: remove me
+      this.scene.start('Gameplay', World.getCurrentSector());
+      return;
+
       this.scene.start('WorldMapScreen', {
         previousPlayerSector: {x: -2, y: -1}
       });
