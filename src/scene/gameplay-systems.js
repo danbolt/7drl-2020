@@ -130,7 +130,7 @@ Gameplay.prototype.doNextTurn = function() {
         portrait: skipperName,
         options: [
           {
-            text: '(n)o',
+            text: '[n] No',
             keyCode: Phaser.Input.Keyboard.KeyCodes.N,
             action: () => {
               // We're keeping course, so we don't need to rotate
@@ -138,7 +138,7 @@ Gameplay.prototype.doNextTurn = function() {
             }
           },
           {
-            text: '(y)es',
+            text: '[y] Yes',
             keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
             action: () => {
               // Undock the ship
@@ -180,7 +180,7 @@ Gameplay.prototype.doNextTurn = function() {
           portrait: skipperName,
           options: [
             {
-              text: '(y)ay!',
+              text: '[y] Yay!',
               keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
               action: () => {
                 this.time.addEvent({
@@ -212,7 +212,7 @@ Gameplay.prototype.doNextTurn = function() {
         portrait: skipperName,
         options: [
             {
-              text: '(n)o',
+              text: '[n] No',
               keyCode: Phaser.Input.Keyboard.KeyCodes.N,
               action: () => {
                 // We're keeping course, so we don't need to rotate
@@ -220,7 +220,7 @@ Gameplay.prototype.doNextTurn = function() {
               }
             },
             {
-              text: '(y)es',
+              text: '[y] Yes',
               keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
               action: () => {
                 // Dock the ship
@@ -245,7 +245,7 @@ Gameplay.prototype.doNextTurn = function() {
         portrait: skipperName,
         options: [
           {
-            text: '(n)o',
+            text: '[n] No',
             keyCode: Phaser.Input.Keyboard.KeyCodes.N,
             action: () => {
               // We're keeping course, so we don't need to rotate
@@ -253,7 +253,7 @@ Gameplay.prototype.doNextTurn = function() {
             }
           },
           {
-            text: '(y)es',
+            text: '[y] Yes',
             keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
             action: () => {
               this.redirectShip(shipEntity, () => {
@@ -304,9 +304,13 @@ Gameplay.prototype.doNextTurn = function() {
       ]
     };
     candidates.value.forEach((candidate, i) => {
+      // Not the best gameplay fix, but we should avoid a crash if there are more targets than keys available
+      if (i >= ENEMY_SELECTION_KEYCODES.length) {
+        return;
+      }
       const targetName = HasComponent(candidate, 'NameComponent') ? GetComponent(candidate, 'NameComponent').value : '???';
       dialogue.options.push({
-        text: '(' + (i + 1) + ') attack ' + targetName,
+        text: '[' + (i + 1) + '] attack ' + targetName,
         portrait: gunnerName,
         keyCode: ENEMY_SELECTION_KEYCODES[i],
         action: () => {
@@ -410,14 +414,14 @@ Gameplay.prototype.doNextTurn = function() {
           portrait: shieldOpName,
           options: [
             {
-              text: '(n)o',
+              text: '[n] No',
               keyCode: Phaser.Input.Keyboard.KeyCodes.N,
               action: () => {
                 this.nextTurnReady = true;
               }
             },
             {
-              text: '(y)es',
+              text: '[y] Yes',
               keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
               action: () => {
                 AddComponent(shipEntity, 'ShieldsUpComponent', new ShieldsUpComponent());
@@ -434,14 +438,14 @@ Gameplay.prototype.doNextTurn = function() {
           portrait: shieldOpName,
           options: [
             {
-              text: '(n)o',
+              text: '[n] No',
               keyCode: Phaser.Input.Keyboard.KeyCodes.N,
               action: () => {
                 this.nextTurnReady = true;
               }
             },
             {
-              text: '(y)es',
+              text: '[y] Yes',
               keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
               action: () => {
                 RemoveComponent(shipEntity, 'ShieldsUpComponent');

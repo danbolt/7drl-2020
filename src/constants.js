@@ -48,7 +48,13 @@ const ENEMY_SELECTION_KEYCODES = [
   Phaser.Input.Keyboard.KeyCodes.SIX,
   Phaser.Input.Keyboard.KeyCodes.SEVEN,
   Phaser.Input.Keyboard.KeyCodes.EIGHT,
-  Phaser.Input.Keyboard.KeyCodes.NINE
+  Phaser.Input.Keyboard.KeyCodes.NINE,
+  Phaser.Input.Keyboard.KeyCodes.T,
+  Phaser.Input.Keyboard.KeyCodes.Y,
+  Phaser.Input.Keyboard.KeyCodes.U,
+  Phaser.Input.Keyboard.KeyCodes.I,
+  Phaser.Input.Keyboard.KeyCodes.O,
+  Phaser.Input.Keyboard.KeyCodes.P
 ];
 
 // TODO: data-drive this
