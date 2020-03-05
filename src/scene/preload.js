@@ -143,6 +143,7 @@ PreloadScreen.prototype.create = function() {
       // Generate a new campaign
       World = new GameWorld(5, 5, Math.random());
       ROT.RNG.setSeed(World.seed); // We have to set ROT's seed to ours to get deterministic markov names :/
+      World.currentConfig = basePointsPlusExtra;
       while (!(World.isGenerated())) {
         World.tickGenerate(playerEntities);
       }

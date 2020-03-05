@@ -25,6 +25,7 @@ let Gameplay = function () {
   this.explosions = [];
 
   this.lockPanning = false;
+  this.lockRotating = false;
 };
 Gameplay.prototype.init = function (payload) {
   this.entities = payload.entities;
@@ -599,18 +600,20 @@ Gameplay.prototype.updateCameraFromInput = function () {
     } 
   }
 
-  if (this.keys.cam_turn_right.isDown || this.keys.right.isDown) {
-    this.gameCameraTheta += CAMERA_TURN_SPEED;
-  }
-  if (this.keys.cam_turn_left.isDown || this.keys.left.isDown) {
-    this.gameCameraTheta -= CAMERA_TURN_SPEED;
-  }
+  if (!(this.lockRotating)) {
+    if (this.keys.cam_turn_right.isDown || this.keys.right.isDown) {
+      this.gameCameraTheta += CAMERA_TURN_SPEED;
+    }
+    if (this.keys.cam_turn_left.isDown || this.keys.left.isDown) {
+      this.gameCameraTheta -= CAMERA_TURN_SPEED;
+    }
 
-  if (this.keys.up.isDown) {
-    this.gameCameraPhi = Math.min(this.gameCameraPhi - CAMERA_TURN_SPEED, Math.PI * 0.45);
-  }
-  if (this.keys.down.isDown) {
-    this.gameCameraPhi = Math.max(this.gameCameraPhi + CAMERA_TURN_SPEED, 0);
+    if (this.keys.up.isDown) {
+      this.gameCameraPhi = Math.min(this.gameCameraPhi - CAMERA_TURN_SPEED, Math.PI * 0.45);
+    }
+    if (this.keys.down.isDown) {
+      this.gameCameraPhi = Math.max(this.gameCameraPhi + CAMERA_TURN_SPEED, 0);
+    }
   }
 };
 

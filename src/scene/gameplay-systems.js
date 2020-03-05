@@ -913,6 +913,8 @@ Gameplay.prototype.showDialogue = function(dialogue) {
 };
 
 Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, onComplete) {
+  const hasRNDDrop = (HasComponent(defendingEntity, 'RNDBountyComponent') && HasComponent(attackingEntity, 'PlayerControlComponent'));
+
   let attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
   let damage = attackPower;
 
@@ -958,8 +960,53 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
         nextLaser.visible = false;
         if (ind === (numberOfLasersToFire - 1)) {
           this.time.addEvent({
-            delay: 140,
-            callback: () => { onComplete(); }
+            delay: (221 + ~~(Math.random() * 30)),
+            callback: () => {
+              // This callback is yucky!!!!
+              if (!hasRNDDrop) {
+                onComplete();
+                return;
+              }
+
+              const bounty = GetComponent(defendingEntity, 'RNDBountyComponent').value;
+              RemoveComponent(defendingEntity, 'RNDBountyComponent');
+              const enemyShipName = GetComponent(defendingEntity, 'NameComponent').value;
+              const skipperPortrait = 'bryce'; // TODO: make this data-driven
+
+              const congratsDialog = {
+                question: enemyShipName + ' dropped special technology!\nWe can add ' + bounty + ' R&D Units to our ship!',
+                portrait: skipperPortrait,
+                options: [{
+                  text: '[y] Spend Points',
+                  keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+                  action: () => {
+                    this.lockRotating = true;
+                    this.scene.launch('PointsSelectionScreen', {
+                      pointsToSpend: bounty,
+                      existingConfig: World.currentConfig,
+                      playerEntities: this.entities,
+                      shipIndex: GetComponent(attackingEntity, 'ECSIndexComponent').value,
+                      onComplete: (newConfigWithAllocatedPoints) => {
+                        const basePointsPlusExtra = CombineTwoPointsConfigurations(World.currentConfig, newConfigWithAllocatedPoints);
+                        basePointsPlusExtra.applyToShipEntity(attackingEntity, this.entities, true);
+                        World.currentConfig = basePointsPlusExtra;
+
+                        this.lockRotating = false;
+                        onComplete();
+                      }
+                    });
+                  }
+                },
+                {
+                  text: '[n] Skip',
+                  keyCode: Phaser.Input.Keyboard.KeyCodes.N,
+                  action: () => {
+                    onComplete();
+                  }
+                }]
+              };
+              this.showDialogue(congratsDialog);
+            }
           });
         }
       }
