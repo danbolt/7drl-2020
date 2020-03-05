@@ -13,14 +13,7 @@ let main = function() {
                         },
                         plugins: {
                             global: [],
-                        },
-                        physics: {
-                            default: 'arcade',
-                            arcade: {
-                                gravity: { y: 0 },
-                                debug: false
-                            }
-                        },
+                        }
                      });
     game.scene.add('FirstLoadScreen', FirstLoadScreen, false);
     game.scene.add('PreloadScreen', PreloadScreen, false);
