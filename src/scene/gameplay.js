@@ -226,6 +226,11 @@ Gameplay.prototype.setupUI = function () {
   const targetAttackPowerText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 6), 'miniset', 'ATTACK PWR', DEFAULT_TEXT_SIZE);
   targetAttackPowerText.tint = 0xFF5500;
   this.targetShipUI.add(targetAttackPowerText);
+
+  const targetPortrait = this.add.sprite(-32, DEFAULT_TEXT_SIZE + 8, 'portraits', 0);
+  targetPortrait.setOrigin(0);
+  this.targetShipUI.add(targetPortrait);
+
   const updateTargetNameAndAffiliation = (target) => {
     if (HasComponent(target, 'NameComponent')) {
       targetNameText.text = GetComponent(target, 'NameComponent').value;
@@ -259,6 +264,16 @@ Gameplay.prototype.setupUI = function () {
       targetAttackPowerText.text = 'Cannons Strength: ' + attackRange.value;
     } else {
       targetAttackPowerText.text = '';
+    }
+
+    if (HasComponent(target, 'PortraitComponent') && PortraitFrames[GetComponent(target, 'PortraitComponent').value]) {
+      const portraitData = GetComponent(target, 'PortraitComponent');
+      const frameIndex = PortraitFrames[portraitData.value].value;
+      targetPortrait.setFrame(frameIndex);
+
+      targetPortrait.setVisible(true);
+    } else {
+      targetPortrait.setVisible(false);
     }
   };
 
@@ -295,6 +310,7 @@ Gameplay.prototype.setupUI = function () {
   this.cruiseEngineerText = this.add.bitmapText(2, GAME_HEIGHT - 16, 'miniset', 'Cruise Engineer', DEFAULT_TEXT_SIZE);
   this.cruiseShieldsText = this.add.bitmapText(2, GAME_HEIGHT - 8, 'miniset', 'Cruise Shields', DEFAULT_TEXT_SIZE);
 };
+const PortraitFrames = {};
 Gameplay.prototype.createPortraitAnimations = function() {
   const generate = (name, a, b, repeat) => {
     this.anims.create({
@@ -303,6 +319,8 @@ Gameplay.prototype.createPortraitAnimations = function() {
       frameRate: 10,
       repeat: repeat
     });
+
+    PortraitFrames[name] = { value: a };
   };
 
   generate('bryce', 0, 1, 0);

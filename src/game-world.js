@@ -11,10 +11,8 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
     AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
     AddComponent(e, 'MeshComponent', new MeshComponent());
+    AddComponent(e, 'PortraitComponent', new NameComponent('gamilon1'));
     AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
-
-    this.snoozeSkipper = false;
-    this.snoozeSkipper = false;
     AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(10));
     AddComponent(e, 'AIControlComponent', new AIControlComponent());
     AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_medium'));
