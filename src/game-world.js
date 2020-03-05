@@ -149,7 +149,7 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
     const earth = NewEntity();
     AddComponent(earth, 'PositionComponent', new PositionComponent(10, 10));
     AddComponent(earth, 'PlanetViewDataComponent', new PlanetViewDataComponent(3, 0.3435, 0x1010aa, 0x104499, 0x007710));
-    AddComponent(earth, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(7.0));
+    AddComponent(earth, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(8.0));
     AddComponent(earth, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
     AddComponent(earth, 'MeshComponent', new MeshComponent());
     AddComponent(earth, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());

@@ -208,7 +208,7 @@ Gameplay.prototype.doNextTurn = function() {
       const planetName = HasComponent(planetEntity, 'NameComponent') ? GetComponent(planetEntity, 'NameComponent').value : '???';
 
       const dialogue = {
-        question: 'We\'re in range of planet ' + planetName + '\n' + 'Would we want to orbit for repairs and fortification?',
+        question: 'We\'re in range of planet ' + planetName + '\n' + 'Should we orbit for repairs and defense?',
         portrait: skipperName,
         options: [
             {
@@ -590,6 +590,43 @@ Gameplay.prototype.doNextTurn = function() {
       AddComponent(entity, 'PositionTweenComponent', new PositionTweenComponent(tween));
       canDoNextTurn = false;
     }
+  });
+
+  ViewEntities(nextEntity, ['PositionComponent', 'ShipOrbitingPlanetComponent', 'RotationComponent', 'MeshComponent'], [], (entity, position, orbiting, rotation, mesh) => {
+    const orbitIndex = orbiting.planetIndex;
+    const planet = this.entities[orbitIndex];
+    const planetPosition = GetComponent(planet, 'PositionComponent');
+    const planetOrbitRadius = GetComponent(planet, 'PlanetOrbitableComponent').dockRange;
+    const planetPhysicalRadius = GetComponent(planet, 'PlanetViewDataComponent').radius;
+
+    const currentRotationToPlanet = Math.atan2(position.y - planetPosition.y, position.x - planetPosition.x);
+    const nextRotationToPlanet = currentRotationToPlanet + ORBIT_ROTATION_PER_TURN;
+    const targetRadius = (planetPhysicalRadius + planetOrbitRadius) * 0.5;
+    const targetPositionX = planetPosition.x + (Math.cos(nextRotationToPlanet) * targetRadius);
+    const targetPositionY = planetPosition.y + (Math.sin(nextRotationToPlanet) * targetRadius);
+
+    position.x = targetPositionX;
+    position.y = targetPositionY;
+
+    rotation.value = (nextRotationToPlanet + (Math.PI * 0.5));
+
+    canDoNextTurn = false;
+    let tween = this.add.tween({
+      targets: mesh.mesh.position,
+      x: Math.max(0, Math.min(position.x, SECTOR_WIDTH)),
+      z: Math.max(0, Math.min(position.y, SECTOR_HEIGHT)),
+      duration: 630,
+      onComplete: () => {
+        this.nextTurnReady = true;
+        RemoveComponent(entity, 'PositionTweenComponent');
+        tween.stop();
+      }
+    });
+
+    if (HasComponent(entity, 'PositionTweenComponent')) {
+      RemoveComponent(entity, 'PositionTweenComponent')
+    }
+    AddComponent(entity, 'PositionTweenComponent', new PositionTweenComponent(tween));
   });
 
   // Ensure AI entities don't go off the sector

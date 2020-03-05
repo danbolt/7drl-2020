@@ -10,7 +10,7 @@ let Gameplay = function () {
   this.keys = null;
 
   this.gameCameraPos = new Phaser.Math.Vector2();
-  this.gameCameraTheta = 0.0;
+  this.gameCameraTheta = Math.PI * 0.25;
   this.gameCameraPhi = Math.PI * 0.25;
   this.gameCamera = null;
 

@@ -32,6 +32,8 @@ const PATH_LINE_COLOR = new THREE.LineBasicMaterial({
 const STARS_COLOR = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 1 } );
 const NUMBER_OF_STARS = 200;
 
+const ORBIT_ROTATION_PER_TURN = 0.4562;
+
 const COMPASS_ANGLE_LETTERS = ['E', 'NE', 'N', 'N', 'NW', 'W', 'W', 'SW', 'S', 'S', 'SE', 'E'];
 
 const UNIT = 'paular'; // A scifi-sounding unit of measure for space in case people say parsecs or lightyears isn't realistic

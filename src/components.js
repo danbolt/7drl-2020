@@ -234,6 +234,22 @@ const MessageOnceInAttackRangeComponent = function(value) {
   this.value = value;
 };
 
+const RNDBountyComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('R&D bounty value was undefined');
+  }
+
+  if (!Number.isInteger(value)) {
+    throw new Error('R&D bounty value was not an integer');
+  }
+
+  if (value < 0) {
+    throw new Error('R&D bounty value was negative');
+  }
+
+  this.value = value ? value : 0;
+}
+
 // --- RENDERING STUFF ---
 
 const MeshComponent = function(mesh) {
