@@ -336,6 +336,8 @@ Gameplay.prototype.createPortraitAnimations = function() {
 Gameplay.prototype.create = function () {
   this.exiting = false;
 
+  this.cameras.cameras[0].fadeIn(1000);
+
   const dummySeed = 10101;
   ROT.RNG.setSeed(dummySeed);
 
