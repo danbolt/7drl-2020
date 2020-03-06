@@ -338,7 +338,10 @@ Gameplay.prototype.setupUI = function () {
   this.skipperCruiseGraphic.on('pointerdown', () => {
     World.snoozeSkipper = !World.snoozeSkipper;
   });
+  this.skipperCruiseGraphic2 = this.add.sprite(8 + 0, -8, 'cruise_lock_butto8', "z1");
+  this.skipperCruiseGraphic2.anims.play('snooze');
   this.cruiseSprites.add(this.skipperCruiseGraphic);
+  this.cruiseSprites.add(this.skipperCruiseGraphic2);
   let noticeKey = this.add.bitmapText(0 + 13, 8, 'miniset', '[Z]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
@@ -350,7 +353,10 @@ Gameplay.prototype.setupUI = function () {
   this.gunnerCruiseGraphic.on('pointerdown', () => {
     World.snoozeGunner = !World.snoozeGunner;
   });
+  this.gunnerCruiseGraphic2 = this.add.sprite(8 + 64 - 16, -8, 'cruise_lock_button', "z1");
+  this.gunnerCruiseGraphic2.anims.play('snooze');
   this.cruiseSprites.add(this.gunnerCruiseGraphic);
+  this.cruiseSprites.add(this.gunnerCruiseGraphic2);
   noticeKey = this.add.bitmapText(64 - 16 + 13, 8, 'miniset', '[X]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
@@ -362,7 +368,10 @@ Gameplay.prototype.setupUI = function () {
   this.engineerCruiseGraphic.on('pointerdown', () => {
     World.snoozeEngineer = !World.snoozeEngineer;
   });
+  this.engineerCruiseGraphic2 = this.add.sprite(8 + 128 - 32, -8, 'cruise_lock_button', "z1");
+  this.engineerCruiseGraphic2.anims.play('snooze');
   this.cruiseSprites.add(this.engineerCruiseGraphic);
+  this.cruiseSprites.add(this.engineerCruiseGraphic2);
   noticeKey = this.add.bitmapText(128 - 32 + 13, 8, 'miniset', '[C]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
@@ -374,7 +383,10 @@ Gameplay.prototype.setupUI = function () {
   this.shieldsCruiseGraphic.on('pointerdown', () => {
     World.snoozeShields = !World.snoozeShields;
   });
+  this.shieldsCruiseGraphic2 = this.add.sprite(8 + 192 - 50, -8, 'cruise_lock_button', "z1");
+  this.shieldsCruiseGraphic2.anims.play('snooze');
   this.cruiseSprites.add(this.shieldsCruiseGraphic);
+  this.cruiseSprites.add(this.shieldsCruiseGraphic2);
   noticeKey = this.add.bitmapText(192 - 50 + 13, 8, 'miniset', '[V]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
@@ -404,6 +416,13 @@ Gameplay.prototype.createPortraitAnimations = function() {
   generate('old_god', 12, 13, -1);
   generate('gamilon_mini', 14, 15, 0);
   generate('gamilon3', 16, 17, 0);
+
+  this.anims.create({
+    key: 'snooze',
+    frames: [ { key: 'cruise_lock_button', frame: 'z1'}, { key: 'cruise_lock_button', frame: 'z2'} ],
+    frameRate: 4,
+    repeat: -1
+  })
 };
 Gameplay.prototype.create = function () {
   this.exiting = false;
@@ -485,6 +504,10 @@ Gameplay.prototype.update = function () {
   this.gunnerCruiseGraphic.setFrame( World.snoozeGunner ? 'sleep' : 'awake' );
   this.engineerCruiseGraphic.setFrame( World.snoozeEngineer ? 'sleep' : 'awake' );
   this.shieldsCruiseGraphic.setFrame( World.snoozeShields ? 'sleep' : 'awake' );
+  this.skipperCruiseGraphic2.setVisible(World.snoozeSkipper);
+  this.gunnerCruiseGraphic2.setVisible(World.snoozeGunner);
+  this.engineerCruiseGraphic2.setVisible(World.snoozeEngineer);
+  this.shieldsCruiseGraphic2.setVisible(World.snoozeShields);
 
   if (this.nextTurnReady) {
     this.doNextTurn();
