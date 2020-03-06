@@ -86,8 +86,12 @@ const GameWorld = function (width, height, seed) {
   this.rng.setSeed(this.seed);
 
   this.nameGenerator = new ROT.StringGenerator();
+  this.placeNameGenerate = new ROT.StringGenerator();
   for (let i = 0; i < MiddleNames.length; i++) {
     this.nameGenerator.observe(MiddleNames[i]);
+  }
+  for (let i = 0; i< PlanetNames.length; i++) {
+    this.placeNameGenerate.observe(PlanetNames[i]);
   }
 
   this.sectors = [];
@@ -126,6 +130,8 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
   const minPlanetRadius = 1.1;
   const randomPlanetRadius = 2.432;
 
+  sector.name += ': ' + this.placeNameGenerate.generate();
+
   const numberOfPlanetsToGenerate = minNumberOfPlanets + (~~(rng.getUniform() * randomNumberOfPlanets));
 
   for (let i = 0; i < numberOfPlanetsToGenerate; i++) {
@@ -139,7 +145,7 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
     AddComponent(p2, 'MeshComponent', new MeshComponent());
     AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
     AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
-    AddComponent(p2, 'NameComponent', new NameComponent(this.nameGenerator.generate()));
+    AddComponent(p2, 'NameComponent', new NameComponent(this.placeNameGenerate.generate()));
     AddComponent(p2, 'ClassComponent', new NameComponent('Wasteland Planet'));
     sector.entities.push(p2);
   }
