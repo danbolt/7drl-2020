@@ -12,7 +12,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(playerShip, 'RotationComponent').value));
     AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(playerShip, 'MeshComponent', new MeshComponent());
-    //AddComponent(playerShip, 'PortraitComponent', new NameComponent('gamilon3'));
+    AddComponent(playerShip, 'PortraitComponent', new NameComponent('algo'));
     AddComponent(playerShip, 'AttackStrengthComponent', new AttackStrengthComponent(4));
     AddComponent(playerShip, 'AttackRangeComponent', new AttackRangeComponent(10));
     AddComponent(playerShip, 'PlayerControlComponent', new PlayerControlComponent());
