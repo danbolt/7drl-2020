@@ -35,15 +35,42 @@ Gameplay.prototype.preload = function () {
   //
 };
 Gameplay.prototype.updateTurnOrder = function() {
-  for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
-    const nextEntity = this.nextTurnQueue[i][0];
+  for (let i = 0; i < TURNS_TO_DISPLAY; i++) { 
     const p = this.turnOrderSprites[i];
-    if (HasComponent(nextEntity, 'PortraitComponent')) {
-      p.setFrame(PortraitFrames[GetComponent(nextEntity, 'PortraitComponent').value].value);
-    } else {
-      p.setFrame(63);
+    if (i === 0) {
+      let t = this.add.tween({
+        targets: p,
+        x: p.x - 34,
+        duration: 70
+      });
+
+      continue;
     }
+
+    let t = this.add.tween({
+      targets: p,
+      y: p.y - 28,
+      duration: 60
+    });
   }
+
+  this.time.addEvent({
+    delay: 100,
+    callback: () => {
+      for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
+        const nextEntity = this.nextTurnQueue[i][0];
+        const p = this.turnOrderSprites[i];
+        if (HasComponent(nextEntity, 'PortraitComponent')) {
+          p.setFrame(PortraitFrames[GetComponent(nextEntity, 'PortraitComponent').value].value);
+        } else {
+          p.setFrame(63);
+        }
+        p.x = 0;
+        p.y = i * 28;
+      }
+    }
+  })
+  
 };
 Gameplay.prototype.setupUI = function () {
   const pixelToHullBarRatio = 2.0;

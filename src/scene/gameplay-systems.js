@@ -734,7 +734,7 @@ Gameplay.prototype.doNextTurn = function() {
   // Delay a small amount before starting the next turn
   if (canDoNextTurn)
   this.time.addEvent({
-    delay: 100,
+    delay: 200,
     callback: () => {
       this.nextTurnReady = true;
     }
