@@ -179,6 +179,36 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
   }
 };
 
+const StartingSectorColor = {
+  colorA: 0x002244,
+  colorB: 0x112233,
+  colorC: 0x001133, 
+}
+
+const IscandarSectorColor = {
+  colorA: 0x043444,
+  colorB: 0x11554A,
+  colorC: 0x221166,
+}
+
+const SoutheastSectorColor = {
+  colorA: 0x307200,
+  colorB: 0x113321,
+  colorC: 0x2C3711, 
+}
+
+const NorthwestSectorColor = {
+  colorA: 0x134444,
+  colorB: 0x112121,
+  colorC: 0x001111, 
+}
+
+const OldGodSectorColor = {
+  colorA: 0x441111,
+  colorB: 0x342211,
+  colorC: 0x331102, 
+}
+
 // This must be called multiple times until isGenerated returns true
 GameWorld.prototype.tickGenerate = function (playerEntities) {
   if (this.isGenerated()) {
@@ -193,6 +223,31 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   for (let i = 0; i < playerEntities.length; i++) {
     newSector.entities.push(playerEntities[i]);
   }
+
+  if (!(this.currentPlayerSector.x === (this.width - 1) && (this.currentPlayerSector.y === 0))) {
+    const w = (this.width - 1);
+    const h = (this.height - 1);
+
+    const xInterp = newSector.x / w; // Subtract 1 to cover the entire space
+    const yInterp = newSector.y / h;
+    
+    const lerpXTopA = lerpColor(StartingSectorColor.colorA, NorthwestSectorColor.colorA, xInterp);
+    const lerpXBottomA = lerpColor(SoutheastSectorColor.colorA, IscandarSectorColor.colorA, xInterp);
+    newSector.colorA = lerpColor(lerpXTopA, lerpXBottomA, yInterp);
+
+    const lerpXTopB = lerpColor(StartingSectorColor.colorB, NorthwestSectorColor.colorB, xInterp);
+    const lerpXBottomB = lerpColor(SoutheastSectorColor.colorB, IscandarSectorColor.colorB, xInterp);
+    newSector.colorB = lerpColor(lerpXTopB, lerpXBottomB, yInterp);
+
+    const lerpXTopC = lerpColor(StartingSectorColor.colorC, NorthwestSectorColor.colorC, xInterp);
+    const lerpXBottomC = lerpColor(SoutheastSectorColor.colorC, IscandarSectorColor.colorC, xInterp);
+    newSector.colorC = lerpColor(lerpXTopC, lerpXBottomC, yInterp);
+  } else {
+    newSector.colorA = OldGodSectorColor.colorA;
+    newSector.colorB = OldGodSectorColor.colorB;
+    newSector.colorC = OldGodSectorColor.colorC;
+  }
+
 
   // TODO: populate sector with other entities
   this.generatePlanetEntitiesForSector(newSector, this.rng);

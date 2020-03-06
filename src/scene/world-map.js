@@ -17,9 +17,9 @@ WorldMapScreen.prototype.setup3DBackground = function () {
       vertexShader: vert,
       fragmentShader: frag,
       uniforms: {
-        color1: new THREE.Uniform(new THREE.Color(0x2544bb)),
-        color2: new THREE.Uniform(new THREE.Color(0x113360)),
-        color3: new THREE.Uniform(new THREE.Color(0x011133)),
+        color1: new THREE.Uniform(new THREE.Color(World.getCurrentSector().colorA)),
+        color2: new THREE.Uniform(new THREE.Color(World.getCurrentSector().colorB)),
+        color3: new THREE.Uniform(new THREE.Color(World.getCurrentSector().colorC)),
         scaleNoise: new THREE.Uniform(0.008),
         deRes: new THREE.Uniform(1),
         displayShadow: new THREE.Uniform(0)
