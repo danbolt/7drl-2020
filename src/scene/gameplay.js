@@ -78,6 +78,7 @@ Gameplay.prototype.setupUI = function () {
   // Player ship UI (always on)
   this.playerShipUI = this.add.group();
 
+  this.add.bitmapText(2, 48 - DEFAULT_TEXT_SIZE, 'miniset', 'NEXT', DEFAULT_TEXT_SIZE);
   this.turnOrder = this.add.container();
   this.turnOrder.x = 2;
   this.turnOrder.y = 48;
