@@ -938,7 +938,7 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
       this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
 
       m.position.set(defendingEntityPosition.x + ROT.RNG.getNormal(0, 1.5), 0.5 + (Math.random() * 1.01), defendingEntityPosition.y + ROT.RNG.getNormal(0, 1.5));
-      m.scale.set(0.001, 0.001, 0.001);
+      m.scale.set(0.0001, 0.0001, 0.0001);
       const t = this.add.tween({
         targets: m.scale,
         x: 0.432,
@@ -947,7 +947,8 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
         yoyo: true,
         duration: 50 + (ROT.RNG.getNormal(100, 90)),
         ease: 'Power2',
-        delay: (460 + ~~(Math.random() * 300))
+        delay: (460 + ~~(Math.random() * 300)),
+        onComplete: () => { m.position.set(0, -99999, 0); }
       });
     }
 
