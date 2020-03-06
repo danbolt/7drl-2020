@@ -10,7 +10,7 @@ let Gameplay = function () {
   this.keys = null;
 
   this.gameCameraPos = new Phaser.Math.Vector2();
-  this.gameCameraTheta = Math.PI * 0.25;
+  this.gameCameraTheta = (Math.PI * 0.25) + Math.PI + 1;
   this.gameCameraPhi = Math.PI * 0.25;
   this.gameCamera = null;
 
@@ -420,7 +420,7 @@ Gameplay.prototype.createPortraitAnimations = function() {
   this.anims.create({
     key: 'snooze',
     frames: [ { key: 'cruise_lock_button', frame: 'z1'}, { key: 'cruise_lock_button', frame: 'z2'} ],
-    frameRate: 4,
+    frameRate: 2,
     repeat: -1
   })
 };

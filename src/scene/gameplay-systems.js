@@ -481,7 +481,6 @@ Gameplay.prototype.doNextTurn = function() {
       return;
     }
 
-    canDoNextTurn = false;
     const candidatePick = ~~(ROT.RNG.getUniform() * candidates.value.length);
     this.performAttack(shipEntity, candidates.value[candidatePick], () => { this.nextTurnReady = true; });
   });
@@ -933,6 +932,25 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
     nextLaser.lookAt(targetX, targetY, targetZ);
     const ind = i;
 
+    // Make an explosion for each laser hit
+    for (let i = 0; i < numberOfLasersToFire; i++) {
+      const m = this.explosions[this.currentExplosionIndex];
+      this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
+
+      m.position.set(defendingEntityPosition.x + ROT.RNG.getNormal(0, 1.5), 0.5 + (Math.random() * 1.01), defendingEntityPosition.y + ROT.RNG.getNormal(0, 1.5));
+      m.scale.set(0.001, 0.001, 0.001);
+      const t = this.add.tween({
+        targets: m.scale,
+        x: 0.432,
+        y: 0.432,
+        z: 0.432,
+        yoyo: true,
+        duration: 50 + (ROT.RNG.getNormal(100, 90)),
+        ease: 'Power2',
+        delay: (460 + ~~(Math.random() * 300))
+      });
+    }
+
     let t = this.add.tween({
       targets: nextLaser.position,
       x: targetX,
@@ -948,8 +966,7 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
           this.time.addEvent({
             delay: (221 + ~~(Math.random() * 30)),
             callback: () => {
-              // This callback is yucky!!!!
-              if (!hasRNDDrop) {
+              if (!hasRNDDrop || (!(defenderHealthData.health <= 0))) {
                 onComplete();
                 return;
               }
