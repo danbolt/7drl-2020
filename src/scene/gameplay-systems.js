@@ -481,6 +481,8 @@ Gameplay.prototype.doNextTurn = function() {
       return;
     }
 
+    canDoNextTurn = false;
+
     const candidatePick = ~~(ROT.RNG.getUniform() * candidates.value.length);
     this.performAttack(shipEntity, candidates.value[candidatePick], () => { this.nextTurnReady = true; });
   });
