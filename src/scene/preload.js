@@ -19,7 +19,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'TeamComponent', new TeamComponent('Space Federation'));
     AddComponent(playerShip, 'NameComponent', new NameComponent('Arlo Mk. IV'));
     AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer Class'));
-    AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 2));
+    AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 300));
     entities.push(playerShip);
 
     // Add the skipper
@@ -114,6 +114,12 @@ PreloadScreen.prototype.preload = function() {
   this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
   this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
 
+  //this.load.spritesheet('cruise_lock_button', 'asset/image/cruise_lock_button.png', { frameWidth: 64, frameHeight: 64 });
+  this.load.atlas({
+    key: 'cruise_lock_button',
+    textureURL: 'asset/image/cruise_lock_button.png',
+    atlasURL: 'asset/image/cruise_lock_button.json'
+  });
   this.load.spritesheet('bars', 'asset/image/bars.png', { frameWidth: 128, frameHeight: 8 });
   this.load.spritesheet('window_9slice', 'asset/image/window_9slice.png', { frameWidth: 16, frameHeight: 16 });
   this.load.spritesheet('portraits', 'asset/image/portraits.png', { frameWidth: 32, frameHeight: 32 });
