@@ -334,40 +334,52 @@ Gameplay.prototype.setupUI = function () {
   const shieldSprite = this.add.sprite(192 - 50, 0, 'portraits', 4);
   this.cruiseSprites.add(shieldSprite)
   this.skipperCruiseGraphic = this.add.image(0, 0, 'cruise_lock_button', "awake");
+  this.skipperCruiseGraphic.setInteractive();
+  this.skipperCruiseGraphic.on('pointerdown', () => {
+    World.snoozeSkipper = !World.snoozeSkipper;
+  });
   this.cruiseSprites.add(this.skipperCruiseGraphic);
   let noticeKey = this.add.bitmapText(0 + 13, 8, 'miniset', '[Z]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
   noticeKey.setCenterAlign();
   noticeKey.setOrigin(0.5, 0);
-  noticeKey.tint = 0x000000;
   this.cruiseSprites.add(noticeKey);
   this.gunnerCruiseGraphic = this.add.image(64 - 16, 0, 'cruise_lock_button', "awake");
+  this.gunnerCruiseGraphic.setInteractive();
+  this.gunnerCruiseGraphic.on('pointerdown', () => {
+    World.snoozeGunner = !World.snoozeGunner;
+  });
   this.cruiseSprites.add(this.gunnerCruiseGraphic);
   noticeKey = this.add.bitmapText(64 - 16 + 13, 8, 'miniset', '[X]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
   noticeKey.setCenterAlign();
   noticeKey.setOrigin(0.5, 0);
-  noticeKey.tint = 0x000000;
   this.cruiseSprites.add(noticeKey);
   this.engineerCruiseGraphic = this.add.image(128 - 32, 0, 'cruise_lock_button', "awake");
+  this.engineerCruiseGraphic.setInteractive();
+  this.engineerCruiseGraphic.on('pointerdown', () => {
+    World.snoozeEngineer = !World.snoozeEngineer;
+  });
   this.cruiseSprites.add(this.engineerCruiseGraphic);
   noticeKey = this.add.bitmapText(128 - 32 + 13, 8, 'miniset', '[C]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
   noticeKey.setCenterAlign();
   noticeKey.setOrigin(0.5, 0);
-  noticeKey.tint = 0x000000;
   this.cruiseSprites.add(noticeKey);
   this.shieldsCruiseGraphic = this.add.image(192 - 50, 0, 'cruise_lock_button', "awake");
+  this.shieldsCruiseGraphic.setInteractive();
+  this.shieldsCruiseGraphic.on('pointerdown', () => {
+    World.snoozeShields = !World.snoozeShields;
+  });
   this.cruiseSprites.add(this.shieldsCruiseGraphic);
   noticeKey = this.add.bitmapText(192 - 50 + 13, 8, 'miniset', '[V]', DEFAULT_TEXT_SIZE);
   noticeKey.scaleX = 2;
   noticeKey.scaleY = 2;
   noticeKey.setCenterAlign();
   noticeKey.setOrigin(0.5, 0);
-  noticeKey.tint = 0xFFFFFF;
   this.cruiseSprites.add(noticeKey);
 };
 const PortraitFrames = {};
