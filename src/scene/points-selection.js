@@ -256,6 +256,8 @@ PointsSelectionScreen.prototype.create = function() {
   this.keys.confirm.on('down', confirmSelection);
   this.events.once('shutdown', () => { this.keys.confirm.removeListener('down', confirmSelection); });
 };
+PointsSelectionScreen.prototype.update = function () {
+};
 PointsSelectionScreen.prototype.shutdown = function() {
   this.payload.onComplete(this.resultConfig);
   this.payload = null;

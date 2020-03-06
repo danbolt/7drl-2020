@@ -302,6 +302,29 @@ const RotationTweenComponent = function(value) {
   this.value = value;
 };
 
+const AudioTensionComponent = function(value) {
+  if (value === undefined) {
+    throw new Error('Audio tension value was undefined');
+  }
+
+  if (!Number.isInteger(value)) {
+    throw new Error('Audio tension value was not an integer');
+  }
+
+  if (value < 0) {
+    throw new Error('Audio tension value was negative');
+  }
+
+  if (value >= BGMSounds.length) {
+    throw new Error('Audio tension value too big: ' + value);
+  }
+
+  this.value = value;
+};
+
+const MuteAudioTensionComponent = function() {};
+
+
 const PlanetViewDataComponent = function(radius, rotationSpeed, color1, color2, color3) {
   this.radius = radius;
   this.rotationSpeed = rotationSpeed; 

@@ -97,6 +97,21 @@ const PORTRAIT_FRAMES = {
   'bryce': [0, 1]
 };
 
+const MeshNamesToLoad = [
+  'player_ship',
+  'gamilon_large',
+  'gamilon_medium',
+  'gamilon_medium2',
+  'gamilon_small',
+  'gamilon_mini',
+  'old_god'
+];
+
+const BGMSounds = ['core_beat', 'gamilons2', 'gamilons1', 'gamilons3', 'old_god'];
+const BGMSingletons = [];
+const MAX_VOLUME = 0.53452;
+let TensionIndex = 1;
+
 // taken from
 // https://gist.github.com/nikolas/b0cce2261f1382159b507dd492e1ceef
 const lerpColor = function(a, b, amount) {

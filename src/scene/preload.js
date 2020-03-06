@@ -20,6 +20,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'NameComponent', new NameComponent('Arlo Mk. IV'));
     AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer Class'));
     AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 300));
+    AddComponent(playerShip, 'AudioTensionComponent', new AudioTensionComponent(0));
     entities.push(playerShip);
 
     // Add the skipper
@@ -75,16 +76,6 @@ const populateWithPlayerEntities = function (entities) {
     }
 };
 
-const MeshNamesToLoad = [
-  'player_ship',
-  'gamilon_large',
-  'gamilon_medium',
-  'gamilon_medium2',
-  'gamilon_small',
-  'gamilon_mini',
-  'old_god'
-];
-
 const FirstLoadScreen = function () {
   // body...
 };
@@ -105,6 +96,10 @@ PreloadScreen.prototype.init = function() {
   //
 };
 PreloadScreen.prototype.preload = function() {
+  BGMSounds.forEach((bgmName) => {
+      this.load.audio(bgmName, ['asset/bgm/' + bgmName +'.mp3', 'asset/bgm/' + bgmName + '.wav']);
+  });
+
   MeshNamesToLoad.forEach((meshName) => {
     this.load.binary(meshName, 'asset/model/' + meshName + '.glb');
   });
@@ -128,6 +123,16 @@ PreloadScreen.prototype.preload = function() {
 };
 PreloadScreen.prototype.create = function() {
   this.scene.stop('PreloadScreen', {});
+
+  BGMSounds.forEach((sound) => {
+    const soundObject = this.sound.add(sound, { volume: 0.5, loop: true });
+    soundObject.play();
+    BGMSingletons.push(soundObject);
+  });
+
+  for (let i = 0; i < BGMSingletons.length; i++) {
+    BGMSingletons[i].volume = 0;
+  }
 
   // Create the player entities for worldgen and allocation
   const playerEntities = [];

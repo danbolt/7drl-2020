@@ -118,6 +118,7 @@ Gameplay.prototype.doNextTurn = function() {
     // We're going to have the skipper do "something"
     canDoNextTurn = false;
 
+
     const hasArrivedAtPlanet = HasComponent(shipEntity, 'OrbitNotificationComponent');
     const inOrbitAlready = HasComponent(shipEntity, 'ShipOrbitingPlanetComponent');
     if (inOrbitAlready) {
@@ -287,6 +288,7 @@ Gameplay.prototype.doNextTurn = function() {
 
     canDoNextTurn = false;
 
+
     const gunnerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
 
     const dialogue = {
@@ -342,6 +344,7 @@ Gameplay.prototype.doNextTurn = function() {
     const engineerName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
 
     canDoNextTurn = false;
+
 
     const minMaxSpeedDelta = engine.maxSpeed - engine.minSpeed;
     let numberOfSpeedOptions = 7;
@@ -405,6 +408,7 @@ Gameplay.prototype.doNextTurn = function() {
     const shieldOpName = HasComponent(entity, 'NameComponent') ? GetComponent(entity, 'NameComponent').value : undefined;
 
     canDoNextTurn = false;
+
 
     if (!areShieldsAlreadyRaised) {
         const dialogue = {
@@ -483,6 +487,7 @@ Gameplay.prototype.doNextTurn = function() {
 
     canDoNextTurn = false;
 
+
     const candidatePick = ~~(ROT.RNG.getUniform() * candidates.value.length);
     this.performAttack(shipEntity, candidates.value[candidatePick], () => { this.nextTurnReady = true; });
   });
@@ -538,6 +543,7 @@ Gameplay.prototype.doNextTurn = function() {
       if (foundTarget) {
         skipTween = true;
         canDoNextTurn = false;
+
         const message = GetComponent(entity, 'MessageOnceInAttackRangeComponent').value;
         RemoveComponent(entity, 'MessageOnceInAttackRangeComponent');
         const dialogue = {
@@ -589,6 +595,7 @@ Gameplay.prototype.doNextTurn = function() {
       }
       AddComponent(entity, 'PositionTweenComponent', new PositionTweenComponent(tween));
       canDoNextTurn = false;
+
     }
   });
 
@@ -611,6 +618,7 @@ Gameplay.prototype.doNextTurn = function() {
     rotation.value = (nextRotationToPlanet + (Math.PI * 0.5));
 
     canDoNextTurn = false;
+
     let tween = this.add.tween({
       targets: mesh.mesh.position,
       x: Math.max(0, Math.min(position.x, SECTOR_WIDTH)),
@@ -778,6 +786,15 @@ Gameplay.prototype.doNextTurn = function() {
     }
   });
 
+  let maxVolumeFound = -1;
+  ViewEntities(this.entities, ['AudioTensionComponent'], ['MuteAudioTensionComponent'], (entity, audio) => {
+    maxVolumeFound = Math.max(audio.value, maxVolumeFound);
+  });
+  for (let i = 0; i < BGMSingletons.length; i++) {
+    const highEnough = i <= maxVolumeFound;
+    BGMSingletons[i].volume = Phaser.Math.Interpolation.SmoothStep(0.1, BGMSingletons[i].volume, highEnough ? MAX_VOLUME : 0);
+  }
+
   // Set entities that don't exist anymore to undefined
   for (let i = 0; i < this.entities.length; i++) {
     if (this.entities[i] === undefined) {
@@ -922,7 +939,28 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
 
   const attackingEntityPosition = GetComponent(attackingEntity, 'PositionComponent');
   const defendingEntityPosition = GetComponent(defendingEntity, 'PositionComponent');
-  const numberOfLasersToFire = Math.ceil(damage * 2);
+  const numberOfLasersToFire = Math.max(1, Math.ceil(attackPower * 2));
+  const numberOfExplosions = Math.ceil(damage * 2);
+  // Make an explosion for each laser hit
+  for (let i = 0; i < numberOfExplosions; i++) {
+    const m = this.explosions[this.currentExplosionIndex];
+    this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
+
+    m.position.set(defendingEntityPosition.x + ROT.RNG.getNormal(0, 1.5), 0.5 + (Math.random() * 1.01), defendingEntityPosition.y + ROT.RNG.getNormal(0, 1.5));
+    m.scale.set(0.0001, 0.0001, 0.0001);
+    const t = this.add.tween({
+      targets: m.scale,
+      x: 0.432,
+      y: 0.432,
+      z: 0.432,
+      yoyo: true,
+      duration: 50 + (ROT.RNG.getNormal(100, 90)),
+      ease: 'Power2',
+      delay: (460 + ~~(Math.random() * 300)),
+      onComplete: () => { m.position.set(0, -99999, 0); }
+    });
+  }
+
   for (let i = 0; i < numberOfLasersToFire; i++) {
     const nextLaser = this.lasers[this.currentLaserIndex];
     this.currentLaserIndex = (this.currentLaserIndex + 1) % this.lasers.length;
@@ -933,26 +971,6 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
     const targetZ = defendingEntityPosition.y + ((Math.random() * 2) - 1.0);
     nextLaser.lookAt(targetX, targetY, targetZ);
     const ind = i;
-
-    // Make an explosion for each laser hit
-    for (let i = 0; i < numberOfLasersToFire; i++) {
-      const m = this.explosions[this.currentExplosionIndex];
-      this.currentExplosionIndex = (this.currentExplosionIndex + 1) % this.explosions.length;
-
-      m.position.set(defendingEntityPosition.x + ROT.RNG.getNormal(0, 1.5), 0.5 + (Math.random() * 1.01), defendingEntityPosition.y + ROT.RNG.getNormal(0, 1.5));
-      m.scale.set(0.0001, 0.0001, 0.0001);
-      const t = this.add.tween({
-        targets: m.scale,
-        x: 0.432,
-        y: 0.432,
-        z: 0.432,
-        yoyo: true,
-        duration: 50 + (ROT.RNG.getNormal(100, 90)),
-        ease: 'Power2',
-        delay: (460 + ~~(Math.random() * 300)),
-        onComplete: () => { m.position.set(0, -99999, 0); }
-      });
-    }
 
     let t = this.add.tween({
       targets: nextLaser.position,
