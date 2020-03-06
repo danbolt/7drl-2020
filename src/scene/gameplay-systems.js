@@ -81,13 +81,7 @@ Gameplay.prototype.doNextTurn = function() {
   // Set this to false if you don't want to immediately do the next turn (eg: player input, cinematic, etc.)
   let canDoNextTurn = true;
 
-  let nextTurn = this.ROTScheduler.next();
-  let nextEntityCandidate = this.entities[nextTurn.indComponent.value];
-  while (nextEntityCandidate === undefined) {
-    nextTurn = this.ROTScheduler.next();
-    nextEntityCandidate = this.entities[nextTurn.indComponent.value];
-  }
-  const nextEntity = [nextEntityCandidate];
+  const nextEntity = this.nextTurnQueue.shift();
 
   // Deplete supplies
   ViewEntities(nextEntity, ['HullHealthComponent', 'SuppliesComponent'], [], (entity, hullHealth, supplies) => {

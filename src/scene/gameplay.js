@@ -17,6 +17,7 @@ let Gameplay = function () {
   this.entities = [];
   this.ROTScheduler = null;
   this.nextTurnReady = true;
+  this.nextTurnQueue = [];
 
   this.currentlyPointingEntity = null;
 
@@ -33,11 +34,35 @@ Gameplay.prototype.init = function (payload) {
 Gameplay.prototype.preload = function () {
   //
 };
+Gameplay.prototype.updateTurnOrder = function() {
+  for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
+    const nextEntity = this.nextTurnQueue[i][0];
+    const p = this.turnOrderSprites[i];
+    if (HasComponent(nextEntity, 'PortraitComponent')) {
+      p.setFrame(PortraitFrames[GetComponent(nextEntity, 'PortraitComponent').value].value);
+    } else {
+      p.setFrame(63);
+    }
+  }
+};
 Gameplay.prototype.setupUI = function () {
   const pixelToHullBarRatio = 2.0;
 
   // Player ship UI (always on)
   this.playerShipUI = this.add.group();
+
+  this.turnOrder = this.add.container();
+  this.turnOrder.x = 2;
+  this.turnOrder.y = 48;
+  this.turnOrder.scaleX = 0.75;
+  this.turnOrder.scaleY = 0.75;
+  this.turnOrderSprites = [];
+  for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
+    const p = this.add.sprite(0, i * 28, 'portraits', 0);
+    p.setOrigin(0);
+    this.turnOrderSprites.push(p);
+    this.turnOrder.add(p);
+  }
 
   // TODO: make a better compass
   const compassInfo = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT - (DEFAULT_TEXT_SIZE * 2) - 2, 'miniset', '. . N . .', DEFAULT_TEXT_SIZE);
@@ -447,6 +472,18 @@ Gameplay.prototype.create = function () {
       getSpeed: () => { return dex.value; }
     }, true);
   });
+  this.nextTurnQueue = [];
+  for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
+    let nextTurn = this.ROTScheduler.next();
+    let nextEntityCandidate = this.entities[nextTurn.indComponent.value];
+    while (nextEntityCandidate === undefined) {
+      nextTurn = this.ROTScheduler.next();
+      nextEntityCandidate = this.entities[nextTurn.indComponent.value];
+    }
+    const nextEntity = [nextEntityCandidate];
+    this.nextTurnQueue.push(nextEntity);
+  }
+
   this.nextTurnReady = true;
 
   this.lockPanning = false;
@@ -511,6 +548,17 @@ Gameplay.prototype.update = function () {
 
   if (this.nextTurnReady) {
     this.doNextTurn();
+
+    // push a new to the queue
+    let nextTurn = this.ROTScheduler.next();
+    let nextEntityCandidate = this.entities[nextTurn.indComponent.value];
+    while (nextEntityCandidate === undefined) {
+      nextTurn = this.ROTScheduler.next();
+      nextEntityCandidate = this.entities[nextTurn.indComponent.value];
+    }
+    const nextEntity = [nextEntityCandidate];
+    this.nextTurnQueue.push(nextEntity);
+    this.updateTurnOrder();
   }
 };
 Gameplay.prototype.shutdown = function () {

@@ -102,7 +102,6 @@ WorldMapScreen.prototype.create = function() {
   for (let x = 0; x < World.width; x++) {
     for (let y = 0; y < World.height; y++) {
       const sector = World.sectors[x][y];
-      console.log(sector);
       const sectorMaterial = new THREE.ShaderMaterial({
         vertexShader: vert,
         fragmentShader: frag,

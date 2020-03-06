@@ -12,6 +12,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(playerShip, 'RotationComponent').value));
     AddComponent(playerShip, 'DexterityComponent', new DexterityComponent(200 + (Math.random() * 50)));
     AddComponent(playerShip, 'MeshComponent', new MeshComponent());
+    //AddComponent(playerShip, 'PortraitComponent', new NameComponent('gamilon3'));
     AddComponent(playerShip, 'AttackStrengthComponent', new AttackStrengthComponent(4));
     AddComponent(playerShip, 'AttackRangeComponent', new AttackRangeComponent(10));
     AddComponent(playerShip, 'PlayerControlComponent', new PlayerControlComponent());
@@ -31,6 +32,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(skipper, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(skipper, 'NameComponent', new NameComponent('bryce'));
+    AddComponent(skipper, 'PortraitComponent', new NameComponent('bryce'));
     entities.push(skipper);
 
     // Add the gunner    
@@ -41,6 +43,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(gunner, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(gunner, 'NameComponent', new NameComponent('jenny'));
+    AddComponent(gunner, 'PortraitComponent', new NameComponent('jenny'));
     entities.push(gunner);
 
     // Add the engineer
@@ -52,6 +55,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(engineer, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(engineer, 'NameComponent', new NameComponent('ella'));
+    AddComponent(engineer, 'PortraitComponent', new NameComponent('ella'));
     entities.push(engineer);
 
     // Add the shields operator
@@ -62,6 +66,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(shieldOp, 'PlayerControlComponent', new PlayerControlComponent());
     AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
     AddComponent(shieldOp, 'NameComponent', new NameComponent('paska'));
+    AddComponent(shieldOp, 'PortraitComponent', new NameComponent('paska'));
     entities.push(shieldOp);
 
     if (HasComponent(playerShip, 'ShieldsComponent')) {
@@ -168,6 +173,10 @@ PreloadScreen.prototype.create = function() {
       while (!(World.isGenerated())) {
         World.tickGenerate(playerEntities);
       }
+
+      // remove me
+      this.scene.start('Gameplay', World.getCurrentSector());
+      return;
 
       this.scene.start('WorldMapScreen', {
         previousPlayerSector: {x: -2, y: -1}
