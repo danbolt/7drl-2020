@@ -100,6 +100,10 @@ PreloadScreen.prototype.preload = function() {
       this.load.audio(bgmName, ['asset/bgm/' + bgmName +'.mp3', 'asset/bgm/' + bgmName + '.wav']);
   });
 
+  SFXSoundNames.forEach((sfxName) => {
+    this.load.audio(sfxName, ['asset/sfx/' + sfxName + '.wav']);
+  });
+
   MeshNamesToLoad.forEach((meshName) => {
     this.load.binary(meshName, 'asset/model/' + meshName + '.glb');
   });
@@ -129,6 +133,12 @@ PreloadScreen.prototype.create = function() {
     soundObject.play();
     BGMSingletons.push(soundObject);
   });
+
+  for (let i = 0; i < SFXSoundNames.length; i++) {
+    const soundName = SFXSoundNames[i];
+    const sfxObject = this.sound.add(soundName, { volume: 0.21, loop: false });
+    SFXSingletons[soundName] = sfxObject;
+  }
 
   for (let i = 0; i < BGMSingletons.length; i++) {
     BGMSingletons[i].volume = 0;

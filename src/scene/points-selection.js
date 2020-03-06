@@ -156,19 +156,24 @@ PointsSelectionScreen.prototype.create = function() {
   const moveSelectionDown = () => {
     currentSelectionIndex = Math.min(options.length - 1, currentSelectionIndex + 1);
     refreshOptions();
+
+    SFXSingletons['click'].play();
   };
   this.keys.down.on('down', moveSelectionDown);
   this.events.once('shutdown', () => { this.keys.down.removeListener('down', moveSelectionDown); });
   const moveSelectionUp = () => {
     currentSelectionIndex = Math.max(0, currentSelectionIndex - 1);
     refreshOptions();
+
+    SFXSingletons['click'].play();
   };
   this.keys.up.on('down', moveSelectionUp);
   this.events.once('shutdown', () => { this.keys.up.removeListener('down', moveSelectionUp); });
 
   const spendPoint = () => {
     if (pointsToSpend <= 0) {
-      // TODO: play a bad beep
+      SFXSingletons['click'].play();
+
       return;
     }
 
@@ -176,18 +181,22 @@ PointsSelectionScreen.prototype.create = function() {
     pointsToSpend--;
     currentOption.toAdd++;
     refreshOptions();
+
+    SFXSingletons['select_y'].play();
   };
   this.keys.right.on('down', spendPoint);
   this.events.once('shutdown', () => { this.keys.right.removeListener('down', spendPoint); });
   const takePointBack = () => {
     const currentOption = options[currentSelectionIndex];
     if (currentOption.toAdd <= 0) {
-      // TODO: play a bad beep
+      SFXSingletons['click'].play();
       return;
     }
     pointsToSpend++;
     currentOption.toAdd--;
     refreshOptions();
+
+    SFXSingletons['select_n'].play();
   };
   this.keys.left.on('down', takePointBack);
   this.events.once('shutdown', () => { this.keys.left.removeListener('down', takePointBack); });
@@ -222,7 +231,6 @@ PointsSelectionScreen.prototype.create = function() {
             this.time.addEvent({
               delay: 32,
               callback: () => {
-
                 textsToKill.forEach((text) => {
                   text.destroy();
                 });

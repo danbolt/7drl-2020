@@ -196,6 +196,7 @@ Gameplay.prototype.doNextTurn = function() {
             }
           ]
         };
+        SFXSingletons['get_bonus'].play();
         this.showDialogue(notifySuppliesDialogue);
 
         // TODO: play a congratulatory sound effect
@@ -300,6 +301,7 @@ Gameplay.prototype.doNextTurn = function() {
           
           keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
           action: () => {
+            SFXSingletons['select_n'].play();
             this.nextTurnReady = true;
           }
         }
@@ -316,6 +318,7 @@ Gameplay.prototype.doNextTurn = function() {
         portrait: gunnerName,
         keyCode: ENEMY_SELECTION_KEYCODES[i],
         action: () => {
+          SFXSingletons['select_y'].play();
           this.performAttack(shipEntity, candidate, () => { this.nextTurnReady = true; });
         }
       });
@@ -363,6 +366,7 @@ Gameplay.prototype.doNextTurn = function() {
           text: '(0) Keep the same speed',
           keyCode: Phaser.Input.Keyboard.KeyCodes.ZERO,
           action: () => {
+            SFXSingletons['select_n'].play();
             this.nextTurnReady = true;
           }
         }
@@ -384,6 +388,7 @@ Gameplay.prototype.doNextTurn = function() {
         text: speedConfigName,
         keyCode: key,
         action: () => {
+          SFXSingletons['select_y'].play();
           const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
           velocity.value = speedValue;
           this.nextTurnReady = true;
@@ -545,7 +550,6 @@ Gameplay.prototype.doNextTurn = function() {
         canDoNextTurn = false;
 
         const message = GetComponent(entity, 'MessageOnceInAttackRangeComponent').value;
-        RemoveComponent(entity, 'MessageOnceInAttackRangeComponent');
         const dialogue = {
           question: message,
           portrait: (HasComponent(entity, 'PortraitComponent') ? GetComponent(entity, 'PortraitComponent').value : undefined),
@@ -565,6 +569,12 @@ Gameplay.prototype.doNextTurn = function() {
           ]
         };
         this.showDialogue(dialogue);
+
+        const sound = GetComponent(entity, 'MessageOnceInAttackRangeComponent').sound;
+        if (sound) {
+          SFXSingletons[sound].play();
+        }
+        RemoveComponent(entity, 'MessageOnceInAttackRangeComponent');
       }
     }
 
@@ -777,6 +787,7 @@ Gameplay.prototype.doNextTurn = function() {
     const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'GAME OVER', DEFAULT_TEXT_SIZE * 2);
     questionText.setCenterAlign();
     questionText.setOrigin(0.5);
+    SFXSingletons['game_over'].play();
 
     if (HasComponent(entity, 'SuppliesComponent')) {
       const supplies = GetComponent(entity, 'SuppliesComponent');
@@ -911,10 +922,21 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     texts.push(optionText);
 
     let key = this.input.keyboard.addKey(option.keyCode);
-    key.once('down', () => { removeAllUIAndEvents(); option.action(); });
+    key.once('down', () => {
+      if (option.keyCode === Phaser.Input.Keyboard.KeyCodes.Y) {
+        SFXSingletons['select_y'].play();
+      } else if (option.keyCode === Phaser.Input.Keyboard.KeyCodes.N) {
+        SFXSingletons['select_n'].play();
+      }
+      removeAllUIAndEvents(); option.action();
+    });
     keys.push(key);
   }
 };
+
+const LaserSounds = ['laser0', 'laser1', 'laser2'];
+const HitSounds = ['hit0', 'hit1', 'hit2'];
+const ExplosionSounds = ['explosion0', 'explosion1', 'explosion2'];
 
 Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, onComplete) {
   const hasRNDDrop = (HasComponent(defendingEntity, 'RNDBountyComponent') && HasComponent(attackingEntity, 'PlayerControlComponent'));
@@ -956,7 +978,8 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
       yoyo: true,
       duration: 50 + (ROT.RNG.getNormal(100, 90)),
       ease: 'Power2',
-      delay: (460 + ~~(Math.random() * 300)),
+      delay: (460 + ~~(Math.random() * 500)),
+      onStart: () => { SFXSingletons[HitSounds[~~(Math.random() * HitSounds.length)]].play(); },
       onComplete: () => { m.position.set(0, -99999, 0); }
     });
   }
@@ -980,7 +1003,12 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
       duration: (400),
       delay: (i * 152),
       easing: Phaser.Math.Easing.Cubic.Out,
-      onStart: () => { nextLaser.visible = true; },
+      onStart: () => {
+        if (ind % 2 === 0) {
+          SFXSingletons[LaserSounds[~~(LaserSounds.length * Math.random())]].play();
+        }
+        nextLaser.visible = true;
+      },
       onComplete: () => {
         nextLaser.visible = false;
         if (ind === (numberOfLasersToFire - 1)) {
@@ -1029,6 +1057,9 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
                   }
                 }]
               };
+
+
+              SFXSingletons['get_bonus'].play();
               this.showDialogue(congratsDialog);
             }
           });
@@ -1063,6 +1094,7 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
         mesh.mesh.visible = false;
       }
     }
+    SFXSingletons[ExplosionSounds[~~(Math.random() * ExplosionSounds.length)]].play();
     AddComponent(defendingEntity, 'DestroyedComponent', new DestroyedComponent());
   }
 };

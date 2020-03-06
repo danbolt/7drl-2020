@@ -25,7 +25,7 @@ const dummyEnemiesPopulate = function (entities, rng, names) {
     entities.push(e);
 
     if (i === 0) {
-      AddComponent(e, 'MessageOnceInAttackRangeComponent', new MessageOnceInAttackRangeComponent('Hey, you\'re not allowed in here!'));
+      AddComponent(e, 'MessageOnceInAttackRangeComponent', new MessageOnceInAttackRangeComponent('Hey, you\'re not allowed in here!', 'gamilon_talk3'));
     }
 
     let skipper = NewEntity();

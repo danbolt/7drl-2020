@@ -112,6 +112,31 @@ const BGMSingletons = [];
 const MAX_VOLUME = 0.53452;
 let TensionIndex = 1;
 
+const SFXSoundNames = [
+  "cdrom",
+  "click",
+  "explosion0",
+  "explosion1",
+  "explosion2",
+  "game_over",
+  "gamilon_talk0",
+  "gamilon_talk1",
+  "gamilon_talk2",
+  "gamilon_talk3",
+  "get_bonus",
+  "hit0",
+  "hit1",
+  "hit2",
+  "laser0",
+  "laser1",
+  "laser2",
+  "select_n",
+  "select_y",
+  "title_fanfare",
+  "win_game",
+];
+const SFXSingletons = {};
+
 // taken from
 // https://gist.github.com/nikolas/b0cce2261f1382159b507dd492e1ceef
 const lerpColor = function(a, b, amount) {

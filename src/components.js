@@ -226,12 +226,13 @@ const ShipOrbitingPlanetComponent = function(value) {
   this.planetIndex = value;
 };
 
-const MessageOnceInAttackRangeComponent = function(value) {
+const MessageOnceInAttackRangeComponent = function(value, soundKey) {
   if (value === undefined) {
     throw new Error('Message value was undefined');
   }
 
   this.value = value;
+  this.sound = soundKey;
 };
 
 const RNDBountyComponent = function(value) {
