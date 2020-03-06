@@ -90,6 +90,43 @@ WorldMapScreen.prototype.create = function() {
     const lineGeom  = new THREE.BufferGeometry().setFromPoints( [new THREE.Vector3(0, 0, i * CellHeight), new THREE.Vector3(GridSize, 0, i * CellHeight)] );
     const pathLine = new THREE.Line(lineGeom, PATH_LINE_COLOR);
     this.three.scene.add(pathLine);
+  } 
+
+  const vertexInfp = this.cache.shader.get('planet_vertex');
+  const vert = vertexInfp.fragmentSrc;
+
+  const fragmentInfo = this.cache.shader.get('planet_fragment');
+  const frag = fragmentInfo.fragmentSrc;
+
+  const sectorColorGeom = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
+  for (let x = 0; x < World.width; x++) {
+    for (let y = 0; y < World.height; y++) {
+      const sector = World.sectors[x][y];
+      console.log(sector);
+      const sectorMaterial = new THREE.ShaderMaterial({
+        vertexShader: vert,
+        fragmentShader: frag,
+        uniforms: {
+          color1: new THREE.Uniform(new THREE.Color(lerpColor(sector.colorA, 0x000000, 0.1735))),
+          color2: new THREE.Uniform(new THREE.Color(lerpColor(sector.colorB, 0x000000, 0.1735))),
+          color3: new THREE.Uniform(new THREE.Color(lerpColor(sector.colorC, 0x000000, 0.1735))),
+          scaleNoise: new THREE.Uniform(2.0),
+          deRes: new THREE.Uniform(1),
+          displayShadow: new THREE.Uniform(0)
+        }
+      });
+      const sectorSquare = new THREE.Mesh(sectorColorGeom, sectorMaterial);
+      sectorSquare.rotation.x = Math.PI * -0.5;
+      sectorSquare.position.set(x * CellWidth + (CellWidth * 0.5), -0.1, y * CellHeight + (CellHeight * 0.5));
+      this.three.scene.add(sectorSquare);
+
+      let t = this.add.tween({
+        targets: sectorSquare.rotation,
+        duration: 10000,
+        z: Math.PI * 2,
+        repeat: -1
+      })
+    }
   }
 
   this.three.camera.position.set(GridSize * 0.5, 2.6, GridSize * 0.5 + 3.7);
@@ -116,12 +153,6 @@ WorldMapScreen.prototype.create = function() {
       })
     }
   });
-
-  const vertexInfp = this.cache.shader.get('planet_vertex');
-  const vert = vertexInfp.fragmentSrc;
-
-  const fragmentInfo = this.cache.shader.get('planet_fragment');
-  const frag = fragmentInfo.fragmentSrc;
 
   const planetGeom = new THREE.IcosahedronBufferGeometry(1.8, 2);
   const earthMaterial = new THREE.ShaderMaterial({

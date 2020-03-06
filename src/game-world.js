@@ -224,7 +224,13 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     newSector.entities.push(playerEntities[i]);
   }
 
-  if (!(this.currentPlayerSector.x === (this.width - 1) && (this.currentPlayerSector.y === 0))) {
+  if (newSector.x === (this.width - 1) && (newSector.y === 0)) {
+    newSector.colorA = OldGodSectorColor.colorA;
+    newSector.colorB = OldGodSectorColor.colorB;
+    newSector.colorC = OldGodSectorColor.colorC;
+
+    newSector.name = 'Jathul';
+  } else {
     const w = (this.width - 1);
     const h = (this.height - 1);
 
@@ -242,10 +248,6 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     const lerpXTopC = lerpColor(StartingSectorColor.colorC, NorthwestSectorColor.colorC, xInterp);
     const lerpXBottomC = lerpColor(SoutheastSectorColor.colorC, IscandarSectorColor.colorC, xInterp);
     newSector.colorC = lerpColor(lerpXTopC, lerpXBottomC, yInterp);
-  } else {
-    newSector.colorA = OldGodSectorColor.colorA;
-    newSector.colorB = OldGodSectorColor.colorB;
-    newSector.colorC = OldGodSectorColor.colorC;
   }
 
 

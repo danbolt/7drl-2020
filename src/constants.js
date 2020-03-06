@@ -27,7 +27,7 @@ const SHIELDS_MAT = new THREE.MeshBasicMaterial({ side: THREE.BackSide, color: 0
 
 const PATH_LINE_COLOR = new THREE.LineBasicMaterial({
   color: 0xaaaaaa,
-  linewidth: 4
+  linewidth: 8
 });
 const STARS_COLOR = new THREE.PointsMaterial( { color: 0xFFFFFF, size: 1 } );
 const NUMBER_OF_STARS = 200;
