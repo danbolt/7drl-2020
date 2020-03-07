@@ -149,36 +149,45 @@ TitleScreen.prototype.preload = function() {
   //
 };
 TitleScreen.prototype.create = function() {
+  this.cameras.cameras[0].fadeIn(400);
+
   this.add.bitmapText(32, 32, 'miniset', 'title screen press space to start', DEFAULT_TEXT_SIZE);
 
   this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
-    // Create the player entities for worldgen and allocation
-    const playerEntities = [];
-    populateWithPlayerEntities(playerEntities);
-    const playerBasePoints = new DefaultPlayerPointsConfiguration();
-    playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities, true);
+    this.cameras.cameras[0].fadeOut(500);
 
-    this.scene.stop('FirstLoadScreen');
-    this.scene.start('PointsSelectionScreen', {
-      pointsToSpend: 3,
-      existingConfig: playerBasePoints,
-      playerEntities: playerEntities,
-      shipIndex: 0,
-      onComplete: (newConfigWithAllocatedPoints) => {
-        // Combine the player-allocated points with the base points.
-        const basePointsPlusExtra = CombineTwoPointsConfigurations(playerBasePoints, newConfigWithAllocatedPoints);
-        basePointsPlusExtra.applyToShipEntity(playerEntities[0], playerEntities, true);
+    this.time.addEvent({
+      delay: 800,
+      callback: () => {
+        // Create the player entities for worldgen and allocation
+        const playerEntities = [];
+        populateWithPlayerEntities(playerEntities);
+        const playerBasePoints = new DefaultPlayerPointsConfiguration();
+        playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities, true);
 
-        // Generate a new campaign
-        World = new GameWorld(5, 5, Math.random());
-        ROT.RNG.setSeed(World.seed); // We have to set ROT's seed to ours to get deterministic markov names :/
-        World.currentConfig = basePointsPlusExtra;
-        while (!(World.isGenerated())) {
-          World.tickGenerate(playerEntities);
-        }
+        this.scene.stop('FirstLoadScreen');
+        this.scene.start('PointsSelectionScreen', {
+          pointsToSpend: 3,
+          existingConfig: playerBasePoints,
+          playerEntities: playerEntities,
+          shipIndex: 0,
+          onComplete: (newConfigWithAllocatedPoints) => {
+            // Combine the player-allocated points with the base points.
+            const basePointsPlusExtra = CombineTwoPointsConfigurations(playerBasePoints, newConfigWithAllocatedPoints);
+            basePointsPlusExtra.applyToShipEntity(playerEntities[0], playerEntities, true);
 
-        this.scene.start('WorldMapScreen', {
-          previousPlayerSector: {x: -2, y: -1}
+            // Generate a new campaign
+            World = new GameWorld(5, 5, Math.random());
+            ROT.RNG.setSeed(World.seed); // We have to set ROT's seed to ours to get deterministic markov names :/
+            World.currentConfig = basePointsPlusExtra;
+            while (!(World.isGenerated())) {
+              World.tickGenerate(playerEntities);
+            }
+
+            this.scene.start('WorldMapScreen', {
+              previousPlayerSector: {x: -2, y: -1}
+            });
+          }
         });
       }
     });
