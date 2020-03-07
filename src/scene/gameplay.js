@@ -538,7 +538,7 @@ Gameplay.prototype.create = function () {
 
   if (!madeSnoozeCallbacks) {
     madeSnoozeCallbacks = true;
-    
+
     const flipSkipper = () => { World.snoozeSkipper = !(World.snoozeSkipper); };
     this.keys.cruiseSkipper.on('down', flipSkipper);
     this.events.once('shutdown', () => { this.keys.cruiseSkipper.removeListener(flipSkipper); });
@@ -583,8 +583,7 @@ Gameplay.prototype.update = function () {
   this.shieldsCruiseGraphic2.setVisible(World.snoozeShields);
 
   if (this.nextTurnReady) {
-    this.doNextTurn();
-
+    const nextEntity = this.nextTurnQueue.shift();
     // push a new to the queue
     let nextTurn = this.ROTScheduler.next();
     let nextEntityCandidate = this.entities[nextTurn.indComponent.value];
@@ -592,9 +591,11 @@ Gameplay.prototype.update = function () {
       nextTurn = this.ROTScheduler.next();
       nextEntityCandidate = this.entities[nextTurn.indComponent.value];
     }
-    const nextEntity = [nextEntityCandidate];
-    this.nextTurnQueue.push(nextEntity);
+    const newGeneratedTurn = [nextEntityCandidate];
+    this.nextTurnQueue.push(newGeneratedTurn);
     this.updateTurnOrder();
+
+    this.doNextTurn(nextEntity);
   }
 };
 Gameplay.prototype.shutdown = function () {

@@ -23,7 +23,7 @@ PopcornEnemyPointsConfiguration.prototype.constructor = PopcornEnemyPointsConfig
 const WeakEnemyPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
-  this.hullHealthPoints = 13;
+  this.hullHealthPoints = 16;
   this.shieldPoints = 0;
   this.shipDexPoints = 2;
 
@@ -46,7 +46,7 @@ WeakEnemyPointsConfiguration.prototype.constructor = WeakEnemyPointsConfiguratio
 const BattleshipEnemyPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
-  this.hullHealthPoints = 20;
+  this.hullHealthPoints = 40;
   this.shieldPoints = 0;
   this.shipDexPoints = 6;
 
@@ -68,7 +68,7 @@ BattleshipEnemyPointsConfiguration.prototype.constructor = BattleshipEnemyPoints
 const AltBattleshipEnemyPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
-  this.hullHealthPoints = 11;
+  this.hullHealthPoints = 38;
   this.shieldPoints = 4;
   this.shipDexPoints = 6;
 

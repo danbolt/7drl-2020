@@ -105,7 +105,7 @@ const CombineTwoPointsConfigurations = function(configA, configB) {
 const DefaultPlayerPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
-  this.hullHealthPoints = 10;
+  this.hullHealthPoints = 100;
   this.shieldPoints = 6;
   this.shipDexPoints = 6;
 
@@ -117,7 +117,7 @@ const DefaultPlayerPointsConfiguration = function() {
   this.gunnerDexPoints = 5;
 
   this.engineerDexPoints = 4;
-  this.engineMaxSpeedPoints = 9;
+  this.engineMaxSpeedPoints = 15;
 
   this.shieldOperatorDexPoints = 4;
 };

@@ -1,5 +1,5 @@
 
-Gameplay.prototype.doNextTurn = function() {
+Gameplay.prototype.doNextTurn = function(nextEntity) {
   if (this.nextTurnReady === false) {
     throw new Error('Unable to perform a new turn yet!');
   }
@@ -80,8 +80,6 @@ Gameplay.prototype.doNextTurn = function() {
 
   // Set this to false if you don't want to immediately do the next turn (eg: player input, cinematic, etc.)
   let canDoNextTurn = true;
-
-  const nextEntity = this.nextTurnQueue.shift();
 
   // Deplete supplies
   ViewEntities(nextEntity, ['HullHealthComponent', 'SuppliesComponent'], [], (entity, hullHealth, supplies) => {
@@ -734,7 +732,7 @@ Gameplay.prototype.doNextTurn = function() {
   // Delay a small amount before starting the next turn
   if (canDoNextTurn)
   this.time.addEvent({
-    delay: 200,
+    delay: 100,
     callback: () => {
       this.nextTurnReady = true;
     }
