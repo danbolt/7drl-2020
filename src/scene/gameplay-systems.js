@@ -560,7 +560,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
             }
           ]
         };
-        this.showDialogue(dialogue, true);
+        this.showDialogue(dialogue);
 
         const sound = GetComponent(entity, 'MessageOnceInAttackRangeComponent').sound;
         if (sound) {

@@ -125,7 +125,7 @@ const generateDroneEnemy = function (entities, rng, names, x, y, message, messag
 };
 
 const generateOldGodEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
-  generateEnemy(entities, rng, names, x, y, new OldGodEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false, 'Mortals! You have disgraced this scared place!\nLeave now!', 'gamilon_talk0');
+  generateEnemy(entities, rng, names, x, y, new OldGodEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false, 'Mortals! You have disgraced this scared place!\nLeave now!', 'gamilon_talk0', 10);
 };
 
 const GameWorld = function (width, height, seed) {
@@ -369,8 +369,21 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     
     // If we're in the far northeast, generate the old god
 
-    // TODO: generate some safety planets; this is a tough boi
-    generateOldGodEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.4, SECTOR_HEIGHT * 0.4);
+    const names = ['Einhader', 'Ignis', 'Lutha', 'Yarrow', 'Ren', 'Zeal'];
+    for (let i = 0; i < 6; i++) {
+      const refuge = NewEntity();
+      AddComponent(refuge, 'PositionComponent', new PositionComponent(SECTOR_WIDTH * 0.5 + ( 60 * Math.cos((i / 6) * Math.PI * 2)), SECTOR_HEIGHT * 0.5 + ( 60 * Math.sin((i / 6) * Math.PI * 2))));
+      AddComponent(refuge, 'PlanetViewDataComponent', new PlanetViewDataComponent(5.4, 0.987, lerpColor(0xAA0000, 0x444444, (i / 6)), lerpColor(0x444444, 0x000000, (i / 6)), lerpColor(0x373737, 0x111111, (i / 6))));
+      AddComponent(refuge, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(12.0));
+      AddComponent(refuge, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(90));
+      AddComponent(refuge, 'MeshComponent', new MeshComponent());
+      AddComponent(refuge, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+      AddComponent(refuge, 'ECSIndexComponent', new ECSIndexComponent(newSector.entities.length));
+      AddComponent(refuge, 'NameComponent', new NameComponent(names[i]));
+      AddComponent(refuge, 'ClassComponent', new NameComponent('Ancient World'));
+      newSector.entities.push(refuge);
+    }
+    generateOldGodEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
 
   } else if ((newSector.x < 2) && (newSector.y > 2)) {
     
