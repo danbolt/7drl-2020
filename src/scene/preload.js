@@ -81,19 +81,6 @@ const populateWithPlayerEntities = function (entities) {
     }
 };
 
-const FirstLoadScreen = function () {
-  // body...
-};
-FirstLoadScreen.prototype.init = function() {
-  //
-};
-FirstLoadScreen.prototype.preload = function() {
-  this.load.image('preload', 'asset/image/preload.png');
-};
-FirstLoadScreen.prototype.create = function() {
-  this.add.image(~~(GAME_WIDTH * 0.5), ~~(GAME_HEIGHT * 0.5), 'preload');
-};
-
 const PreloadScreen = function () {
   // body...
 };
@@ -114,11 +101,11 @@ PreloadScreen.prototype.preload = function() {
   });
 
   this.load.bitmapFont('miniset', 'asset/font/MiniSet.png', 'asset/font/MiniSet.fnt');
+  this.load.bitmapFont('century', 'asset/font/century_0.png', 'asset/font/century.fnt');
 
   this.load.glsl('planet_vertex', 'asset/shader/planet_vertex.glsl');
   this.load.glsl('planet_fragment', 'asset/shader/planet_fragment.glsl');
 
-  //this.load.spritesheet('cruise_lock_button', 'asset/image/cruise_lock_button.png', { frameWidth: 64, frameHeight: 64 });
   this.load.atlas({
     key: 'cruise_lock_button',
     textureURL: 'asset/image/cruise_lock_button.png',
@@ -131,17 +118,17 @@ PreloadScreen.prototype.preload = function() {
   this.load.spritesheet(DEFAULT_IMAGE_MAP, 'asset/image/fromJesse.png', { frameWidth: 16, frameHeight: 16 });
 };
 PreloadScreen.prototype.create = function() {
-  this.scene.stop('PreloadScreen', {});
+  this.scene.stop('FirstLoadScreen', {});
 
   BGMSounds.forEach((sound) => {
-    const soundObject = this.sound.add(sound, { volume: 0.5, loop: true });
+    const soundObject = this.sound.add(sound, { volume: MAX_VOLUME, loop: true });
     soundObject.play();
     BGMSingletons.push(soundObject);
   });
 
   for (let i = 0; i < SFXSoundNames.length; i++) {
     const soundName = SFXSoundNames[i];
-    const sfxObject = this.sound.add(soundName, { volume: 0.21, loop: false });
+    const sfxObject = this.sound.add(soundName, { volume: 0.15, loop: false });
     SFXSingletons[soundName] = sfxObject;
   }
 
@@ -149,36 +136,7 @@ PreloadScreen.prototype.create = function() {
     BGMSingletons[i].volume = 0;
   }
 
-  // Create the player entities for worldgen and allocation
-  const playerEntities = [];
-  populateWithPlayerEntities(playerEntities);
-  const playerBasePoints = new DefaultPlayerPointsConfiguration();
-  playerBasePoints.applyToShipEntity(playerEntities[0], playerEntities, true);
-
-  this.scene.stop('FirstLoadScreen');
-  this.scene.start('PointsSelectionScreen', {
-    pointsToSpend: 3,
-    existingConfig: playerBasePoints,
-    playerEntities: playerEntities,
-    shipIndex: 0,
-    onComplete: (newConfigWithAllocatedPoints) => {
-      // Combine the player-allocated points with the base points.
-      const basePointsPlusExtra = CombineTwoPointsConfigurations(playerBasePoints, newConfigWithAllocatedPoints);
-      basePointsPlusExtra.applyToShipEntity(playerEntities[0], playerEntities, true);
-
-      // Generate a new campaign
-      World = new GameWorld(5, 5, Math.random());
-      ROT.RNG.setSeed(World.seed); // We have to set ROT's seed to ours to get deterministic markov names :/
-      World.currentConfig = basePointsPlusExtra;
-      while (!(World.isGenerated())) {
-        World.tickGenerate(playerEntities);
-      }
-
-      this.scene.start('WorldMapScreen', {
-        previousPlayerSector: {x: -2, y: -1}
-      });
-    }
-  });
+  this.scene.start('SplashScreen');
 
   // Add the shutdown event
   this.events.once('shutdown', this.shutdown, this);

@@ -111,7 +111,7 @@ const MeshNamesToLoad = [
 
 const BGMSounds = ['core_beat', 'gamilons2', 'gamilons1', 'gamilons3', 'old_god'];
 const BGMSingletons = [];
-const MAX_VOLUME = 0.53452;
+const MAX_VOLUME = 0.21;
 let TensionIndex = 1;
 
 const SFXSoundNames = [
