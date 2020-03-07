@@ -58,7 +58,7 @@ const BattleshipEnemyPointsConfiguration = function() {
   this.gunnerDexPoints = 3;
 
   this.engineerDexPoints = 3;
-  this.engineMaxSpeedPoints = 8;
+  this.engineMaxSpeedPoints = 7;
 
   this.shieldOperatorDexPoints = 0;
 };
@@ -68,7 +68,7 @@ BattleshipEnemyPointsConfiguration.prototype.constructor = BattleshipEnemyPoints
 const AltBattleshipEnemyPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
-  this.hullHealthPoints = 10;
+  this.hullHealthPoints = 11;
   this.shieldPoints = 4;
   this.shipDexPoints = 6;
 
@@ -86,4 +86,49 @@ const AltBattleshipEnemyPointsConfiguration = function() {
 };
 AltBattleshipEnemyPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
 AltBattleshipEnemyPointsConfiguration.prototype.constructor = AltBattleshipEnemyPointsConfiguration;
+
+
+const DreadnoughtEnemyPointsConfiguration = function() {
+  PointsConfiguration.call(this);
+
+  this.hullHealthPoints = 30;
+  this.shieldPoints = 8;
+  this.shipDexPoints = 6;
+
+  this.atkStrengthPoints = 7;
+  this.atkRangePoints = 17;
+
+  this.skipperDexPoints = 5;
+
+  this.gunnerDexPoints = 6;
+
+  this.engineerDexPoints = 5;
+  this.engineMaxSpeedPoints = 9;
+
+  this.shieldOperatorDexPoints = 7;
+};
+DreadnoughtEnemyPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
+DreadnoughtEnemyPointsConfiguration.prototype.constructor = DreadnoughtEnemyPointsConfiguration;
+
+const OldGodEnemyPointsConfiguration = function() {
+  PointsConfiguration.call(this);
+
+  this.hullHealthPoints = 35;
+  this.shieldPoints = 0;
+  this.shipDexPoints = 10;
+
+  this.atkStrengthPoints = 10;
+  this.atkRangePoints = 9999;
+
+  this.skipperDexPoints = 10;
+
+  this.gunnerDexPoints = 2;
+
+  this.engineerDexPoints = 1;
+  this.engineMaxSpeedPoints = 5;
+
+  this.shieldOperatorDexPoints = 0;
+};
+OldGodEnemyPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
+OldGodEnemyPointsConfiguration.prototype.constructor = OldGodEnemyPointsConfiguration;
 

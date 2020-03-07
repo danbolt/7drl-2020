@@ -95,14 +95,25 @@ const generateWeakEnemy = function (entities, rng, names, x, y) {
 const generateBattleshipEnemy = function (entities, rng, names, x, y) {
   const portraitToPick = 'gamilon3';
 
-  generateEnemy(entities, rng, names, x, y, new BattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_NAME_PREFIX, BATTLESHIP_CLASS_NAME, 'gamilon_medium', 1, 2.3);
+  generateEnemy(entities, rng, names, x, y, new BattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_NAME_PREFIX, BATTLESHIP_CLASS_NAME, 'gamilon_medium', 2, 2.3);
 };
 
 const generateAltBattleshipEnemy = function (entities, rng, names, x, y) {
   const portraitToPick = 'gamilon2';
 
-  generateEnemy(entities, rng, names, x, y, new AltBattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_ALT_NAME_PREFIX, BATTLESHIP_ALT_CLASS_NAME, 'gamilon_medium2', 1, 2, true);
+  generateEnemy(entities, rng, names, x, y, new AltBattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_ALT_NAME_PREFIX, BATTLESHIP_ALT_CLASS_NAME, 'gamilon_medium2', 2, 2, true);
 };
+
+const generateDreadnoughtEnemy = function (entities, rng, names, x, y) {
+  const portraitToPick = 'gamilon1';
+
+  generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, DREADNOUGHT_NAME_PREFIX, DREADNOUGHT_CLASS_NAME, 'gamilon_large', 3, 3.4, true);
+};
+
+const generateOldGodEnemy = function (entities, rng, names, x, y) {
+  generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false);
+};
+
 
 // TODO: real enemies plz
 const dummyEnemiesPopulate = function (entities, rng, names) {
@@ -369,7 +380,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.2);
     const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.2);
 
-    generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+    //generateOldGodEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
     generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX * 1.4, posY * 1.4);
   }
 
