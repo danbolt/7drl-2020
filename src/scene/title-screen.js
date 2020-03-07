@@ -69,7 +69,7 @@ SplashScreen.prototype.create = function() {
 
   this.cameras.cameras[0].fadeIn(400);
 
-  const text = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.83, 'century', 'https://danbolt.itch.io', 32);
+  const text = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.83, 'century', 'danbolt.itch.io', 32);
   text.tint = 0x343434;
   text.setOrigin(0.5, 0.5);
   text.setCenterAlign();
