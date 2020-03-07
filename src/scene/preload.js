@@ -157,7 +157,7 @@ PreloadScreen.prototype.create = function() {
 
   this.scene.stop('FirstLoadScreen');
   this.scene.start('PointsSelectionScreen', {
-    pointsToSpend: 8,
+    pointsToSpend: 3,
     existingConfig: playerBasePoints,
     playerEntities: playerEntities,
     shipIndex: 0,
