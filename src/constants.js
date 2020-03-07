@@ -61,9 +61,8 @@ const ENEMY_SELECTION_KEYCODES = [
   Phaser.Input.Keyboard.KeyCodes.P
 ];
 
-// TODO: data-drive this
-const SHIELD_BUFFER_RATIO = 0.6;
-const SHIELD_DEPLETE_RATE = 1.0;
+const SHIELD_BUFFER_RATIO = 0.087;
+const SHIELD_DEPLETE_RATE = 0.09;
 const SHIELD_REGEN_RATE = 3.0;
 
 const PLANET_REPAIR_RATIO = 0.1;
@@ -163,5 +162,7 @@ const ENEMY_FACTION_NAME = ENEMY_PEOPLE_NAME + ' Empire';
 
 const POPCORN_CLASS_NAME = 'Frontier Frigate';
 const POPCORN_NAME_PREFIX = 'LX3R';
+const WEAK_CLASS_NAME = 'Cruiser';
+const WEAK_NAME_PREFIX = 'CN14';
 
 

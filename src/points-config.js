@@ -116,7 +116,7 @@ const DefaultPlayerPointsConfiguration = function() {
   this.engineerDexPoints = 4;
   this.engineMaxSpeedPoints = 9;
 
-  this.shieldOperatorDexPoints = 3;
+  this.shieldOperatorDexPoints = 4;
 };
 DefaultPlayerPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
 DefaultPlayerPointsConfiguration.prototype.constructor = DefaultPlayerPointsConfiguration;

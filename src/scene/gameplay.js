@@ -247,6 +247,7 @@ Gameplay.prototype.setupUI = function () {
   const targetHullBarBacking = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 0), DEFAULT_IMAGE_MAP, 28);
   targetHullBarBacking.setTint(0x251111);
   targetHullBarBacking.setOrigin(0);
+  targetHullBarBacking.displayWidth = 96;
   targetHullBarBacking.displayHeight = DEFAULT_TEXT_SIZE;
   this.targetShipUI.add(targetHullBarBacking);
   const targetHullBar = this.add.image(2, 2 + (DEFAULT_TEXT_SIZE * 0), DEFAULT_IMAGE_MAP, 28);
@@ -267,8 +268,8 @@ Gameplay.prototype.setupUI = function () {
   const updateTargetHullBar = (target) => {
     if (HasComponent(target, 'HullHealthComponent')) {
       const health = GetComponent(target, 'HullHealthComponent');
-      targetHullBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
-      targetHullBar.displayWidth = health.health * pixelToHullBarRatio;
+      targetHullBarBacking.displayWidth = 96;
+      targetHullBar.displayWidth = health.health / health.maxHealth * 96;
     } else {
       targetHullBarBacking.setVisible(false);
       targetHullBar.setVisible(false);
@@ -276,8 +277,8 @@ Gameplay.prototype.setupUI = function () {
 
     if (HasComponent(target, 'ShieldsComponent')) {
       const health = GetComponent(target, 'ShieldsComponent');
-      targetShieldsBarBacking.displayWidth = health.maxHealth * pixelToHullBarRatio;
-      targetShieldsBar.displayWidth = health.health * pixelToHullBarRatio;
+      targetShieldsBarBacking.displayWidth = 96;
+      targetShieldsBar.displayWidth = health.health / health.maxHealth * 96;
     } else {
       targetShieldsBarBacking.setVisible(false);
       targetShieldsBar.setVisible(false);
