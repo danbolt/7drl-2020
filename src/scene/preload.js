@@ -100,6 +100,8 @@ PreloadScreen.prototype.preload = function() {
     this.load.binary(meshName, 'asset/model/' + meshName + '.glb');
   });
 
+  this.load.image('splash_bg', 'asset/image/splash_bg.png');
+
   this.load.bitmapFont('miniset', 'asset/font/MiniSet.png', 'asset/font/MiniSet.fnt');
   this.load.bitmapFont('century', 'asset/font/century_0.png', 'asset/font/century.fnt');
 
