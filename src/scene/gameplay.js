@@ -1,3 +1,5 @@
+let madeSnoozeCallbacks = false;
+
 let Gameplay = function () {
   this.three = {
     scene: null,
@@ -534,18 +536,22 @@ Gameplay.prototype.create = function () {
   });
   tweenCameraToPlayer(400);
 
-  const flipSkipper = () => { World.snoozeSkipper = !(World.snoozeSkipper); };
-  this.keys.cruiseSkipper.on('down', flipSkipper);
-  this.events.once('shutdown', () => { this.keys.cruiseSkipper.removeListener(flipSkipper); });
-  const flipGunner = () => { World.snoozeGunner = !(World.snoozeGunner); };
-  this.keys.cruiseGunner.on('down', flipGunner);
-  this.events.once('shutdown', () => { this.keys.cruiseGunner.removeListener(flipGunner); });
-  const flipEngineer = () => { World.snoozeEngineer = !(World.snoozeEngineer); };
-  this.keys.cruiseEngineer.on('down', flipEngineer);
-  this.events.once('shutdown', () => { this.keys.cruiseEngineer.removeListener(flipEngineer); });
-  const flipShields = () => { World.snoozeShields = !(World.snoozeShields); };
-  this.keys.cruiseShields.on('down', flipShields);
-  this.events.once('shutdown', () => { this.keys.cruiseShields.removeListener(flipShields); });
+  if (!madeSnoozeCallbacks) {
+    madeSnoozeCallbacks = true;
+    
+    const flipSkipper = () => { World.snoozeSkipper = !(World.snoozeSkipper); };
+    this.keys.cruiseSkipper.on('down', flipSkipper);
+    this.events.once('shutdown', () => { this.keys.cruiseSkipper.removeListener(flipSkipper); });
+    const flipGunner = () => { World.snoozeGunner = !(World.snoozeGunner); };
+    this.keys.cruiseGunner.on('down', flipGunner);
+    this.events.once('shutdown', () => { this.keys.cruiseGunner.removeListener(flipGunner); });
+    const flipEngineer = () => { World.snoozeEngineer = !(World.snoozeEngineer); };
+    this.keys.cruiseEngineer.on('down', flipEngineer);
+    this.events.once('shutdown', () => { this.keys.cruiseEngineer.removeListener(flipEngineer); });
+    const flipShields = () => { World.snoozeShields = !(World.snoozeShields); };
+    this.keys.cruiseShields.on('down', flipShields);
+    this.events.once('shutdown', () => { this.keys.cruiseShields.removeListener(flipShields); });
+  }
 
 
   this.setupUI();
