@@ -279,8 +279,8 @@ TitleScreen.prototype.create = function() {
               World.tickGenerate(playerEntities);
             }
 
-            World.currentPlayerSector.x = World.width - 1;
-            World.currentPlayerSector.y = 0;
+            //World.currentPlayerSector.x = 0;
+            //World.currentPlayerSector.y = 0;
 
             this.scene.start('WorldMapScreen', {
               previousPlayerSector: {x: -2, y: -1}
