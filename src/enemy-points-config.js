@@ -132,3 +132,25 @@ const OldGodEnemyPointsConfiguration = function() {
 OldGodEnemyPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
 OldGodEnemyPointsConfiguration.prototype.constructor = OldGodEnemyPointsConfiguration;
 
+const DroneEnemyPointsConfiguration = function() {
+  PointsConfiguration.call(this);
+
+  this.hullHealthPoints = 5;
+  this.shieldPoints = 0;
+  this.shipDexPoints = 15;
+
+  this.atkStrengthPoints = 5;
+  this.atkRangePoints = 3.4;
+
+  this.skipperDexPoints = 30;
+
+  this.gunnerDexPoints = 3;
+
+  this.engineerDexPoints = 1;
+  this.engineMaxSpeedPoints = 3;
+
+  this.shieldOperatorDexPoints = 0;
+};
+DroneEnemyPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
+DroneEnemyPointsConfiguration.prototype.constructor = DroneEnemyPointsConfiguration;
+

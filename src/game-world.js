@@ -110,8 +110,14 @@ const generateDreadnoughtEnemy = function (entities, rng, names, x, y) {
   generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, DREADNOUGHT_NAME_PREFIX, DREADNOUGHT_CLASS_NAME, 'gamilon_large', 3, 3.4, true);
 };
 
+const generateDroneEnemy = function (entities, rng, names, x, y) {
+  const portraitToPick = 'gamilon_mini';
+
+  generateEnemy(entities, rng, names, x, y, new DroneEnemyPointsConfiguration(), portraitToPick, 'Lost ' + ENEMY_PEOPLE_NAME + ' Machines', DRONE_NAME_PREFIX, DRONE_CLASS_NAME, 'gamilon_mini', 1, 0.5, false);
+};
+
 const generateOldGodEnemy = function (entities, rng, names, x, y) {
-  generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false);
+  generateEnemy(entities, rng, names, x, y, new OldGodEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false);
 };
 
 
@@ -246,7 +252,11 @@ GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
   const minPlanetRadius = 1.1;
   const randomPlanetRadius = 2.432;
 
-  sector.name += ': ' + this.placeNameGenerate.generate();
+  if (sector.x === (this.width - 1) && (sector.y === 0)) {
+    //
+  } else {
+    sector.name += ': ' + this.placeNameGenerate.generate();
+  }
 
   const numberOfPlanetsToGenerate = minNumberOfPlanets + (~~(rng.getUniform() * randomNumberOfPlanets));
 
@@ -373,14 +383,18 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   }
 
 
-  // TODO: populate sector with other entities
+  // TODO: populate sector with more interesting planets
   this.generatePlanetEntitiesForSector(newSector, this.rng);
+
+  // Generate enemy types based on euclidian distance
+  const tileDistanceFromStart = Math.abs(this.currentPlayerSector.x - newSector.x) + Math.abs(this.currentPlayerSector.y - newSector.y);
+  console.log(newSector.name + ": " + tileDistanceFromStart);
 
   for (let i = 0; i < 5; i++) {
     const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.2);
     const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.2);
 
-    //generateOldGodEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+    //generateDroneEnemy(newSector.entities, this.rng, this.placeNameGenerate, posX, posY);
     generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX * 1.4, posY * 1.4);
   }
 

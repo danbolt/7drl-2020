@@ -136,6 +136,7 @@ const SFXSoundNames = [
   "select_y",
   "title_fanfare",
   "win_game",
+  "startup"
 ];
 const SFXSingletons = {};
 
@@ -170,5 +171,7 @@ const BATTLESHIP_ALT_CLASS_NAME = 'Invictus Battleship';
 const BATTLESHIP_ALT_NAME_PREFIX = 'LRS';
 const DREADNOUGHT_CLASS_NAME = 'Dreadnought';
 const DREADNOUGHT_NAME_PREFIX = 'NVXX';
+const DRONE_CLASS_NAME = 'Autonomous Cannon';
+const DRONE_NAME_PREFIX = 'K1';
 
 
