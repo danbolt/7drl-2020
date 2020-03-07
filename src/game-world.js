@@ -240,6 +240,12 @@ const OldGodSectorColor = {
   colorC: 0x331102, 
 }
 
+const GamilonHomeworldSectorColor = {
+  colorA: 0x110000,
+  colorB: 0x222222,
+  colorC: 0x440000, 
+}
+
 // This must be called multiple times until isGenerated returns true
 GameWorld.prototype.tickGenerate = function (playerEntities) {
   if (this.isGenerated()) {
@@ -496,6 +502,47 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
       }
       generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
+    }
+  }
+
+  // Generate the gamilon homeworld if we're near iscandar
+  if ((newSector.x === (this.iscandarSector.x - 1)) && (newSector.y === (this.iscandarSector.y - 1)) ) {
+    const gamHomeworld = NewEntity();
+    AddComponent(gamHomeworld, 'PositionComponent', new PositionComponent(SECTOR_WIDTH - 10, SECTOR_HEIGHT - 10));
+    AddComponent(gamHomeworld, 'PlanetViewDataComponent', new PlanetViewDataComponent(5, 0.3435, 0x110011, 0x871F00, 0x553D00));
+    AddComponent(gamHomeworld, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(8.0));
+    AddComponent(gamHomeworld, 'MeshComponent', new MeshComponent());
+    AddComponent(gamHomeworld, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+    AddComponent(gamHomeworld, 'ECSIndexComponent', new ECSIndexComponent(newSector.entities.length));
+    AddComponent(gamHomeworld, 'NameComponent', new NameComponent('Lohrahgus'));
+    AddComponent(gamHomeworld, 'ClassComponent', new NameComponent(ENEMY_PEOPLE_NAME + ' Homeworld'));
+    AddComponent(gamHomeworld, 'TeamComponent', new TeamComponent(ENEMY_FACTION_NAME));
+    newSector.entities.push(gamHomeworld);
+
+    newSector.colorA = GamilonHomeworldSectorColor.colorA;
+    newSector.colorB = GamilonHomeworldSectorColor.colorB;
+    newSector.colorC = GamilonHomeworldSectorColor.colorC;
+
+    generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH - 18, SECTOR_HEIGHT - 50, undefined, undefined, 3);
+    generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH - 50, SECTOR_HEIGHT - 18, undefined, undefined, 3);
+    generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH - 18, SECTOR_HEIGHT - 18, 'Federation scum!\nYou won\'t go any further!', 'gamilon_talk0', 8);
+
+    for (let i = 0; i < 10; i++) {
+      const planetRadius = this.rng.getNormal(3.4, 1.0);
+      const generatedX = SECTOR_WIDTH - ((SECTOR_WIDTH * this.rng.getNormal(0.7, 0.3)) * Math.cos(i / 10 * Math.PI * 0.4 + (Math.PI * 0.05)));
+      const generatedY = SECTOR_HEIGHT - ((SECTOR_HEIGHT * this.rng.getNormal(0.7, 0.3)) * Math.sin(i / 10 * Math.PI * 0.4 + (Math.PI * 0.05)));
+
+      let p2 = NewEntity();
+      AddComponent(p2, 'PositionComponent', new PositionComponent(generatedX, generatedY));
+      AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius, 0.3435, 0x44111, 0xDD331F, 0xeeaa88));
+      AddComponent(p2, 'MeshComponent', new MeshComponent());
+      AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+      AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(newSector.entities.length));
+      AddComponent(p2, 'NameComponent', new NameComponent(this.placeNameGenerate.generate()));
+      AddComponent(p2, 'ClassComponent', new NameComponent('Power Refinery'));
+      AddComponent(p2, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(planetRadius + 6.0));
+      AddComponent(p2, 'TeamComponent', new TeamComponent(ENEMY_FACTION_NAME));
+      newSector.entities.push(p2);
     }
   }
 

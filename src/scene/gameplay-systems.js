@@ -181,7 +181,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
                   callback: () => {
                     const supplies = GetComponent(shipEntity, 'SuppliesComponent');
                     supplies.value = Math.min(supplies.value + suppliesBonusQuantity, supplies.max);
-                    this.showDialogue(departDialogue);
+                    this.showDialogue(departDialogue, true);
                   }
                 })
               }
@@ -189,11 +189,11 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
           ]
         };
         SFXSingletons['get_bonus'].play();
-        this.showDialogue(notifySuppliesDialogue);
+        this.showDialogue(notifySuppliesDialogue, true);
 
         // TODO: play a congratulatory sound effect
       } else {
-        this.showDialogue(departDialogue);
+        this.showDialogue(departDialogue, true);
       }
     } else if (hasArrivedAtPlanet) {
       RemoveComponent(shipEntity, 'OrbitNotificationComponent');
@@ -231,7 +231,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
           ]
         };
 
-        this.showDialogue(dialogue);
+        this.showDialogue(dialogue, true);
     } else {
       // Normal skipper check
       const dialogue = {
@@ -258,7 +258,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
         ]
       };
 
-      this.showDialogue(dialogue);
+      this.showDialogue(dialogue, true);
     }
   });
 
@@ -316,7 +316,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
       });
     });
 
-    this.showDialogue(dialogue);
+    this.showDialogue(dialogue, true);
   });
 
   ViewEntities(nextEntity, ['EngineerComponent', 'PlayerControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, playerControl, shipReference, engine) => {
@@ -387,7 +387,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
         }
       });
     }
-    this.showDialogue(dialogue);
+    this.showDialogue(dialogue, true);
   });
 
   ViewEntities(nextEntity, ['ShieldOperatorComponent', 'PlayerControlComponent', 'ShipReferenceComponent'], [], (entity, shieldOperator, playerControl, shipReference) => {
@@ -430,7 +430,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
           ]
         };
     
-        this.showDialogue(dialogue);
+        this.showDialogue(dialogue, true);
       } else {
         const dialogue = {
           question: 'Should we lower the shields to let them recharge?',
@@ -454,7 +454,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
           ]
         };
     
-        this.showDialogue(dialogue);
+        this.showDialogue(dialogue, true);
       }
   });
 
@@ -560,7 +560,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
             }
           ]
         };
-        this.showDialogue(dialogue);
+        this.showDialogue(dialogue, true);
 
         const sound = GetComponent(entity, 'MessageOnceInAttackRangeComponent').sound;
         if (sound) {
@@ -858,7 +858,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
   }
 };
 
-Gameplay.prototype.showDialogue = function(dialogue) {
+Gameplay.prototype.showDialogue = function(dialogue, hideBG) {
   let texts = [];
   let keys = [];
 
@@ -871,10 +871,14 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     easing: Phaser.Math.Easing.Cubic.In
   });
 
-  if (this.keys.hide_box) {
-    this.keys.hide_box.once('down', () => { backing.visible = false; }); 
-    const hideText = this.add.bitmapText(4,  GAME_HEIGHT  * 0.4 + ((dialogue.options.length - 2) * DEFAULT_TEXT_SIZE) - (DEFAULT_TEXT_SIZE + 4) + (dialogue.portrait ? 16 : 0), 'miniset', 'Press [shift] to hide this box', DEFAULT_TEXT_SIZE);
-    backing.add(hideText);
+  if (!hideBG) {
+    if (this.keys.hide_box) {
+      this.keys.hide_box.once('down', () => { backing.visible = false; }); 
+      const hideText = this.add.bitmapText(4,  GAME_HEIGHT  * 0.4 + ((dialogue.options.length - 2) * DEFAULT_TEXT_SIZE) - (DEFAULT_TEXT_SIZE + 4) + (dialogue.portrait ? 16 : 0), 'miniset', 'Press [shift] to hide this box', DEFAULT_TEXT_SIZE);
+      backing.add(hideText);
+    }
+  } else {
+    backing.visible = false;
   }
 
   let portrait = null;
@@ -1058,7 +1062,7 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
 
 
               SFXSingletons['get_bonus'].play();
-              this.showDialogue(congratsDialog);
+              this.showDialogue(congratsDialog, true);
             }
           });
         }

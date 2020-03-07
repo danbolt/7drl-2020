@@ -138,7 +138,7 @@ PreloadScreen.prototype.create = function() {
     BGMSingletons[i].volume = 0;
   }
 
-  this.scene.start('SplashScreen');
+  this.scene.start('TitleScreen');
 
   // Add the shutdown event
   this.events.once('shutdown', this.shutdown, this);
