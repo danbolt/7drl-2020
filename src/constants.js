@@ -164,5 +164,11 @@ const POPCORN_CLASS_NAME = 'Frontier Frigate';
 const POPCORN_NAME_PREFIX = 'LX3R';
 const WEAK_CLASS_NAME = 'High-Powered Destroyer';
 const WEAK_NAME_PREFIX = 'CN14';
+const BATTLESHIP_CLASS_NAME = 'General Battleship';
+const BATTLESHIP_NAME_PREFIX = 'LRG';
+const BATTLESHIP_ALT_CLASS_NAME = 'Invictus Battleship';
+const BATTLESHIP_ALT_NAME_PREFIX = 'LRS';
+const DREADNOUGHT_CLASS_NAME = 'Dreadnought';
+const DREADNOUGHT_NAME_PREFIX = 'NVXX';
 
 

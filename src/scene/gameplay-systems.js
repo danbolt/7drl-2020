@@ -642,7 +642,7 @@ Gameplay.prototype.doNextTurn = function() {
   });
 
   // Ensure AI entities don't go off the sector
-  ViewEntities(nextEntity, ['PositionComponent', 'RotationComponent'], ['PlayerControlComponent'], (entity, position, rotation) => {
+  ViewEntities(nextEntity, ['PositionComponent', 'RotationComponent', 'ForwardVelocityComponent'], ['PlayerControlComponent'], (entity, position, rotation, velocity) => {
     const err = 0.001;
 
     let flipped = false;

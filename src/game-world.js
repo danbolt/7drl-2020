@@ -1,4 +1,4 @@
-const generateEnemy = function (entities, rng, names, x, y, config, portraitToPick, faction, namePrefix, className, modelName, audioTension, mass) {
+const generateEnemy = function (entities, rng, names, x, y, config, portraitToPick, faction, namePrefix, className, modelName, audioTension, mass, shields) {
   let e = NewEntity();
 
   AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
@@ -20,6 +20,10 @@ const generateEnemy = function (entities, rng, names, x, y, config, portraitToPi
   AddComponent(e, 'MassComponent', new MassComponent(mass));
   AddComponent(e, 'AudioTensionComponent', new AudioTensionComponent(audioTension));
   entities.push(e);
+
+  if (shields !== undefined) {
+    AddComponent(e, 'ShieldsComponent', new HullHealthComponent(1)); 
+  }
 
   let skipper = NewEntity();
   AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
@@ -49,6 +53,29 @@ const generateEnemy = function (entities, rng, names, x, y, config, portraitToPi
   AddComponent(engineer, 'PortraitComponent', new NameComponent(portraitToPick));
   entities.push(engineer);
 
+
+  if (shields !== undefined) {
+
+    let shieldOp = NewEntity();
+    AddComponent(shieldOp, 'ShieldOperatorComponent', new ShieldOperatorComponent());
+    AddComponent(shieldOp, 'DexterityComponent', new DexterityComponent(50));
+    AddComponent(shieldOp, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 4));
+    AddComponent(shieldOp, 'AIControlComponent', new AIControlComponent());
+    AddComponent(shieldOp, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(shieldOp, 'NameComponent', new NameComponent(portraitToPick));
+    AddComponent(shieldOp, 'PortraitComponent', new NameComponent(portraitToPick));
+    entities.push(shieldOp);
+
+    let shieldMesh = NewEntity();
+    AddComponent(shieldMesh, 'MeshComponent', new MeshComponent());
+    AddComponent(shieldMesh, 'MeshPositionMatchComponent', new MeshPositionMatchComponent(entities.length - 5));
+    AddComponent(shieldMesh, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+    AddComponent(shieldMesh, 'RequestShield3DAppearanceComponent', new RequestShield3DAppearanceComponent(mass * 2));
+    AddComponent(shieldMesh, 'PlanetViewDataComponent', new PlanetViewDataComponent(0.0, 0.3435, 0x44111, 0x775500, 0xeeaa88)); // dummy planet data for that spin
+    AddComponent(shieldMesh, 'VisibleIfShieldsUpComponent', new VisibleIfShieldsUpComponent(entities.length - 5));
+    entities.push(shieldMesh);
+  }
+
   config.applyToShipEntity(e, entities, true);
 };
 
@@ -62,7 +89,19 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
 const generateWeakEnemy = function (entities, rng, names, x, y) {
   const portraitToPick = (rng.getUniform() < 0.5) ? 'gamilon3' : 'gamilon2';
 
-  generateEnemy(entities, rng, names, x, y, new WeakEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, WEAK_NAME_PREFIX, WEAK_CLASS_NAME, 'gamilon_small', 1, 1.075);
+  generateEnemy(entities, rng, names, x, y, new WeakEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, WEAK_NAME_PREFIX, WEAK_CLASS_NAME, 'gamilon_small', 1, 1.65);
+};
+
+const generateBattleshipEnemy = function (entities, rng, names, x, y) {
+  const portraitToPick = 'gamilon3';
+
+  generateEnemy(entities, rng, names, x, y, new BattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_NAME_PREFIX, BATTLESHIP_CLASS_NAME, 'gamilon_medium', 1, 2.3);
+};
+
+const generateAltBattleshipEnemy = function (entities, rng, names, x, y) {
+  const portraitToPick = 'gamilon2';
+
+  generateEnemy(entities, rng, names, x, y, new AltBattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_ALT_NAME_PREFIX, BATTLESHIP_ALT_CLASS_NAME, 'gamilon_medium2', 1, 2, true);
 };
 
 // TODO: real enemies plz
@@ -327,10 +366,10 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   this.generatePlanetEntitiesForSector(newSector, this.rng);
 
   for (let i = 0; i < 5; i++) {
-    const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.1);
-    const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.1);
+    const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.2);
+    const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.2);
 
-    generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+    generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
     generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX * 1.4, posY * 1.4);
   }
 

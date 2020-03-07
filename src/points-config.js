@@ -26,6 +26,9 @@ PointsConfiguration.prototype.applyToShipEntity = function(shipEntity, entities,
   }
   if (HasComponent(shipEntity, 'ShieldsComponent')) {
     GetComponent(shipEntity, 'ShieldsComponent').maxHealth = (this.shieldPoints * SHIELDS_PER_POINT);
+    if (fillHealth) {
+      GetComponent(shipEntity, 'ShieldsComponent').health = GetComponent(shipEntity, 'ShieldsComponent').maxHealth;
+    }
   }
   GetComponent(shipEntity, 'DexterityComponent').value = (this.shipDexPoints * SHIP_DEX_PER_POINT);
   GetComponent(shipEntity, 'AttackStrengthComponent').value = (this.atkStrengthPoints * ATK_STRENGTH_PER_POINT);
