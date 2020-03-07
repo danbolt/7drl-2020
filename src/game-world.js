@@ -2,6 +2,8 @@
 
 const generatePopcornEnemy = function (entities, rng, names, x, y) {
   let e = NewEntity();
+  const portraitToPick = (rng.getUniform() < 0.1444) ? 'gamilon1' : 'gamilon2';
+  
   AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
   AddComponent(e, 'HullHealthComponent', new HullHealthComponent(1));
   AddComponent(e, 'PositionComponent', new PositionComponent(x, y));
@@ -10,7 +12,7 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
   AddComponent(e, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(e, 'RotationComponent').value));
   AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
   AddComponent(e, 'MeshComponent', new MeshComponent());
-  AddComponent(e, 'PortraitComponent', new NameComponent('gamilon2'));
+  AddComponent(e, 'PortraitComponent', new NameComponent(portraitToPick));
   AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
   AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(30));
   AddComponent(e, 'AIControlComponent', new AIControlComponent());
@@ -28,7 +30,7 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
   AddComponent(skipper, 'DexterityComponent', new DexterityComponent(2));
   AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
   AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(skipper, 'PortraitComponent', new NameComponent('gamilon2'));
+  AddComponent(skipper, 'PortraitComponent', new NameComponent(portraitToPick));
   entities.push(skipper);
 
   let gunner = NewEntity();
@@ -37,7 +39,7 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
   AddComponent(gunner, 'DexterityComponent', new DexterityComponent(2));
   AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
   AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(gunner, 'PortraitComponent', new NameComponent('gamilon2'));
+  AddComponent(gunner, 'PortraitComponent', new NameComponent(portraitToPick));
   entities.push(gunner);
 
   let engineer = NewEntity();
@@ -47,7 +49,7 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
   AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
   AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
   AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(engineer, 'PortraitComponent', new NameComponent('gamilon2'));
+  AddComponent(engineer, 'PortraitComponent', new NameComponent(portraitToPick));
   entities.push(engineer);
 
   const config = new PopcornEnemyPointsConfiguration();
