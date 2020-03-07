@@ -585,7 +585,7 @@ Gameplay.prototype.doNextTurn = function() {
         targets: mesh.mesh.position,
         x: Math.max(0, Math.min(position.x, SECTOR_WIDTH)),
         z: Math.max(0, Math.min(position.y, SECTOR_HEIGHT)),
-        duration: 650 * velocity.value,
+        duration: 150 * velocity.value,
         onComplete: () => {
           this.nextTurnReady = true;
           RemoveComponent(entity, 'PositionTweenComponent');
@@ -955,8 +955,8 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
 
   const attackingEntityPosition = GetComponent(attackingEntity, 'PositionComponent');
   const defendingEntityPosition = GetComponent(defendingEntity, 'PositionComponent');
-  const numberOfLasersToFire = Math.max(1, Math.ceil(attackPower * 2));
-  const numberOfExplosions = Math.ceil(damage * 2);
+  const numberOfLasersToFire = Math.max(1, Math.ceil(attackPower * 0.08));
+  const numberOfExplosions = Math.ceil(damage * 0.6);
   // Make an explosion for each laser hit
   for (let i = 0; i < numberOfExplosions; i++) {
     const m = this.explosions[this.currentExplosionIndex];

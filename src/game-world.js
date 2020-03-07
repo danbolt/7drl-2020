@@ -1,4 +1,59 @@
 
+
+const generatePopcornEnemy = function (entities, rng, names, x, y) {
+  let e = NewEntity();
+  AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+  AddComponent(e, 'HullHealthComponent', new HullHealthComponent(1));
+  AddComponent(e, 'PositionComponent', new PositionComponent(x, y));
+  AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(1.0));
+  AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
+  AddComponent(e, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(e, 'RotationComponent').value));
+  AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
+  AddComponent(e, 'MeshComponent', new MeshComponent());
+  AddComponent(e, 'PortraitComponent', new NameComponent('gamilon2'));
+  AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
+  AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(30));
+  AddComponent(e, 'AIControlComponent', new AIControlComponent());
+  AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_popcorn'));
+  AddComponent(e, 'TeamComponent', new TeamComponent(ENEMY_FACTION_NAME));
+  AddComponent(e, 'NameComponent', new NameComponent(POPCORN_NAME_PREFIX + ' ' + names.generate()));
+  AddComponent(e, 'ClassComponent', new NameComponent(POPCORN_CLASS_NAME));
+  AddComponent(e, 'MassComponent', new MassComponent(1.0527));
+  AddComponent(e, 'AudioTensionComponent', new AudioTensionComponent(1));
+  entities.push(e);
+
+  let skipper = NewEntity();
+  AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
+  AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
+  AddComponent(skipper, 'DexterityComponent', new DexterityComponent(2));
+  AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
+  AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+  AddComponent(skipper, 'PortraitComponent', new NameComponent('gamilon2'));
+  entities.push(skipper);
+
+  let gunner = NewEntity();
+  AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
+  AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 2));
+  AddComponent(gunner, 'DexterityComponent', new DexterityComponent(2));
+  AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
+  AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+  AddComponent(gunner, 'PortraitComponent', new NameComponent('gamilon2'));
+  entities.push(gunner);
+
+  let engineer = NewEntity();
+  AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
+  AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
+  AddComponent(engineer, 'DexterityComponent', new DexterityComponent(2));
+  AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
+  AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
+  AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
+  AddComponent(engineer, 'PortraitComponent', new NameComponent('gamilon2'));
+  entities.push(engineer);
+
+  const config = new PopcornEnemyPointsConfiguration();
+  config.applyToShipEntity(e, entities, true);
+};
+
 // TODO: real enemies plz
 const dummyEnemiesPopulate = function (entities, rng, names) {
   for (let i = 0; i < 5; i++) {
@@ -260,7 +315,12 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   // TODO: populate sector with other entities
   this.generatePlanetEntitiesForSector(newSector, this.rng);
 
-  dummyEnemiesPopulate(newSector.entities, this.rng, this.nameGenerator);
+  //dummyEnemiesPopulate(newSector.entities, this.rng, this.nameGenerator);
+  for (let i = 0; i < 5; i++) {
+    const popX = this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.14);
+    const popY = this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.14);
+    generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, popX, popY);
+  }
 
   // Move to the next generation index
   this.generationIndex.x++;

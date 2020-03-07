@@ -24,7 +24,9 @@ PointsConfiguration.prototype.applyToShipEntity = function(shipEntity, entities,
   if (fillHealth) {
     GetComponent(shipEntity, 'HullHealthComponent').health = (this.hullHealthPoints * HULL_HEALTH_PER_POINT);
   }
-  GetComponent(shipEntity, 'ShieldsComponent').maxHealth = (this.shieldPoints * SHIELDS_PER_POINT);
+  if (HasComponent(shipEntity, 'ShieldsComponent')) {
+    GetComponent(shipEntity, 'ShieldsComponent').maxHealth = (this.shieldPoints * SHIELDS_PER_POINT);
+  }
   GetComponent(shipEntity, 'DexterityComponent').value = (this.shipDexPoints * SHIP_DEX_PER_POINT);
   GetComponent(shipEntity, 'AttackStrengthComponent').value = (this.atkStrengthPoints * ATK_STRENGTH_PER_POINT);
   GetComponent(shipEntity, 'AttackRangeComponent').value = (this.atkRangePoints * ATK_RANGE_PER_POINT);
@@ -101,20 +103,20 @@ const DefaultPlayerPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
   this.hullHealthPoints = 10;
-  this.shieldPoints = 8
-  this.shipDexPoints = 9;
+  this.shieldPoints = 6;
+  this.shipDexPoints = 6;
 
-  this.atkStrengthPoints = 4;
-  this.atkRangePoints = 7;
+  this.atkStrengthPoints = 6;
+  this.atkRangePoints = 9;
 
-  this.skipperDexPoints = 2;
+  this.skipperDexPoints = 3;
 
   this.gunnerDexPoints = 5;
 
-  this.engineerDexPoints = 2;
-  this.engineMaxSpeedPoints = 4;
+  this.engineerDexPoints = 4;
+  this.engineMaxSpeedPoints = 9;
 
-  this.shieldOperatorDexPoints = 2;
+  this.shieldOperatorDexPoints = 3;
 };
 DefaultPlayerPointsConfiguration.prototype = Object.create(PointsConfiguration.prototype);
 DefaultPlayerPointsConfiguration.prototype.constructor = DefaultPlayerPointsConfiguration;

@@ -17,8 +17,8 @@ const DEFAULT_POSITION_TWEEN_DURATION = 2000;
 const TURNS_TO_DISPLAY = 6;
 
 const DEFAULT_WORLD_SIZE_IN_SECTORS = 10;
-const SECTOR_WIDTH = 70;
-const SECTOR_HEIGHT = 70;
+const SECTOR_WIDTH = 143;
+const SECTOR_HEIGHT = 143;
 
 const EXPLOSION_BUFFER_COUNT = 60;
 const LASER_BUFFER_COUNT = 50;
@@ -63,8 +63,8 @@ const ENEMY_SELECTION_KEYCODES = [
 
 // TODO: data-drive this
 const SHIELD_BUFFER_RATIO = 0.6;
-const SHIELD_DEPLETE_RATE = 0.2;
-const SHIELD_REGEN_RATE = 0.4;
+const SHIELD_DEPLETE_RATE = 1.0;
+const SHIELD_REGEN_RATE = 3.0;
 
 const PLANET_REPAIR_RATIO = 0.1;
 
@@ -77,11 +77,11 @@ const SUPPLIES_BAR_WIDTH = GAME_WIDTH;
 
 // Spending R&D points
 const HULL_HEALTH_PER_POINT = 10;
-const SHIELDS_PER_POINT = 7;
+const SHIELDS_PER_POINT = 10;
 const SHIP_DEX_PER_POINT = 1;
 
 const ATK_STRENGTH_PER_POINT = 10;
-const ATK_RANGE_PER_POINT = 1;
+const ATK_RANGE_PER_POINT = 2;
 
 const SKIPPER_DEX_PER_POINT = 1;
 
@@ -106,6 +106,7 @@ const MeshNamesToLoad = [
   'gamilon_medium2',
   'gamilon_small',
   'gamilon_mini',
+  'gamilon_popcorn',
   'old_god'
 ];
 
@@ -156,5 +157,11 @@ const lerpColor = function(a, b, amount) {
 
     return (rr << 16) + (rg << 8) + (rb | 0);
 };
+
+const ENEMY_PEOPLE_NAME = 'Yaralon';
+const ENEMY_FACTION_NAME = ENEMY_PEOPLE_NAME + ' Empire';
+
+const POPCORN_CLASS_NAME = 'Frontier Frigate';
+const POPCORN_NAME_PREFIX = 'LX3R';
 
 
