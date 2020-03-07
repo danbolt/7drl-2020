@@ -373,11 +373,12 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   // TODO: populate sector with other entities
   this.generatePlanetEntitiesForSector(newSector, this.rng);
 
-  //dummyEnemiesPopulate(newSector.entities, this.rng, this.nameGenerator);
   for (let i = 0; i < 5; i++) {
-    const posX = this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.14);
-    const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.14);
+    const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.35);
+    const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.35);
+
     generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+    generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX * 1.4, posY * 1.4);
   }
 
   // Move to the next generation index

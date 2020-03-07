@@ -162,7 +162,7 @@ const ENEMY_FACTION_NAME = ENEMY_PEOPLE_NAME + ' Empire';
 
 const POPCORN_CLASS_NAME = 'Frontier Frigate';
 const POPCORN_NAME_PREFIX = 'LX3R';
-const WEAK_CLASS_NAME = 'Cruiser';
+const WEAK_CLASS_NAME = 'High-Powered Destroyer';
 const WEAK_NAME_PREFIX = 'CN14';
 
 
