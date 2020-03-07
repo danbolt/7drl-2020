@@ -299,6 +299,12 @@ Gameplay.prototype.setupUI = function () {
   const targetAttackPowerText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 6), 'miniset', 'ATTACK PWR', DEFAULT_TEXT_SIZE);
   targetAttackPowerText.tint = 0xFF5500;
   this.targetShipUI.add(targetAttackPowerText);
+  const orbitableText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 7), 'miniset', 'CAN ORBIT', DEFAULT_TEXT_SIZE);
+  orbitableText.tint = 0x00CCFF;
+  this.targetShipUI.add(orbitableText);
+  const planetSuppliesText = this.add.bitmapText(2, 2 + (DEFAULT_TEXT_SIZE * 8), 'miniset', 'HAS SUPPLIES', DEFAULT_TEXT_SIZE);
+  planetSuppliesText.tint = 0x00FF33;
+  this.targetShipUI.add(planetSuppliesText);
 
   const targetPortrait = this.add.sprite(-32, DEFAULT_TEXT_SIZE + 8, 'portraits', 0);
   targetPortrait.setOrigin(0);
@@ -337,6 +343,18 @@ Gameplay.prototype.setupUI = function () {
       targetAttackPowerText.text = 'Cannons Strength: ' + attackRange.value;
     } else {
       targetAttackPowerText.text = '';
+    }
+
+    if (HasComponent(target, 'PlanetOrbitableComponent')) {
+      orbitableText.visible = true;
+    } else {
+      orbitableText.visible = false;
+    }
+
+    if (HasComponent(target, 'PlanetSuppliesComponent')) {
+      planetSuppliesText.visible = true;
+    } else {
+      planetSuppliesText.visible = false;
     }
 
     if (HasComponent(target, 'PortraitComponent') && PortraitFrames[GetComponent(target, 'PortraitComponent').value]) {
@@ -647,7 +665,7 @@ Gameplay.prototype.setup3DBackground = function () {
   const fragmentInfo = this.cache.shader.get('planet_fragment');
   const frag = fragmentInfo.fragmentSrc;
 
-  const backgroundGeom = new THREE.IcosahedronBufferGeometry(900, 2);
+  const backgroundGeom = new THREE.IcosahedronBufferGeometry(800, 2);
   const backgroundMaterial = new THREE.ShaderMaterial({
       side: THREE.BackSide,
       vertexShader: vert,
@@ -698,6 +716,13 @@ Gameplay.prototype.setup3DBackground = function () {
   this.attackRangeMarker.rotation.x = Math.PI * 0.5;
   this.attackRangeMarker.visible = false;
   this.three.scene.add(this.attackRangeMarker);
+
+  const orbitRangeGeometry = new THREE.CircleBufferGeometry(1.0, 12);
+  const orbitRangeMat = new THREE.MeshBasicMaterial( {color: 0x00CCFF, wireframe: true } );
+  this.orbitRangeMarker = new THREE.Mesh(orbitRangeGeometry, orbitRangeMat);
+  this.orbitRangeMarker.rotation.x = Math.PI * 0.5;
+  this.orbitRangeMarker.visible = false;
+  this.three.scene.add(this.orbitRangeMarker);
 }
 Gameplay.prototype.setup3DScene = function () {
   this.gameCamera = new THREE.PerspectiveCamera( 70, GAME_WIDTH / GAME_HEIGHT,  0.1, 1000 );
@@ -811,7 +836,19 @@ Gameplay.prototype.update3DScene = function() {
       this.attackRangeMarker.position.set(arrayRaycastResults[0].object.position.x, arrayRaycastResults[0].object.position.y, arrayRaycastResults[0].object.position.z);
       this.attackRangeMarker.scale.set(attackRange, attackRange, 1.0);
     }
+
+    
+    if (HasComponent(this.currentlyPointingEntity, 'PlanetOrbitableComponent')) {
+      const dockRange = GetComponent(this.currentlyPointingEntity, 'PlanetOrbitableComponent').dockRange;
+
+      this.orbitRangeMarker.visible = true;
+      this.orbitRangeMarker.position.set(arrayRaycastResults[0].object.position.x, arrayRaycastResults[0].object.position.y, arrayRaycastResults[0].object.position.z);
+      this.orbitRangeMarker.scale.set(dockRange, dockRange, 1.0);
+    } else {
+      this.orbitRangeMarker.visible = false;
+    }
   } else {
+    this.orbitRangeMarker.visible = false;
     this.attackRangeMarker.visible = false;
   }
   // clear out the results

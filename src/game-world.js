@@ -175,37 +175,25 @@ GameWorld.prototype.isGenerated = function() {
   return (this.generationIndex.x === 0) && (this.generationIndex.y === (this.height));
 };
 
-GameWorld.prototype.generatePlanetEntitiesForSector = function(sector, rng) {
-  // TODO: make these more confiurable from the sector
-  const minNumberOfPlanets = 2;
-  const randomNumberOfPlanets = 5;
-
-  const minPlanetRadius = 1.1;
-  const randomPlanetRadius = 2.432;
-
-  if (sector.x === (this.width - 1) && (sector.y === 0)) {
-    // ignore naming hell; it's fine
-  } else if ((sector.x === this.iscandarSector.x) && (sector.y === this.iscandarSector.y)) {
-    sector.name = 'Nayr Principality';
-  } else {
-    sector.name += ': ' + this.placeNameGenerate.generate();
-  }
-
-  const numberOfPlanetsToGenerate = minNumberOfPlanets + (~~(rng.getUniform() * randomNumberOfPlanets));
+GameWorld.prototype.generateSupplyPlanetEntitiesForSector = function(sector, rng, min) {
+  const numberOfPlanetsToGenerate = Math.max(~~(rng.getNormal(3, 4)), min);
+  const meanSuppliesPerPlanet = Math.max(rng.getNormal(40, 30), 30);
 
   for (let i = 0; i < numberOfPlanetsToGenerate; i++) {
-    const planetRadius = minPlanetRadius + (rng.getUniform() * randomPlanetRadius)
-    const generatedX = 1.0 + (rng.getUniform() * (SECTOR_WIDTH - 2));
-    const generatedY = 1.0 + (rng.getUniform() * (SECTOR_HEIGHT - 2));
+    const planetRadius = rng.getNormal(5.0, 2.1);
+    const generatedX = 5.0 + (rng.getUniform() * (SECTOR_WIDTH - 10));
+    const generatedY = 5.0 + (rng.getUniform() * (SECTOR_HEIGHT - 10));
 
     let p2 = NewEntity();
     AddComponent(p2, 'PositionComponent', new PositionComponent(generatedX, generatedY));
-    AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius, 0.3435, 0x44111, 0x775500, 0xeeaa88));
+    AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius, 0.3435, 0x6666FF, lerpColor(0x64AA64, 0x22FF22, rng.getNormal(0.5, 0.5)), 0x0000CC));
     AddComponent(p2, 'MeshComponent', new MeshComponent());
     AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
     AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
     AddComponent(p2, 'NameComponent', new NameComponent(this.placeNameGenerate.generate()));
-    AddComponent(p2, 'ClassComponent', new NameComponent('Wasteland Planet'));
+    AddComponent(p2, 'ClassComponent', new NameComponent('Forest Planet'));
+    AddComponent(p2, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(planetRadius + 8.4));
+    AddComponent(p2, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
     sector.entities.push(p2);
   }
 };
@@ -259,6 +247,14 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   // Always have the player entities be the first in the listing for the sector
   for (let i = 0; i < playerEntities.length; i++) {
     newSector.entities.push(playerEntities[i]);
+  }
+
+  if (newSector.x === (this.width - 1) && (newSector.y === 0)) {
+    // ignore naming hell; it's fine
+  } else if ((newSector.x === this.iscandarSector.x) && (newSector.y === this.iscandarSector.y)) {
+    newSector.name = 'Nayr Principality';
+  } else {
+    newSector.name = newSector.name + ': ' + this.placeNameGenerate.generate();
   }
 
   if (newSector.x === (this.width - 1) && (newSector.y === 0)) {
@@ -399,10 +395,13 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
       generateDroneEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
     }
 
+    this.generateSupplyPlanetEntitiesForSector(newSector, this.rng, ~((this.rng.getUniform() * 3) + 3));
+
     // TODO: if we have time, generate "the machine core" that destroys all ingame drones if destroyed
   } else {
-    // if none of the other situations hold true, then generate normal enemies
+    this.generateSupplyPlanetEntitiesForSector(newSector, this.rng, 3);
 
+    // if none of the other situations hold true, then generate normal enemies
     if (tileDistanceFromStart <= 2) {
       
 
