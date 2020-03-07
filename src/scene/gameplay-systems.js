@@ -873,6 +873,12 @@ Gameplay.prototype.showDialogue = function(dialogue) {
     easing: Phaser.Math.Easing.Cubic.In
   });
 
+  if (this.keys.hide_box) {
+    this.keys.hide_box.once('down', () => { backing.visible = false; }); 
+    const hideText = this.add.bitmapText(4,  GAME_HEIGHT  * 0.4 + ((dialogue.options.length - 2) * DEFAULT_TEXT_SIZE) - (DEFAULT_TEXT_SIZE + 4) + (dialogue.portrait ? 16 : 0), 'miniset', 'Press [shift] to hide this box', DEFAULT_TEXT_SIZE);
+    backing.add(hideText);
+  }
+
   let portrait = null;
 
   const removeAllUIAndEvents = () => {

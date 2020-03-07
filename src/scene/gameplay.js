@@ -623,6 +623,7 @@ Gameplay.prototype.setupInput = function () {
     'up': Phaser.Input.Keyboard.KeyCodes.UP,
 
     'return_cam': Phaser.Input.Keyboard.KeyCodes.SPACE,
+    'hide_box': Phaser.Input.Keyboard.KeyCodes.SHIFT,
 
     'cruiseSkipper': Phaser.Input.Keyboard.KeyCodes.Z,
     'cruiseGunner': Phaser.Input.Keyboard.KeyCodes.X,

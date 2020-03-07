@@ -34,7 +34,7 @@ const WeakEnemyPointsConfiguration = function() {
 
   this.gunnerDexPoints = 6;
 
-  this.engineerDexPoints = 3;
+  this.engineerDexPoints = 1;
   this.engineMaxSpeedPoints = 3;
 
   this.shieldOperatorDexPoints = 0;
@@ -48,17 +48,17 @@ const BattleshipEnemyPointsConfiguration = function() {
 
   this.hullHealthPoints = 20;
   this.shieldPoints = 0;
-  this.shipDexPoints = 2;
+  this.shipDexPoints = 6;
 
-  this.atkStrengthPoints = 4;
-  this.atkRangePoints = 9;
+  this.atkStrengthPoints = 2.5;
+  this.atkRangePoints = 13;
 
-  this.skipperDexPoints = 5;
+  this.skipperDexPoints = 8;
 
-  this.gunnerDexPoints = 6;
+  this.gunnerDexPoints = 3;
 
   this.engineerDexPoints = 3;
-  this.engineMaxSpeedPoints = 3;
+  this.engineMaxSpeedPoints = 8;
 
   this.shieldOperatorDexPoints = 0;
 };

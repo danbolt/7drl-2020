@@ -1,8 +1,5 @@
-
-
-const generatePopcornEnemy = function (entities, rng, names, x, y) {
+const generateEnemy = function (entities, rng, names, x, y, config, portraitToPick, faction, namePrefix, className, modelName, audioTension, mass) {
   let e = NewEntity();
-  const portraitToPick = (rng.getUniform() < 0.1444) ? 'gamilon1' : 'gamilon2';
 
   AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
   AddComponent(e, 'HullHealthComponent', new HullHealthComponent(1));
@@ -16,12 +13,12 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
   AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
   AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(30));
   AddComponent(e, 'AIControlComponent', new AIControlComponent());
-  AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_popcorn'));
-  AddComponent(e, 'TeamComponent', new TeamComponent(ENEMY_FACTION_NAME));
-  AddComponent(e, 'NameComponent', new NameComponent(POPCORN_NAME_PREFIX + ' ' + names.generate()));
-  AddComponent(e, 'ClassComponent', new NameComponent(POPCORN_CLASS_NAME));
-  AddComponent(e, 'MassComponent', new MassComponent(1.0527));
-  AddComponent(e, 'AudioTensionComponent', new AudioTensionComponent(1));
+  AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent(modelName));
+  AddComponent(e, 'TeamComponent', new TeamComponent(faction));
+  AddComponent(e, 'NameComponent', new NameComponent(namePrefix + ' ' + names.generate()));
+  AddComponent(e, 'ClassComponent', new NameComponent(className));
+  AddComponent(e, 'MassComponent', new MassComponent(mass));
+  AddComponent(e, 'AudioTensionComponent', new AudioTensionComponent(audioTension));
   entities.push(e);
 
   let skipper = NewEntity();
@@ -52,64 +49,20 @@ const generatePopcornEnemy = function (entities, rng, names, x, y) {
   AddComponent(engineer, 'PortraitComponent', new NameComponent(portraitToPick));
   entities.push(engineer);
 
-  const config = new PopcornEnemyPointsConfiguration();
   config.applyToShipEntity(e, entities, true);
 };
 
+
+const generatePopcornEnemy = function (entities, rng, names, x, y) {
+  const portraitToPick = (rng.getUniform() < 0.1444) ? 'gamilon1' : 'gamilon2';
+
+  generateEnemy(entities, rng, names, x, y, new PopcornEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, POPCORN_NAME_PREFIX, POPCORN_CLASS_NAME, 'gamilon_popcorn', 1, 1.05);
+};
+
 const generateWeakEnemy = function (entities, rng, names, x, y) {
-  let e = NewEntity();
   const portraitToPick = (rng.getUniform() < 0.5) ? 'gamilon3' : 'gamilon2';
-  
-  AddComponent(e, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(e, 'HullHealthComponent', new HullHealthComponent(1));
-  AddComponent(e, 'PositionComponent', new PositionComponent(x, y));
-  AddComponent(e, 'ForwardVelocityComponent', new ForwardVelocityComponent(1.0));
-  AddComponent(e, 'RotationComponent', new RotationComponent(Math.random() * Math.PI * 2));
-  AddComponent(e, 'LerpRotationComponent', new LerpRotationComponent(GetComponent(e, 'RotationComponent').value));
-  AddComponent(e, 'DexterityComponent', new DexterityComponent(4));
-  AddComponent(e, 'MeshComponent', new MeshComponent());
-  AddComponent(e, 'PortraitComponent', new NameComponent(portraitToPick));
-  AddComponent(e, 'AttackStrengthComponent', new AttackStrengthComponent(4));
-  AddComponent(e, 'AttackRangeComponent', new AttackRangeComponent(30));
-  AddComponent(e, 'AIControlComponent', new AIControlComponent());
-  AddComponent(e, 'RequestGLTF3DAppearanceComponent', new RequestGLTF3DAppearanceComponent('gamilon_small'));
-  AddComponent(e, 'TeamComponent', new TeamComponent(ENEMY_FACTION_NAME));
-  AddComponent(e, 'NameComponent', new NameComponent(WEAK_NAME_PREFIX + ' ' + names.generate()));
-  AddComponent(e, 'ClassComponent', new NameComponent(WEAK_CLASS_NAME));
-  AddComponent(e, 'MassComponent', new MassComponent(1.7042));
-  AddComponent(e, 'AudioTensionComponent', new AudioTensionComponent(1));
-  entities.push(e);
 
-  let skipper = NewEntity();
-  AddComponent(skipper, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 1));
-  AddComponent(skipper, 'SkipperComponent', new SkipperComponent());
-  AddComponent(skipper, 'DexterityComponent', new DexterityComponent(2));
-  AddComponent(skipper, 'AIControlComponent', new AIControlComponent());
-  AddComponent(skipper, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(skipper, 'PortraitComponent', new NameComponent(portraitToPick));
-  entities.push(skipper);
-
-  let gunner = NewEntity();
-  AddComponent(gunner, 'GunnerComponent', new GunnerComponent());
-  AddComponent(gunner, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 2));
-  AddComponent(gunner, 'DexterityComponent', new DexterityComponent(2));
-  AddComponent(gunner, 'AIControlComponent', new AIControlComponent());
-  AddComponent(gunner, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(gunner, 'PortraitComponent', new NameComponent(portraitToPick));
-  entities.push(gunner);
-
-  let engineer = NewEntity();
-  AddComponent(engineer, 'EngineerComponent', new EngineerComponent());
-  AddComponent(engineer, 'EngineComponent', new EngineComponent(3.3));
-  AddComponent(engineer, 'DexterityComponent', new DexterityComponent(2));
-  AddComponent(engineer, 'ShipReferenceComponent', new ShipReferenceComponent(entities.length - 3));
-  AddComponent(engineer, 'AIControlComponent', new AIControlComponent());
-  AddComponent(engineer, 'ECSIndexComponent', new ECSIndexComponent(entities.length));
-  AddComponent(engineer, 'PortraitComponent', new NameComponent(portraitToPick));
-  entities.push(engineer);
-
-  const config = new WeakEnemyPointsConfiguration();
-  config.applyToShipEntity(e, entities, true);
+  generateEnemy(entities, rng, names, x, y, new WeakEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, WEAK_NAME_PREFIX, WEAK_CLASS_NAME, 'gamilon_small', 1, 1.075);
 };
 
 // TODO: real enemies plz
@@ -374,8 +327,8 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
   this.generatePlanetEntitiesForSector(newSector, this.rng);
 
   for (let i = 0; i < 5; i++) {
-    const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.35);
-    const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.35);
+    const posX = this.rng.getNormal(SECTOR_WIDTH * 0.35, SECTOR_WIDTH * 0.1);
+    const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.35, SECTOR_HEIGHT * 0.1);
 
     generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
     generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX * 1.4, posY * 1.4);
