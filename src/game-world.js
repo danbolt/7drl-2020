@@ -181,20 +181,35 @@ GameWorld.prototype.generateSupplyPlanetEntitiesForSector = function(sector, rng
 
   for (let i = 0; i < numberOfPlanetsToGenerate; i++) {
     const planetRadius = rng.getNormal(5.0, 2.1);
-    const generatedX = 5.0 + (rng.getUniform() * (SECTOR_WIDTH - 10));
-    const generatedY = 5.0 + (rng.getUniform() * (SECTOR_HEIGHT - 10));
+    const generatedX = 1.0 + (rng.getUniform() * (SECTOR_WIDTH - 3));
+    const generatedY = 1.0 + (rng.getUniform() * (SECTOR_HEIGHT - 3));
 
-    let p2 = NewEntity();
-    AddComponent(p2, 'PositionComponent', new PositionComponent(generatedX, generatedY));
-    AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius, 0.3435, 0x6666FF, lerpColor(0x64AA64, 0x22FF22, rng.getNormal(0.5, 0.5)), 0x0000CC));
-    AddComponent(p2, 'MeshComponent', new MeshComponent());
-    AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
-    AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
-    AddComponent(p2, 'NameComponent', new NameComponent(this.placeNameGenerate.generate()));
-    AddComponent(p2, 'ClassComponent', new NameComponent('Forest Planet'));
-    AddComponent(p2, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(planetRadius + 8.4));
-    AddComponent(p2, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
-    sector.entities.push(p2);
+    if (rng.getUniform() < 0.15) {
+      let p2 = NewEntity();
+      AddComponent(p2, 'PositionComponent', new PositionComponent(generatedX, generatedY));
+      AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius - 1.9, 0.3435, 0x0000e2, lerpColor(0x64AA64, 0xaa33aa, rng.getUniform()), 0x666666));
+      AddComponent(p2, 'MeshComponent', new MeshComponent());
+      AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+      AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
+      AddComponent(p2, 'NameComponent', new NameComponent(this.placeNameGenerate.generate()));
+      AddComponent(p2, 'ClassComponent', new NameComponent('City Planet'));
+      AddComponent(p2, 'TeamComponent', new TeamComponent('Space Federation'));
+      AddComponent(p2, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(planetRadius + 7.0));
+      AddComponent(p2, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(50));
+      sector.entities.push(p2);
+    } else {
+      let p2 = NewEntity();
+      AddComponent(p2, 'PositionComponent', new PositionComponent(generatedX, generatedY));
+      AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius, 0.3435, 0x6666FF, lerpColor(0x64AA64, 0x22FF22, rng.getNormal(0.5, 0.5)), 0x0000CC));
+      AddComponent(p2, 'MeshComponent', new MeshComponent());
+      AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+      AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(sector.entities.length));
+      AddComponent(p2, 'NameComponent', new NameComponent(this.placeNameGenerate.generate()));
+      AddComponent(p2, 'ClassComponent', new NameComponent('Forest Planet'));
+      AddComponent(p2, 'PlanetOrbitableComponent', new PlanetOrbitableComponent(planetRadius + 8.4));
+      AddComponent(p2, 'PlanetSuppliesComponent', new PlanetSuppliesComponent(30));
+      sector.entities.push(p2);
+    }
   }
 };
 
