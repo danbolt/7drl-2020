@@ -93,14 +93,63 @@ Gameplay.prototype.setupUI = function () {
     this.turnOrderSprites.push(p);
     this.turnOrder.add(p);
   }
+  const minimapGridCellSize = 8;
+  const minimap = { x: (GAME_WIDTH - (minimapGridCellSize * World.width)), y: (GAME_HEIGHT - (minimapGridCellSize * World.height)) }
+  for (let x = 0; x < World.width; x++) {
+    for (let y = 0; y < World.height; y++) {
+      const atCorrectPosition =((World.currentPlayerSector.x === x) && (World.currentPlayerSector.y === y));
+      const cellRect = this.add.rectangle(minimap.x + (x * minimapGridCellSize), minimap.y + (y * minimapGridCellSize), minimapGridCellSize, minimapGridCellSize, 0xcccccc, 0.8);
+      if (atCorrectPosition) {
+        const playerCellRect = this.add.rectangle(minimap.x + (x * minimapGridCellSize), minimap.y + (y * minimapGridCellSize), minimapGridCellSize, minimapGridCellSize, 0xFF0000, 1.0);
+        this.add.tween({
+          targets: playerCellRect,
+          alpha: 0,
+          yoyo: true,
+          duration: 500,
+          repeat: -1
+        })
+      }
+    }
+  }
 
-  // TODO: make a better compass
-  const compassInfo = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT - (DEFAULT_TEXT_SIZE * 2) - 2, 'miniset', '. . N . .', DEFAULT_TEXT_SIZE);
-  compassInfo.setOrigin(0.5, 0);
+  const compassInfo = this.add.bitmapText((GAME_WIDTH - (minimapGridCellSize * World.width)), (GAME_HEIGHT - (minimapGridCellSize * World.height)) - DEFAULT_TEXT_SIZE * 2, 'miniset', '. . N . .', DEFAULT_TEXT_SIZE);
+  const compassGraphic = this.add.container(compassInfo.x, compassInfo.y - 32);
+  compassGraphic.scaleX = 0.75;
+  compassGraphic.scaleY = 0.75;
+  const northMarker = this.add.bitmapText(0, -32, 'miniset', 'N', DEFAULT_TEXT_SIZE * 2);
+  northMarker.setOrigin(0.5, 0.5);
+  northMarker.setCenterAlign();
+  compassGraphic.add(northMarker);
+  const southMarker = this.add.bitmapText(0, 32, 'miniset', 'S', DEFAULT_TEXT_SIZE * 2);
+  southMarker.setOrigin(0.5, 0.5);
+  southMarker.setCenterAlign();
+  southMarker.rotation = Math.PI
+  compassGraphic.add(southMarker);
+  const eastMarker = this.add.bitmapText(32, 0, 'miniset', 'E', DEFAULT_TEXT_SIZE * 2);
+  eastMarker.setOrigin(0.5, 0.5);
+  eastMarker.setCenterAlign();
+  eastMarker.rotation = Math.PI * 0.5
+  compassGraphic.add(eastMarker);
+  const westMarker = this.add.bitmapText(-32, 0, 'miniset', 'W', DEFAULT_TEXT_SIZE * 2);
+  westMarker.setOrigin(0.5, 0.5);
+  westMarker.setCenterAlign();
+  westMarker.rotation = Math.PI * -0.5
+  compassGraphic.add(westMarker);
+  const shipDirectionMarker = this.add.line(0, 0, 16, 0, 32, 0, 0xFF0000, 1.0);
+  compassGraphic.add(shipDirectionMarker);
+  for (let i = 0; i < 8; i++) {
+    if (i % 2 === 0) {
+      continue;
+    }
+    const r = i / 8 * Math.PI * 2;
+    const mark = this.add.rectangle(Math.cos(r) * 32, Math.sin(r) * 32, 4, 4, 0xFFFFFF, 0.6);
+    compassGraphic.add(mark);
+  }
+
   let tick = 0;
   const updateCompassInfo = () => {
     tick++
-    if (tick > 3) {
+    if (tick > 2) {
       tick = 0;
     } else {
       return;
@@ -110,6 +159,11 @@ Gameplay.prototype.setupUI = function () {
     const cameraAngle2PiClamped = Phaser.Math.Angle.Normalize(cameraAngle);
     const cameraAngleIndex = ~~((cameraAngle2PiClamped / (Math.PI * 2.001)) * COMPASS_ANGLE_LETTERS.length);
     compassInfo.text = '. . ' + COMPASS_ANGLE_LETTERS[cameraAngleIndex] + ' . .';
+
+    compassGraphic.rotation = cameraAngle2PiClamped - (Math.PI * 0.5);
+    ViewEntities(this.entities, ['PlayerControlComponent', 'LerpRotationComponent', 'HullHealthComponent'], [], (e, p, rotation) => {
+      shipDirectionMarker.rotation = rotation.value + (Math.PI * 0.5);
+    });
   };
 
   const sectorInfo = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT - DEFAULT_TEXT_SIZE - 2, 'miniset', World.getCurrentSector().name, DEFAULT_TEXT_SIZE);

@@ -460,7 +460,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
       }
       if (tileDistanceFromStart <= 1) {
         generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.20, 'Halt! All transit is forbidden!', 'gamilon_talk3');
-        generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.20, SECTOR_HEIGHT * 0.5, 'Intruder! Intruder alert!', 'gamilon_talk3');
+        generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.20, SECTOR_HEIGHT * 0.2, 'Intruder! Intruder alert!', 'gamilon_talk3');
       }
 
       // TODO: planets for easy sectors
