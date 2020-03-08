@@ -458,7 +458,60 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
       }
   });
 
-  ViewEntities(nextEntity, ['EngineerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'EngineComponent'], [], (entity, engineer, aiControl, shipReference, engine) => {
+  // If your target is outside of your aggro range, remove it
+  ViewEntities(nextEntity, ['PositionComponent', 'AggroComponent'], [], (entity, position, aggro) => {
+    const targetEntity = this.entities[aggro.targetIndex];
+    if (targetEntity === undefined) {
+      return
+    }
+    const targetPosition = GetComponent(targetEntity, 'PositionComponent');
+    const distance = Phaser.Math.Distance.Squared(position.x, position.y, targetPosition.x, targetPosition.y);
+    const aggroRangeSquared = aggro.range * aggro.range;
+    if (distance > aggroRangeSquared) {
+      
+      RemoveComponent(entity, 'AggroComponent')
+    }
+  });
+
+  ViewEntities(nextEntity, ['PositionComponent', 'PursueIfInRangeComponent', 'AIControlComponent', 'TeamComponent', 'HullHealthComponent'], ['AggroComponent', 'DestroyedComponent'], (entity, position, pursueIf, aiControl, myTeam) => {
+    const pursueRangeSquared = pursueIf.range * pursueIf.range;
+    let candidate = null
+    ViewEntities(this.entities, ['PositionComponent', 'HullHealthComponent', 'TeamComponent'], [], (potentialTarget, potentialTargetPosition, potentialTargetHealth, potentialTargetTeam) => {
+      if (potentialTargetTeam.value === myTeam.value) {
+        return;
+      }
+
+      const distanceSq = Phaser.Math.Distance.Squared(position.x, position.y, potentialTargetPosition.x, potentialTargetPosition.y);
+      if (distanceSq <= pursueRangeSquared) {
+          candidate = potentialTarget;
+      }
+    });
+    if (candidate !== null) {
+      const candidateIndex = GetComponent(candidate, 'ECSIndexComponent').value;
+      AddComponent(entity, 'AggroComponent', new AggroComponent(candidateIndex, pursueIf.range));
+      
+    }
+  });
+
+  // Update AI ship crew to match aggro
+  ViewEntities(nextEntity, ['ShipReferenceComponent', 'AIControlComponent'], [], (entity, shipReference, aiControl) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+
+    if (HasComponent(shipEntity, 'AggroComponent')) {
+      const aiAggro = GetComponent(shipEntity, 'AggroComponent');
+      AddComponent(entity, 'AggroComponent', aiAggro);
+    } else {
+      if (HasComponent(entity, 'AggroComponent')) {
+        RemoveComponent(entity, 'AggroComponent');
+      }
+    }
+  });
+
+  // If you're not targeting anything, you can dawdle
+  ViewEntities(nextEntity, ['EngineerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'EngineComponent'], ['AggroComponent'], (entity, engineer, aiControl, shipReference, engine) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
       return;
@@ -466,10 +519,32 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
 
     // TODO: make AI engineers set engines intelligently
     const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
-    velocity.value = engine.minSpeed + (Math.random() * (engine.maxSpeed - engine.minSpeed));
+    velocity.value = 0;
   });
 
-  ViewEntities(nextEntity, ['GunnerComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, gunner, aiControl, shipReference) => {
+  // If you've found a target, move towards them
+  ViewEntities(nextEntity, ['EngineerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'EngineComponent', 'AggroComponent'], [], (entity, engineer, aiControl, shipReference, engine, aggro) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    const shipPostion = GetComponent(shipEntity, 'PositionComponent');
+
+    const targetEntity = this.entities[aggro.targetIndex];
+    if (targetEntity === undefined) {
+      RemoveComponent(entity, 'AggroComponent');
+      return;
+    }
+    const targetPosition = GetComponent(targetEntity, 'PositionComponent');
+    const distance = Phaser.Math.Distance.Between(targetPosition.x, targetPosition.y, shipPostion.x, shipPostion.y);
+    const speedToGo = engine.maxSpeed
+
+    
+    const velocity = GetComponent(shipEntity, 'ForwardVelocityComponent');
+    velocity.value = speedToGo;
+  });
+
+  ViewEntities(nextEntity, ['GunnerComponent', 'AIControlComponent', 'ShipReferenceComponent'], ['OnlyAttackIfPursuingComponent', 'AggroComponent'], (entity, gunner, aiControl, shipReference) => {
     const shipEntity = this.entities[shipReference.value];
     if (shipEntity === undefined) {
       return;
@@ -484,12 +559,40 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
 
     canDoNextTurn = false;
 
-
     const candidatePick = ~~(ROT.RNG.getUniform() * candidates.value.length);
     this.performAttack(shipEntity, candidates.value[candidatePick], () => { this.nextTurnReady = true; });
   });
 
-  ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, skipper, ai, shipRef) => {
+  ViewEntities(nextEntity, ['GunnerComponent', 'AIControlComponent', 'ShipReferenceComponent', 'AggroComponent'], [], (entity, gunner, aiControl, shipReference, aggro) => {
+    const shipEntity = this.entities[shipReference.value];
+    if (shipEntity === undefined) {
+      return;
+    }
+    if (!(HasComponent(shipEntity, 'AttackCandidatesComponent'))) {
+      return;
+    }
+    const candidates = GetComponent(shipEntity, 'AttackCandidatesComponent');
+    if (candidates.value.length < 1) {
+      return;
+    }
+
+    candidates.value.forEach((candidate) => {
+      if (!HasComponent(candidate, 'ECSIndexComponent')) {
+        return;
+      }
+      const candidateIndex = GetComponent(candidate, 'ECSIndexComponent').value;
+      if (candidateIndex !== aggro.targetIndex) {
+        return;
+      }
+
+      
+      canDoNextTurn = false;
+      this.performAttack(shipEntity, candidate, () => { this.nextTurnReady = true; });
+    });
+  });
+
+  // Dawdle
+  ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent'], ['AggroComponent'], (entity, skipper, ai, shipRef) => {
     // TODO: make better skipper AI
     const shipIndex = shipRef.value;
     const shipToControl = this.entities[shipIndex];
@@ -504,6 +607,34 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
 
     const rotation = GetComponent(shipToControl, 'RotationComponent');
     rotation.value += 0.8;
+  });
+
+  // Pursue
+  ViewEntities(nextEntity, ['SkipperComponent', 'AIControlComponent', 'ShipReferenceComponent', 'AggroComponent'], [], (entity, skipper, ai, shipRef, aggro) => {
+    // TODO: make better skipper AI
+    const shipIndex = shipRef.value;
+    const shipToControl = this.entities[shipIndex];
+    if (shipToControl === undefined) {
+      return;
+    }
+    const shipPostion = GetComponent(shipToControl, 'PositionComponent');
+
+    const targetEntity = this.entities[aggro.targetIndex];
+    if (targetEntity === undefined) {
+      RemoveComponent(entity, 'AggroComponent');
+      return;
+    }
+    const targetPosition = GetComponent(targetEntity, 'PositionComponent');
+
+    // Don't bother trying to orbit
+    if (HasComponent(shipToControl, 'OrbitNotificationComponent')) {
+      RemoveComponent(shipToControl, 'OrbitNotificationComponent');
+    }
+
+    
+
+    const rotation = GetComponent(shipToControl, 'RotationComponent');
+    rotation.value = Math.atan2(targetPosition.y - shipPostion.y, targetPosition.x - shipPostion.x);
   });
 
   ViewEntities(nextEntity, ['ShieldOperatorComponent', 'AIControlComponent', 'ShipReferenceComponent'], [], (entity, shieldOperator, playerControl, shipReference) => {
@@ -1134,9 +1265,9 @@ Gameplay.prototype.redirectShip = function(shipEntityToRedirect, onComplete) {
 
   const updateArrowPerTick = () => {
     if (this.keys.cam_right.isDown) {
-      rotation += CAMERA_TURN_SPEED;
-    } else if (this.keys.cam_left.isDown) {
       rotation -= CAMERA_TURN_SPEED;
+    } else if (this.keys.cam_left.isDown) {
+      rotation += CAMERA_TURN_SPEED;
     }
     updateArrowDir(rotation);
   };

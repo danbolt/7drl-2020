@@ -161,6 +161,48 @@ const PlayerControlComponent = function() {};
 // TODO: Various types of AI control
 const AIControlComponent = function() {}
 
+const PursueIfAttackedComponent = function() {};
+
+const PursueIfInRangeComponent = function(range) {
+  if (range === undefined) {
+    throw new Error('range value was undefined');
+  }
+
+  if (range < 0) {
+    throw new Error('range value was negative');
+  }
+
+  this.range = range;
+}
+
+const OnlyAttackIfPursuingComponent = function() {};
+
+const AggroComponent = function(targetIndex, range) {
+  if (targetIndex === undefined) {
+    throw new Error('Targetindex value was undefined');
+  }
+
+  if (!Number.isInteger(targetIndex)) {
+    throw new Error('Targetindex value was not an integer');
+  }
+
+  if (targetIndex < 0) {
+    throw new Error('Targetindex value was negative');
+  }
+
+  if (range === undefined) {
+    throw new Error('range value was undefined');
+  }
+
+  if (range < 0) {
+    throw new Error('range value was negative');
+  }
+
+
+  this.targetIndex = targetIndex;
+  this.range = range;
+}
+
 const AttackCandidatesComponent = function(value) {
   if (!((Array.isArray(value)) || (value === undefined))) {
     throw new Error('attack candidates was not an array or undefined');
