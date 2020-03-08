@@ -631,7 +631,36 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
       RemoveComponent(shipToControl, 'OrbitNotificationComponent');
     }
 
-    
+    if (HasComponent(entity, 'MessageOnceInAttackRangeComponent')) {
+      canDoNextTurn = false;
+
+      const message = GetComponent(entity, 'MessageOnceInAttackRangeComponent').value;
+      const dialogue = {
+        question: message,
+        portrait: (HasComponent(shipToControl, 'PortraitComponent') ? GetComponent(shipToControl, 'PortraitComponent').value : undefined),
+        options: [
+          {
+            text: '[y] OK',
+            keyCode: Phaser.Input.Keyboard.KeyCodes.Y,
+            action: () => {
+              this.time.addEvent({
+                delay: 32,
+                callback: () => {
+                  this.nextTurnReady = true;
+                }
+              })
+            }
+          }
+        ]
+      };
+      this.showDialogue(dialogue);
+
+      const sound = GetComponent(entity, 'MessageOnceInAttackRangeComponent').sound;
+      if (sound) {
+        SFXSingletons[sound].play();
+      }
+      RemoveComponent(entity, 'MessageOnceInAttackRangeComponent');
+    }
 
     const rotation = GetComponent(shipToControl, 'RotationComponent');
     rotation.value = Math.atan2(targetPosition.y - shipPostion.y, targetPosition.x - shipPostion.x);
