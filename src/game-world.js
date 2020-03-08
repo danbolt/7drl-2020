@@ -427,7 +427,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     // If we're in the southwest, generate the drones
 
     for (let i = 0; i < 10; i++) {
-      const bounty = 1 + ~~(this.rng.getUniform() * 2);
+      const bounty = ((this.rng.getUniform() < 0.5) ? 1 : undefined);
       const message = i === 0 ? ('WARNING WARNING NO REFUGE\nDESIST OR BE DESTROYED') : undefined;
       const messageSound = i === 0 ? 'gamilon_talk2' : undefined;
       const posX = this.rng.getNormal(SECTOR_WIDTH * 0.55, SECTOR_WIDTH * 0.3);
