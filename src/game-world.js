@@ -104,6 +104,7 @@ const generateWeakEnemy = function (entities, rng, names, x, y, message, message
   const portraitToPick = (rng.getUniform() < 0.5) ? 'gamilon3' : 'gamilon2';
 
   const result = generateEnemy(entities, rng, names, x, y, new WeakEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, WEAK_NAME_PREFIX, WEAK_CLASS_NAME, 'gamilon_small', 1, 1.65, false, message, messageSound, rndBounty);
+  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(18));
   AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
 
   return result;
@@ -468,7 +469,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     }
 
     // if none of the other situations hold true, then generate normal enemies
-    if (tileDistanceFromStart <= 2) {
+    if (tileDistanceFromStart <= 1) {
       
 
       // If we're pretty close to the start, then generating simple enemies is best
@@ -478,13 +479,13 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
 
         generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
       }
-      if (tileDistanceFromStart <= 1) {
+      if (tileDistanceFromStart <= 0) {
         generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.20, 'Halt! All transit is forbidden!', 'gamilon_talk3');
         generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.20, SECTOR_HEIGHT * 0.2, 'Intruder! Intruder alert!', 'gamilon_talk3');
       }
 
       // TODO: planets for easy sectors
-    } else if (tileDistanceFromStart <= 3) {
+    } else if (tileDistanceFromStart <= 2) {
       
 
       // The next difficulty spike is learning to raise shields; the "weak" enemy has a strong attack
@@ -492,9 +493,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-        if (this.rng.getUniform() < 0.33) {
-          generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 2 + 1));
-        }
+        generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, (this.rng.getUniform() < 0.3) ? 1 : undefined);
       }
       generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'Continue further and be destroyed!', 'gamilon_talk3', 1);
 

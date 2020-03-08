@@ -40,7 +40,7 @@ PointsSelectionScreen.prototype.create9Slice = function (x, y, width, height) {
 PointsSelectionScreen.prototype.pushOptionsView = function(options, existingConfig) {
   const optionData = [
     {
-      name: 'Ship Dexterity',
+      name: 'Ship Initiative',
       configKey: 'skipperDexPoints'
     },
     {
@@ -48,7 +48,7 @@ PointsSelectionScreen.prototype.pushOptionsView = function(options, existingConf
       configKey: 'shieldPoints'
     },
     {
-      name: 'Shield Toggle Dexterity',
+      name: 'Shield Toggle Initiative',
       configKey: 'shieldOperatorDexPoints'
     },
     {
@@ -60,11 +60,11 @@ PointsSelectionScreen.prototype.pushOptionsView = function(options, existingConf
       configKey: 'atkRangePoints'
     },
     {
-      name: 'Cannons Dexterity',
+      name: 'Cannons Initiative',
       configKey: 'gunnerDexPoints'
     },
     {
-      name: 'Engine Dexterity',
+      name: 'Engine Initiative',
       configKey: 'engineerDexPoints'
     },
     {

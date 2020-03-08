@@ -110,7 +110,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
     canDoNextTurn = false;
 
 
-    const hasArrivedAtPlanet = HasComponent(shipEntity, 'OrbitNotificationComponent');
+    const hasArrivedAtPlanet = HasComponent(shipEntity, 'OrbitNotificationComponent') && HasComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent');
     const inOrbitAlready = HasComponent(shipEntity, 'ShipOrbitingPlanetComponent');
     if (inOrbitAlready) {
       const planetOrbitIndex = GetComponent(shipEntity, 'ShipInOrbitRangeOfPlanetComponent').planetIndex;
@@ -1033,6 +1033,8 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
 
             // Remove all temp components
             RemoveComponentFromAllEntities(this.entities, 'ShipInOrbitRangeOfPlanetComponent');
+            RemoveComponentFromAllEntities(this.entities, 'OrbitNotificationComponent');
+            RemoveComponentFromAllEntities(this.entities, 'ShipOrbitingPlanetComponent');
             RemoveComponentFromAllEntities(this.entities, 'AggroComponent');
 
             // Go to the next sector

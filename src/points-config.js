@@ -110,7 +110,7 @@ const DefaultPlayerPointsConfiguration = function() {
   this.shipDexPoints = 6;
 
   this.atkStrengthPoints = 6;
-  this.atkRangePoints = 9;
+  this.atkRangePoints = 8;
 
   this.skipperDexPoints = 3;
 
