@@ -1078,6 +1078,11 @@ Gameplay.prototype.performAttack = function(attackingEntity, defendingEntity, on
   let attackPower = HasComponent(attackingEntity, 'AttackStrengthComponent') ? GetComponent(attackingEntity, 'AttackStrengthComponent').value : 0;
   let damage = attackPower;
 
+  // If you get attacked and want to hit back, you can use this for aggro range
+  if (HasComponent(defendingEntity, 'PursueIfAttackedComponent')) {
+    AddComponent(defendingEntity, 'AggroComponent', new AggroComponent(GetComponent(attackingEntity, 'ECSIndexComponent').value, 99999));
+  }
+
   // TODO: add shields into damage calculation
   if (HasComponent(defendingEntity, 'ShieldsComponent') && HasComponent(defendingEntity, 'ShieldsUpComponent')) {
     const shields = GetComponent(defendingEntity, 'ShieldsComponent');

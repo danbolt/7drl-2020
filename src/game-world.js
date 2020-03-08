@@ -96,14 +96,16 @@ const generatePopcornEnemy = function (entities, rng, names, x, y, message, mess
   const result = generateEnemy(entities, rng, names, x, y, new PopcornEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, POPCORN_NAME_PREFIX, POPCORN_CLASS_NAME, 'gamilon_popcorn', 1, 1.05, false, message, messageSound, rndBounty);
   AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(70));
 
-
   return result;
 };
 
 const generateWeakEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
   const portraitToPick = (rng.getUniform() < 0.5) ? 'gamilon3' : 'gamilon2';
 
-  return generateEnemy(entities, rng, names, x, y, new WeakEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, WEAK_NAME_PREFIX, WEAK_CLASS_NAME, 'gamilon_small', 1, 1.65, false, message, messageSound, rndBounty);
+  const result = generateEnemy(entities, rng, names, x, y, new WeakEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, WEAK_NAME_PREFIX, WEAK_CLASS_NAME, 'gamilon_small', 1, 1.65, false, message, messageSound, rndBounty);
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
+
+  return result;
 };
 
 const generateBattleshipEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
@@ -123,6 +125,7 @@ const generateDreadnoughtEnemy = function (entities, rng, names, x, y, message, 
 
   const result = generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, DREADNOUGHT_NAME_PREFIX, DREADNOUGHT_CLASS_NAME, 'gamilon_large', 3, 3.4, true);
   AddComponent(result[0], 'OnlyAttackIfPursuingComponent', new OnlyAttackIfPursuingComponent());
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
   return result;
 };
 
