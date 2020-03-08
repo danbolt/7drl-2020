@@ -20,7 +20,7 @@ const populateWithPlayerEntities = function (entities) {
     AddComponent(playerShip, 'TeamComponent', new TeamComponent('Space Federation'));
     AddComponent(playerShip, 'NameComponent', new NameComponent('Arlo Mk. IV'));
     AddComponent(playerShip, 'ClassComponent', new NameComponent('Journeyer Class'));
-    AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(300, 300));
+    AddComponent(playerShip, 'SuppliesComponent', new SuppliesComponent(100, 100));
     AddComponent(playerShip, 'AudioTensionComponent', new AudioTensionComponent(0));
     entities.push(playerShip);
 
