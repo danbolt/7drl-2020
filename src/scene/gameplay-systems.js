@@ -977,6 +977,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
 
             // Remove all temp components
             RemoveComponentFromAllEntities(this.entities, 'ShipInOrbitRangeOfPlanetComponent');
+            RemoveComponentFromAllEntities(this.entities, 'AggroComponent');
 
             // Go to the next sector
             this.scene.start('WorldMapScreen', {

@@ -91,10 +91,10 @@ const generateEnemy = function (entities, rng, names, x, y, config, portraitToPi
 
 
 const generatePopcornEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
-  const portraitToPick = (rng.getUniform() < 0.1444) ? 'gamilon1' : 'gamilon2';
+  const portraitToPick = 'gamilon2';
 
   const result = generateEnemy(entities, rng, names, x, y, new PopcornEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, POPCORN_NAME_PREFIX, POPCORN_CLASS_NAME, 'gamilon_popcorn', 1, 1.05, false, message, messageSound, rndBounty);
-  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(99999));
+  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(70));
 
 
   return result;
@@ -121,7 +121,9 @@ const generateAltBattleshipEnemy = function (entities, rng, names, x, y, message
 const generateDreadnoughtEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
   const portraitToPick = 'gamilon1';
 
-  return generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, DREADNOUGHT_NAME_PREFIX, DREADNOUGHT_CLASS_NAME, 'gamilon_large', 3, 3.4, true);
+  const result = generateEnemy(entities, rng, names, x, y, new DreadnoughtEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, DREADNOUGHT_NAME_PREFIX, DREADNOUGHT_CLASS_NAME, 'gamilon_large', 3, 3.4, true);
+  AddComponent(result[0], 'OnlyAttackIfPursuingComponent', new OnlyAttackIfPursuingComponent());
+  return result;
 };
 
 const generateDroneEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
@@ -131,7 +133,10 @@ const generateDroneEnemy = function (entities, rng, names, x, y, message, messag
 };
 
 const generateOldGodEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
-  return generateEnemy(entities, rng, names, x, y, new OldGodEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false, 'Mortals! You have disgraced this scared place!\nLeave now!', 'gamilon_talk0', 10);
+  const result =  generateEnemy(entities, rng, names, x, y, new OldGodEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false, 'Mortals! You have disgraced this scared place!\nLeave now!', 'gamilon_talk0', 10);
+  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(99999));
+
+  return result;
 };
 
 const GameWorld = function (width, height, seed) {
