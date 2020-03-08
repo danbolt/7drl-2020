@@ -95,6 +95,7 @@ const generatePopcornEnemy = function (entities, rng, names, x, y, message, mess
 
   const result = generateEnemy(entities, rng, names, x, y, new PopcornEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, POPCORN_NAME_PREFIX, POPCORN_CLASS_NAME, 'gamilon_popcorn', 1, 1.05, false, message, messageSound, rndBounty);
   AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(9999));
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
 
   return result;
 };
@@ -113,6 +114,7 @@ const generateBattleshipEnemy = function (entities, rng, names, x, y, message, m
 
   const result = generateEnemy(entities, rng, names, x, y, new BattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_NAME_PREFIX, BATTLESHIP_CLASS_NAME, 'gamilon_medium', 2, 2.3, false, message, messageSound, rndBounty);
   AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(SECTOR_WIDTH * 0.65));
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
 
   return result;
 };
@@ -122,6 +124,7 @@ const generateAltBattleshipEnemy = function (entities, rng, names, x, y, message
 
   const result = generateEnemy(entities, rng, names, x, y, new AltBattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_ALT_NAME_PREFIX, BATTLESHIP_ALT_CLASS_NAME, 'gamilon_medium2', 2, 2, true, message, messageSound, rndBounty);
   AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(SECTOR_WIDTH * 0.65));
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
 
   return result;
 };
@@ -140,6 +143,7 @@ const generateDroneEnemy = function (entities, rng, names, x, y, message, messag
 
   const result = generateEnemy(entities, rng, names, x, y, new DroneEnemyPointsConfiguration(), portraitToPick, 'Lost ' + ENEMY_PEOPLE_NAME + ' Machines', DRONE_NAME_PREFIX, DRONE_CLASS_NAME, 'gamilon_mini', 1, 0.5, false, message, messageSound, rndBounty);
   AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(9999));
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
 
   return result;
 };
@@ -147,6 +151,7 @@ const generateDroneEnemy = function (entities, rng, names, x, y, message, messag
 const generateOldGodEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
   const result =  generateEnemy(entities, rng, names, x, y, new OldGodEnemyPointsConfiguration(), 'old_god', '???', '', 'Ancient God of Flame', 'old_god', 4, 10.1, false, 'Mortals! You have disgraced this scared place!\nLeave now!', 'gamilon_talk0', 10);
   AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(99999));
+  AddComponent(result[0], 'PursueIfAttackedComponent', new PursueIfAttackedComponent());
 
   return result;
 };
@@ -539,7 +544,6 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
           generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 2);
         }
       }
-      generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, 40, 40, 'gahhh! please don\'t kill me!', 'gamilon_talk2');
       for (let i = 0; i < 5; i++) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));

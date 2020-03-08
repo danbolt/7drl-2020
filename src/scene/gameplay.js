@@ -183,7 +183,8 @@ Gameplay.prototype.setupUI = function () {
   westMarker.setCenterAlign();
   westMarker.rotation = Math.PI * -0.5
   compassGraphic.add(westMarker);
-  const shipDirectionMarker = this.add.line(compassInfo.x, compassInfo.y, 0, 0, 32, 0, 0xFF0000, 1.0);
+  const shipDirectionMarker = this.add.line(compassGraphic.x, compassGraphic.y, 0, 0, 32, 0, 0xFF0000, 1.0);
+  shipDirectionMarker.setOrigin(0);
   for (let i = 0; i < 8; i++) {
     if (i % 2 === 0) {
       continue;
@@ -207,9 +208,9 @@ Gameplay.prototype.setupUI = function () {
     const cameraAngleIndex = ~~((cameraAngle2PiClamped / (Math.PI * 2.001)) * COMPASS_ANGLE_LETTERS.length);
     compassInfo.text = '. . ' + COMPASS_ANGLE_LETTERS[cameraAngleIndex] + ' . .';
 
-    compassGraphic.rotation = cameraAngle2PiClamped - (Math.PI * 0.5);
+    compassGraphic.rotation = Phaser.Math.Angle.Normalize(cameraAngle2PiClamped - (Math.PI * 0.5));
     ViewEntities(this.entities, ['PlayerControlComponent', 'LerpRotationComponent', 'HullHealthComponent'], [], (e, p, rotation) => {
-      shipDirectionMarker.rotation = rotation.value + (Math.PI * 0.5);
+      shipDirectionMarker.rotation = this.gameCameraTheta + rotation.value;
     });
   };
 

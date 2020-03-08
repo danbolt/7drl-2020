@@ -379,10 +379,29 @@ TitleScreen.prototype.createAsteroid = function (argument) {
 
 const TitleTextA = `In a different place,
 in a different time,
-Nayr was the fairest planet of them all.`;
+NAYR was the most lovely planet of them all.`;
 
 const TitleTextB = `Clouds, mountains, and rivers,
-commerce, art, and ,`
+science, art, and commerce.
+NAYR was a utopia for all that came.`;
+
+const TitleTextC = `Until one day...`;
+
+const TitleTextD = `The ` + ENEMY_FACTION_NAME.toUpperCase() + ` took NAYR as
+a colony for itself.
+They sanctioned the populace and
+closed all borders.`
+
+const TitleTextE = `All hope seemed lost until...`;
+
+const TitleTextF = `A motley crew of volunteers offered to
+escort the PLANET SHIELD, a device that can protect
+the people of NAYR from the ` + ENEMY_PEOPLE_NAME.toUpperCase() + 'S.';
+
+const TitleTextG = `With you as the captain of the ARLO MK IV,
+will you be able to make it?
+
+Can you save NAYR?`;
 
 TitleScreen.prototype.create = function() {
   this.hasShownTitle = false;
@@ -546,7 +565,8 @@ TitleScreen.prototype.create = function() {
   const farRange = 10;
   const closeRange = 3.4;
   const gamilonTweens = [];
-  for (let id = 0; id < 16; id++) {
+  const numberOfShips = 10
+  for (let id = 0; id < numberOfShips; id++) {
     const i = id;
     const gltfBinary = this.cache.binary.get('gamilon_small');
     loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
@@ -554,15 +574,15 @@ TitleScreen.prototype.create = function() {
       const m = gltfData.scene.children[0];
       m.scale.set(0.5, 0.5, 0.5);
       this.three.scene.add(m);
-      m.position.set(iscandar.position.x + Math.cos(i / 16 * Math.PI * 2) * farRange, 0, iscandar.position.z + Math.sin(i / 16 * Math.PI * 2) * farRange)
+      m.position.set(iscandar.position.x + Math.cos(i / numberOfShips * Math.PI * 2) * farRange, 0, iscandar.position.z + Math.sin(i / numberOfShips * Math.PI * 2) * farRange)
       m.lookAt(iscandar.position);
       m.visible = false;
 
       let t = this.add.tween({
         targets: m.position,
         paused: true,
-        x: (iscandar.position.x + Math.cos(i / 16 * Math.PI * 2) * closeRange),
-        z: (iscandar.position.z + Math.sin(i / 16 * Math.PI * 2) * closeRange),
+        x: (iscandar.position.x + Math.cos(i / numberOfShips * Math.PI * 2) * closeRange),
+        z: (iscandar.position.z + Math.sin(i / numberOfShips * Math.PI * 2) * closeRange),
         duration: gamilonTweenDuration,
         easing: Phaser.Math.Easing.Cubic.Out,
         onStart: () => { m.visible = true; },
