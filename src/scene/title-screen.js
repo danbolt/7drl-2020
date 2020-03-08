@@ -381,9 +381,9 @@ const TitleTextA = `In a different place,
 in a different time,
 NAYR was the most lovely planet of them all.`;
 
-const TitleTextB = `Clouds, mountains, and rivers,
-science, art, and commerce.
-NAYR was a utopia for all that came.`;
+const TitleTextB = `Clouds, mountains, and rivers!
+Science, art, and cuisine!
+NAYR was a southeast utopia for all that came.`;
 
 const TitleTextC = `Until one day...`;
 
@@ -404,7 +404,33 @@ will you be able to make it?
 Can you save NAYR?`;
 
 TitleScreen.prototype.startTitleTextTween = function (string, onComplete) {
-  //
+  this.prologueText.text = string;
+  let t = this.add.tween({
+    targets: this,
+    tweenVal: 1,
+    duration: 1000,
+    onUpdate: (tween) => {
+      this.prologueText.alpha = ((~~(tween.progress * 4)) / 4);
+    },
+    onComplete: () => {
+      this.time.addEvent({
+        delay: 1000 + (40 * string.length),
+        callback: () => {
+          this.add.tween({
+          targets: this,
+          tweenVal: 0,
+          duration: 1000,
+          onUpdate: (tween) => {
+            this.prologueText.alpha = ((~~((1 - tween.progress) * 4)) / 4);
+          },
+          onComplete: () => {
+            onComplete();
+          }
+        })
+        }
+      })
+    }
+  })
 };
 
 TitleScreen.prototype.create = function() {
@@ -467,13 +493,6 @@ TitleScreen.prototype.create = function() {
       duration: 10000,
       easing: Phaser.Math.Easing.Cubic.Out,
       onStart: () => {
-        this.time.addEvent({
-          delay: 5000,
-          callback: () => {
-            SFXSingletons['win_game'].play();
-            this.showTitle();
-          }
-        })
         this.add.tween({
           targets: playerShip.scale,
           x: 0.5,
@@ -545,6 +564,12 @@ TitleScreen.prototype.create = function() {
   const toEarth = () => {
     matTweenB.play();
     cameraScrollTween.play();
+    this.startTitleTextTween(TitleTextF, () => {
+      this.startTitleTextTween(TitleTextG, () => {
+        SFXSingletons['win_game'].play();
+        this.showTitle();
+      });
+    });
   };
 
   const gamilonTweenDuration = 300;
@@ -590,7 +615,14 @@ TitleScreen.prototype.create = function() {
         duration: gamilonTweenDuration,
         easing: Phaser.Math.Easing.Cubic.Out,
         onStart: () => { m.visible = true; },
-        onComplete: () => { if (i === 0) { this.time.addEvent({delay: toEarthTweenDelay, callback: toEarth}) } }
+        onComplete: () => { if (i === 0) {
+          
+          this.startTitleTextTween(TitleTextD, () => {
+            this.startTitleTextTween(TitleTextE, () => {
+              this.time.addEvent({delay: toEarthTweenDelay, callback: toEarth});
+            })
+          })
+        }}
       });
       gamilonTweens.push(t);
     });
@@ -603,10 +635,18 @@ TitleScreen.prototype.create = function() {
     matTweenA.play();
   };
 
-  this.time.addEvent({
-    delay: 2000,
-    callback: launchGamilons
-  })
+  this.tweenVal = 0;
+  this.prologueText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'you shouldn\'t be able to read this', DEFAULT_TEXT_SIZE);
+  this.prologueText.setOrigin(0.5, 0.5);
+  this.prologueText.setCenterAlign();
+  this.prologueText.alpha = 0;
+  this.startTitleTextTween(TitleTextA, () => {
+    this.startTitleTextTween(TitleTextB, () => {
+      this.startTitleTextTween(TitleTextC, () => {
+        launchGamilons();
+      });
+    });
+  });
 
   this.three.camera.position.set(-5, 3, -5);
   this.three.camera.lookAt(iscandar.position);
