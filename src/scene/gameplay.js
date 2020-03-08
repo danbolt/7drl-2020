@@ -208,9 +208,9 @@ Gameplay.prototype.setupUI = function () {
     const cameraAngleIndex = ~~((cameraAngle2PiClamped / (Math.PI * 2.001)) * COMPASS_ANGLE_LETTERS.length);
     compassInfo.text = '. . ' + COMPASS_ANGLE_LETTERS[cameraAngleIndex] + ' . .';
 
-    compassGraphic.rotation = Phaser.Math.Angle.Normalize(cameraAngle2PiClamped - (Math.PI * 0.5));
+    compassGraphic.rotation = Phaser.Math.Angle.Normalize(-cameraAngle2PiClamped + (Math.PI * 0.5 * 3) + Math.PI);
     ViewEntities(this.entities, ['PlayerControlComponent', 'LerpRotationComponent', 'HullHealthComponent'], [], (e, p, rotation) => {
-      shipDirectionMarker.rotation = this.gameCameraTheta + rotation.value;
+      shipDirectionMarker.rotation = compassGraphic.rotation + Phaser.Math.Angle.Normalize(Math.atan2(Math.sin(rotation.value), Math.cos(-rotation.value)));
     });
   };
 

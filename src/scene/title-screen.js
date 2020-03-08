@@ -403,6 +403,10 @@ will you be able to make it?
 
 Can you save NAYR?`;
 
+TitleScreen.prototype.startTitleTextTween = function (string, onComplete) {
+  //
+};
+
 TitleScreen.prototype.create = function() {
   this.hasShownTitle = false;
 
@@ -565,7 +569,7 @@ TitleScreen.prototype.create = function() {
   const farRange = 10;
   const closeRange = 3.4;
   const gamilonTweens = [];
-  const numberOfShips = 10
+  const numberOfShips = 10;
   for (let id = 0; id < numberOfShips; id++) {
     const i = id;
     const gltfBinary = this.cache.binary.get('gamilon_small');
