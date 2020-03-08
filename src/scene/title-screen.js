@@ -376,6 +376,14 @@ TitleScreen.prototype.createAsteroid = function (argument) {
 
   return earth;
 };
+
+const TitleTextA = `In a different place,
+in a different time,
+Nayr was the fairest planet of them all.`;
+
+const TitleTextB = `Clouds, mountains, and rivers,
+commerce, art, and ,`
+
 TitleScreen.prototype.create = function() {
   this.hasShownTitle = false;
 

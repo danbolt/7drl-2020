@@ -160,6 +160,7 @@ Gameplay.prototype.setupUI = function () {
   }
 
   const compassInfo = this.add.bitmapText((GAME_WIDTH - (minimapGridCellSize * World.width)), (GAME_HEIGHT - (minimapGridCellSize * World.height)) - DEFAULT_TEXT_SIZE * 2, 'miniset', '. . N . .', DEFAULT_TEXT_SIZE);
+  compassInfo.visible = false;
   const compassGraphic = this.add.container(compassInfo.x, compassInfo.y - 32);
   compassGraphic.scaleX = 0.75;
   compassGraphic.scaleY = 0.75;
@@ -182,8 +183,7 @@ Gameplay.prototype.setupUI = function () {
   westMarker.setCenterAlign();
   westMarker.rotation = Math.PI * -0.5
   compassGraphic.add(westMarker);
-  const shipDirectionMarker = this.add.line(0, 0, 16, 0, 32, 0, 0xFF0000, 1.0);
-  compassGraphic.add(shipDirectionMarker);
+  const shipDirectionMarker = this.add.line((GAME_WIDTH - (minimapGridCellSize * World.width)), (GAME_HEIGHT - (minimapGridCellSize * World.height)) - DEFAULT_TEXT_SIZE * 2, 16, 0, 32, 0, 0xFF0000, 1.0);
   for (let i = 0; i < 8; i++) {
     if (i % 2 === 0) {
       continue;

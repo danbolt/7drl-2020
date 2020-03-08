@@ -460,7 +460,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
       
 
       // If we're pretty close to the start, then generating simple enemies is best
-      for (let i = 0; i < ((tileDistanceFromStart <= 1) ? 2 : 7); i++) {
+      for (let i = 0; i < ((tileDistanceFromStart <= 1) ? 7 : 10); i++) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
@@ -476,23 +476,21 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
       
 
       // The next difficulty spike is learning to raise shields; the "weak" enemy has a strong attack
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 9; i++) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
         if (this.rng.getUniform() < 0.33) {
-          generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+          generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 2));
         }
       }
-      generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'Continue further and be destroyed!', 'gamilon_talk3', 3);
+      generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'Continue further and be destroyed!', 'gamilon_talk3', 1);
 
-      if (this.rng.getUniform() < 0.5) {
-        for (let i = 0; i < 2; i++) {
-          const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
+      for (let i = 0; i < 5; i++) {
+        const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-          generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
-        }
+        generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
       }
 
       // TODO: planets for weak sectors
@@ -501,38 +499,30 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
 
       // Battleships are kind of just there. They exist to provide an interesting challenge
       // be sure to add planets (free content and difficulty balancing!)
+      for (let i = 0; i < 7; i++) {
+        const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
+        const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
+        generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 2);
+      }
+      for (let i = 0; i < ~~(this.rng.getUniform() * 4 + 3); i++) {
+        const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
+        const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
+
+        generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+      }
+      generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'For the empire!!', 'gamilon_talk1', 3);
       for (let i = 0; i < 4; i++) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-        if (this.rng.getUniform() < 0.66) {
-          generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 2);
-        }
-      }
-      generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'For the empire!!', 'gamilon_talk1', 3);
-
-      if (this.rng.getUniform() < 0.2) {
-        for (let i = 0; i < 2; i++) {
-          const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
-          const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
-
-          generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
-        }
-      }
-      if (this.rng.getUniform() < 0.5) {
-        const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
-        const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
-
-        generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+        generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
       }
 
       // TODO: planets for weak sectors
     } else if (tileDistanceFromStart <= 6) {
       
 
-      // Battleships are kind of just there. They exist to provide an interesting challenge
-      // be sure to add planets (free content and difficulty balancing!)
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 8 + ~~(this.rng.getUniform() * 2); i++) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
@@ -541,14 +531,13 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         } else {
           generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
         }
-        if (this.rng.getUniform() < 0.2) {
-          for (let i = 0; i < 2; i++) {
-            const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
-            const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
+      }
+      generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, 40, 40, 'gahhh! please don\'t kill me!', 'gamilon_talk2');
+      for (let i = 0; i < 5; i++) {
+        const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
+        const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-            generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
-          }
-        }
+        generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined);
       }
     } else if (tileDistanceFromStart <= 7) {
       
@@ -565,7 +554,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-        generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+        generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
       }
       generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
     }
