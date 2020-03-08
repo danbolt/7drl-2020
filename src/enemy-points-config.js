@@ -68,18 +68,18 @@ BattleshipEnemyPointsConfiguration.prototype.constructor = BattleshipEnemyPoints
 const AltBattleshipEnemyPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
-  this.hullHealthPoints = 40;
+  this.hullHealthPoints = 30;
   this.shieldPoints = 4;
   this.shipDexPoints = 6;
 
-  this.atkStrengthPoints = 2.8;
+  this.atkStrengthPoints = 5;
   this.atkRangePoints = 10;
 
   this.skipperDexPoints = 10;
 
   this.gunnerDexPoints = 3;
 
-  this.engineerDexPoints = 7;
+  this.engineerDexPoints = 12;
   this.engineMaxSpeedPoints = 25;
 
   this.shieldOperatorDexPoints = 7;
@@ -92,7 +92,7 @@ const DreadnoughtEnemyPointsConfiguration = function() {
   PointsConfiguration.call(this);
 
   this.hullHealthPoints = 80;
-  this.shieldPoints = 8;
+  this.shieldPoints = 10;
   this.shipDexPoints = 6;
 
   this.atkStrengthPoints = 7;

@@ -672,8 +672,17 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
       return;
     }
     const areShieldsAlreadyRaised = HasComponent(shipEntity, 'ShieldsUpComponent');
+    if (areShieldsAlreadyRaised) {
+      if (!HasComponent(entity, 'AggroComponent')) {
+        RemoveComponent(shipEntity, 'ShieldsUpComponent');
+      }
+      return;
+    }
 
     // TODO: Make interesting shields AI 
+    if (HasComponent(entity, 'AggroComponent')) {
+      AddComponent(shipEntity, 'ShieldsUpComponent', new ShieldsUpComponent());
+    }
   });
 
   ViewEntities(nextEntity, ['AIControlComponent', 'PositionComponent', 'ShipReferenceComponent'], [], (entity, aiControl, position, shipRef) => {

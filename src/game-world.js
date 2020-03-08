@@ -111,13 +111,19 @@ const generateWeakEnemy = function (entities, rng, names, x, y, message, message
 const generateBattleshipEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
   const portraitToPick = 'gamilon3';
 
-  return generateEnemy(entities, rng, names, x, y, new BattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_NAME_PREFIX, BATTLESHIP_CLASS_NAME, 'gamilon_medium', 2, 2.3, false, message, messageSound, rndBounty);
+  const result = generateEnemy(entities, rng, names, x, y, new BattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_NAME_PREFIX, BATTLESHIP_CLASS_NAME, 'gamilon_medium', 2, 2.3, false, message, messageSound, rndBounty);
+  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(SECTOR_WIDTH * 0.65));
+
+  return result;
 };
 
 const generateAltBattleshipEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
   const portraitToPick = 'gamilon2';
 
-  return generateEnemy(entities, rng, names, x, y, new AltBattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_ALT_NAME_PREFIX, BATTLESHIP_ALT_CLASS_NAME, 'gamilon_medium2', 2, 2, true);
+  const result = generateEnemy(entities, rng, names, x, y, new AltBattleshipEnemyPointsConfiguration(), portraitToPick, ENEMY_FACTION_NAME, BATTLESHIP_ALT_NAME_PREFIX, BATTLESHIP_ALT_CLASS_NAME, 'gamilon_medium2', 2, 2, true, message, messageSound, rndBounty);
+  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(SECTOR_WIDTH * 0.65));
+
+  return result;
 };
 
 const generateDreadnoughtEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
@@ -338,6 +344,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     AddComponent(earth, 'TeamComponent', new TeamComponent('Space Federation'));
     newSector.entities.push(earth);
 
+
     // asteroid belt for looks
     for (let i = 0; i < 32; i++) {
       if (i >= 14 && i <= 20) {
@@ -526,7 +533,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-        if (this.rng.getUniform() < 0.5) {
+        if (this.rng.getUniform() < 0.4) {
           generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
         } else {
           generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
@@ -554,7 +561,11 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-        generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
+        if (this.rng.getUniform() < 0.4563) {
+          generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+        } else {
+          generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+        }
       }
       generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
     }
