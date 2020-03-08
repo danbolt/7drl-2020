@@ -730,6 +730,131 @@ WinScreen.prototype.preload = function() {
 WinScreen.prototype.create = function() {
   TitleScreen.prototype.setupBackground.call(this);
 
+  const iscandar = TitleScreen.prototype.createIscandar.call(this);
+  this.three.scene.add(iscandar);
+  this.three.camera.position.set(5, 3, -5);
+  this.three.camera.lookAt(0, 0, 0);
+
+  this.three.camera.lookAt(iscandar.position);
+
+  this.tweenVal = 0;
+  this.prologueText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'you shouldn\'t be able to read this', DEFAULT_TEXT_SIZE);
+  this.prologueText.setOrigin(0.5, 0.5);
+  this.prologueText.setCenterAlign();
+  this.prologueText.alpha = 0;
+
+  const farRange = 12;
+  const closeRange = 3.4;
+  const numberOfShips = 10;
+  const gamalonTweens = [];
+  for (let id = 0; id < numberOfShips; id++) {
+    const i = id;
+    const gltfBinary = this.cache.binary.get('gamilon_small');
+    loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
+      // The mesh must be the only object in the scene
+      const m = gltfData.scene.children[0];
+      m.scale.set(0.5, 0.5, 0.5);
+      this.three.scene.add(m);
+      m.position.set(iscandar.position.x + Math.cos(i / numberOfShips * Math.PI * 2) * closeRange, 0, iscandar.position.z + Math.sin(i / numberOfShips * Math.PI * 2) * closeRange)
+      m.lookAt(iscandar.position);
+      m.visible = true;
+
+      let t = this.add.tween({
+        targets: m.position,
+        paused: true,
+        x: (iscandar.position.x + Math.cos(i / numberOfShips * Math.PI * 2) * farRange),
+        z: (iscandar.position.z + Math.sin(i / numberOfShips * Math.PI * 2) * farRange),
+        duration: 600,
+        onComplete: () => {
+          let flickerCount = 0;
+          const flipFlicker = () => {
+            if (flickerCount >= 7) {
+              m.visible = false;
+              return;
+            }
+            flickerCount++;
+            m.visible = !(m.visible);
+
+            this.time.addEvent({
+              delay: 100,
+              callback: flipFlicker
+            })
+          }
+          this.time.addEvent({
+            delay: 100,
+            callback: flipFlicker
+          })
+        }
+      });
+      let t2 = this.add.tween({
+        targets: m.rotation,
+        paused: true,
+        x: (Math.random() * Math.PI * 2) - Math.PI,
+        z: (Math.random() * Math.PI * 2) - Math.PI,
+        y: Math.PI + (i * 0.6782),
+        duration: 400
+      });
+      gamalonTweens.push(t);
+      gamalonTweens.push(t2);
+    });
+  }
+
+  const shield = new THREE.Mesh( SHIELDS_GEOM, SHIELDS_MAT );
+  shield.scale.set(0.0004, 0.0004, 0.0004);
+  shield.position.set(iscandar.position.x, iscandar.position.y, iscandar.position.z);
+  this.three.scene.add(shield);
+  const earthTween = this.add.tween({
+    targets: shield.rotation,
+    y: Math.PI * 2,
+    duration: 5000,
+    repeat: -1
+  });
+
+  this.time.addEvent({
+    delay: 700,
+    callback: () => {
+      const t = this.add.tween({
+        targets: shield.scale,
+        x: 2.3,
+        y: 2.3,
+        z: 2.3,
+        duration: 200,
+        easing: Phaser.Math.Easing.Elastic.Out
+      });
+    }
+  })
+
+  this.time.addEvent({
+    delay: 1200,
+    callback: () => {
+      gamalonTweens.forEach((t) => { t.play(); })
+    }
+  })
+
+const finalText = `And just in the nick of time,
+the ` + ENEMY_PEOPLE_NAME.toUpperCase() + ` were blocked
+by the PLANET SHIELD and NAYR'S former glory
+was restored!
+
+Congratulations captain and crew of
+the ARLO MK IV!`
+
+  TitleScreen.prototype.startTitleTextTween.call(this, finalText, () => {
+    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'century', 'VICTORY', 32);
+    questionText.setCenterAlign();
+    questionText.setOrigin(0.5);
+
+    SFXSingletons['win_game2'].play();
+
+    const returnText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.75, 'miniset', 'press space to return to title', DEFAULT_TEXT_SIZE);
+    returnText.setOrigin(0.5, 0.5);
+    returnText.setCenterAlign();
+
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
+      this.scene.start('CDRomScreen');
+    });
+  });
+
   this.cameras.cameras[0].fadeIn(400);
 
   const tSound = this.add.tween({
@@ -737,11 +862,5 @@ WinScreen.prototype.create = function() {
     volume: MAX_VOLUME * 0.5,
     delay: 2000,
     duration: 500,
-  });
-
-  this.add.bitmapText(32, 32, 'miniset', 'You win! Press space to go to back to the title', DEFAULT_TEXT_SIZE);
-
-  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
-    this.scene.start('CDRomScreen');
   });
 };

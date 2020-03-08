@@ -47,8 +47,7 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
 
         // If the player is in orbit range of a planet with
         if (isAVictoryPlanet && HasComponent(shipEntity, 'PlayerControlComponent')) {
-          this.scene.stop('Gameplay');
-          // TODO: Add a victory screen
+          this.scene.start('WinScreen');
         }
       }
     });

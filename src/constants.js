@@ -136,6 +136,7 @@ const SFXSoundNames = [
   "select_y",
   "title_fanfare",
   "win_game",
+  "win_game2",
   "startup"
 ];
 const SFXSingletons = {};
