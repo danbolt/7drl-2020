@@ -280,7 +280,7 @@ TitleScreen.prototype.create = function() {
             }
 
             //World.currentPlayerSector.x = 0;
-            //World.currentPlayerSector.y = 0;
+            //World.currentPlayerSector.y = 3;
 
             this.scene.start('WorldMapScreen', {
               previousPlayerSector: {x: -2, y: -1}
@@ -307,7 +307,17 @@ CDRomScreen.prototype.create = function() {
     delay: 300,
     callback: () => {
       let cd =this.add.circle(GAME_WIDTH - 20, GAME_HEIGHT - 20, 18, 0xAAAAAF);
-      let cdHole =this.add.circle(GAME_WIDTH - 20, GAME_HEIGHT - 20, 5, 0x000000);
+      const holeContainer = this.add.container(GAME_WIDTH - 20, GAME_HEIGHT - 20);
+      let cdHole =this.add.circle(0, 0, 5, 0x000000);
+      let cdHole2 =this.add.circle(0, 11, 5, 0x000000);
+      holeContainer.add(cdHole);
+      holeContainer.add(cdHole2);
+      this.add.tween({
+        targets: holeContainer,
+        rotation: Math.PI * 2,
+        duration: 1000,
+        repeat: -1
+      })
 
       this.time.addEvent({
         delay: 50,
