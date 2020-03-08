@@ -488,7 +488,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
         if (this.rng.getUniform() < 0.33) {
-          generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 2));
+          generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 2 + 1));
         }
       }
       generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'Continue further and be destroyed!', 'gamilon_talk3', 1);
@@ -515,7 +515,7 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posX = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.3)));
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
-        generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+        generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY);
       }
       generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.32, 'For the empire!!', 'gamilon_talk1', 3);
       for (let i = 0; i < 4; i++) {
@@ -534,9 +534,9 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
         if (this.rng.getUniform() < 0.4) {
-          generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+          generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 2);
         } else {
-          generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+          generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 2);
         }
       }
       generatePopcornEnemy(newSector.entities, this.rng, this.nameGenerator, 40, 40, 'gahhh! please don\'t kill me!', 'gamilon_talk2');
@@ -552,9 +552,9 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
       // Dreadnoughts represent the strongest(?) enemy. There aren't many and they're a force to be reckoned with
       // We place dreadnoughts in odd places
       if (newSector.x === (this.width - 1)) {
-        generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.25, undefined, undefined, ~~(this.rng.getUniform() * 4));
+        generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.25, undefined, undefined, 1);
       } else if (newSector.y === (this.height - 1)) {
-        generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH * 0.25, SECTOR_HEIGHT * 0.5, undefined, undefined, ~~(this.rng.getUniform() * 4));
+        generateDreadnoughtEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH * 0.25, SECTOR_HEIGHT * 0.5, undefined, undefined, 1);
       }
 
       for (let i = 0; i < 5; i++) {
@@ -562,9 +562,9 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
         const posY = Math.max(10, Math.min(SECTOR_WIDTH - 10, this.rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.3)));
 
         if (this.rng.getUniform() < 0.4563) {
-          generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+          generateBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 1);
         } else {
-          generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, ~~(this.rng.getUniform() * 4));
+          generateAltBattleshipEnemy(newSector.entities, this.rng, this.nameGenerator, posX, posY, undefined, undefined, 1);
         }
       }
       generateWeakEnemy(newSector.entities, this.rng, this.nameGenerator, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
