@@ -222,6 +222,7 @@ TitleScreen.prototype.showTitle = function (argument) {
     return;
   }
   this.hasShownTitle = true;
+  this.prologueText.visible = false;
 
   let t = this.add.tween({
     targets: [this.bg, this.st],
@@ -741,6 +742,6 @@ WinScreen.prototype.create = function() {
   this.add.bitmapText(32, 32, 'miniset', 'You win! Press space to go to back to the title', DEFAULT_TEXT_SIZE);
 
   this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
-    this.scene.start('TitleScreen');
+    this.scene.start('CDRomScreen');
   });
 };

@@ -945,10 +945,29 @@ Gameplay.prototype.doNextTurn = function(nextEntity) {
   });
 
   ViewEntities(this.entities, ['DestroyedComponent', 'PlayerControlComponent', 'HullHealthComponent'], [], (entity, destroyed, playerControl, hullHealthComponent) => {
-    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'GAME OVER', DEFAULT_TEXT_SIZE * 2);
+    const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'century', 'GAME OVER', 32);
     questionText.setCenterAlign();
     questionText.setOrigin(0.5);
-    SFXSingletons['game_over'].play();
+    this.time.addEvent({
+      delay: 400,
+      callback: () => { SFXSingletons['game_over'].play(); }
+    });
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        const questionText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.75, 'miniset', 'press space to go back to the title screen', DEFAULT_TEXT_SIZE);
+        questionText.setCenterAlign();
+        questionText.setOrigin(0.5);
+
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
+          for (let i = 0; i < BGMSingletons.length; i++) {
+            BGMSingletons[i].volume = 0;
+          }
+          this.scene.start('CDRomScreen');
+        });
+      }
+    })
 
     if (HasComponent(entity, 'SuppliesComponent')) {
       const supplies = GetComponent(entity, 'SuppliesComponent');
