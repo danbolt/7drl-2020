@@ -132,7 +132,10 @@ const generateDreadnoughtEnemy = function (entities, rng, names, x, y, message, 
 const generateDroneEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
   const portraitToPick = 'gamilon_mini';
 
-  return generateEnemy(entities, rng, names, x, y, new DroneEnemyPointsConfiguration(), portraitToPick, 'Lost ' + ENEMY_PEOPLE_NAME + ' Machines', DRONE_NAME_PREFIX, DRONE_CLASS_NAME, 'gamilon_mini', 1, 0.5, false);
+  const result = generateEnemy(entities, rng, names, x, y, new DroneEnemyPointsConfiguration(), portraitToPick, 'Lost ' + ENEMY_PEOPLE_NAME + ' Machines', DRONE_NAME_PREFIX, DRONE_CLASS_NAME, 'gamilon_mini', 1, 0.5, false, message, messageSound, rndBounty);
+  AddComponent(result[0], 'PursueIfInRangeComponent', new PursueIfInRangeComponent(9999));
+
+  return result;
 };
 
 const generateOldGodEnemy = function (entities, rng, names, x, y, message, messageSound, rndBounty) {
@@ -282,6 +285,8 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     // ignore naming hell; it's fine
   } else if ((newSector.x === this.iscandarSector.x) && (newSector.y === this.iscandarSector.y)) {
     newSector.name = 'Nayr Principality';
+  } else if ((newSector.x < 2) && (newSector.y > 2)) {
+    newSector.name = newSector.name + ': Rogue autonomous machine space'
   } else {
     newSector.name = newSector.name + ': ' + this.placeNameGenerate.generate();
   }
@@ -414,17 +419,20 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     
     // If we're in the southwest, generate the drones
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 10; i++) {
+      const bounty = 1 + ~~(this.rng.getUniform() * 2);
+      const message = i === 0 ? ('WARNING WARNING NO REFUGE\nDESIST OR BE DESTROYED') : undefined;
+      const messageSound = i === 0 ? 'gamilon_talk2' : undefined;
       const posX = this.rng.getNormal(SECTOR_WIDTH * 0.55, SECTOR_WIDTH * 0.3);
       const posY = this.rng.getNormal(SECTOR_HEIGHT * 0.55, SECTOR_HEIGHT * 0.4);
-      generateDroneEnemy(newSector.entities, this.rng, this.placeNameGenerate, posX, posY);
+      generateDroneEnemy(newSector.entities, this.rng, this.placeNameGenerate, posX, posY, message, messageSound, bounty);
     }
     // If we're "deep", then add an extra drone
     if (tileDistanceFromStart > 3) {
       generateDroneEnemy(newSector.entities, this.rng, this.placeNameGenerate, SECTOR_WIDTH * 0.5, SECTOR_HEIGHT * 0.5);
     }
 
-    this.generateSupplyPlanetEntitiesForSector(newSector, this.rng, ~((this.rng.getUniform() * 3) + 3));
+    this.generateSupplyPlanetEntitiesForSector(newSector, this.rng, ~~((this.rng.getUniform() * 3) + 3));
 
     // TODO: if we have time, generate "the machine core" that destroys all ingame drones if destroyed
   } else {

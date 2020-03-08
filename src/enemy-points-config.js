@@ -140,14 +140,14 @@ const DroneEnemyPointsConfiguration = function() {
   this.shipDexPoints = 15;
 
   this.atkStrengthPoints = 5;
-  this.atkRangePoints = 3.4;
+  this.atkRangePoints = 8.7;
 
   this.skipperDexPoints = 30;
 
-  this.gunnerDexPoints = 3;
+  this.gunnerDexPoints = 10;
 
-  this.engineerDexPoints = 1;
-  this.engineMaxSpeedPoints = 3;
+  this.engineerDexPoints = 6;
+  this.engineMaxSpeedPoints = 28;
 
   this.shieldOperatorDexPoints = 0;
 };
