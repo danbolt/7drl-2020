@@ -62,10 +62,14 @@ Gameplay.prototype.updateTurnOrder = function() {
       for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
         const nextEntity = this.nextTurnQueue[i][0];
         const p = this.turnOrderSprites[i];
+        p.ent = nextEntity;
         if (HasComponent(nextEntity, 'PortraitComponent')) {
           p.setFrame(PortraitFrames[GetComponent(nextEntity, 'PortraitComponent').value].value);
         } else {
           p.setFrame(63);
+        }
+        if (HasComponent(nextEntity, 'ShipReferenceComponent')) {
+          p.ent = this.entities[GetComponent(nextEntity, 'ShipReferenceComponent').value];
         }
         p.x = 0;
         p.y = i * 28;
@@ -82,6 +86,7 @@ Gameplay.prototype.setupUI = function () {
 
   this.add.bitmapText(2, 48 - DEFAULT_TEXT_SIZE, 'miniset', 'NEXT', DEFAULT_TEXT_SIZE);
   this.turnOrder = this.add.container();
+  this.turnOrder.setInteractive();
   this.turnOrder.x = 2;
   this.turnOrder.y = 48;
   this.turnOrder.scaleX = 0.75;
@@ -90,6 +95,48 @@ Gameplay.prototype.setupUI = function () {
   for (let i = 0; i < TURNS_TO_DISPLAY; i++) {
     const p = this.add.sprite(0, i * 28, 'portraits', 0);
     p.setOrigin(0);
+    p.setInteractive();
+    p.on('pointerover', () => { if (p.ent) {
+      if (!HasComponent(p.ent, 'MeshComponent')) {
+        return;
+      }
+      const pMesh = GetComponent(p.ent, 'MeshComponent').mesh;
+      if (pMesh === null) {
+        return;
+      }
+
+      this.currentlyPointingEntity = p.ent;
+      this.penting = true;
+
+      if (HasComponent(this.currentlyPointingEntity, 'AttackRangeComponent')) {
+        const attackRange = GetComponent(this.currentlyPointingEntity, 'AttackRangeComponent').value;
+
+        this.attackRangeMarker.visible = true;
+        this.attackRangeMarker.position.set(pMesh.position.x, pMesh.position.y, pMesh.position.z);
+        this.attackRangeMarker.scale.set(attackRange, attackRange, 1.0);
+      }
+
+      if (HasComponent(this.currentlyPointingEntity, 'PlanetOrbitableComponent')) {
+        const dockRange = GetComponent(this.currentlyPointingEntity, 'PlanetOrbitableComponent').dockRange;
+
+        this.orbitRangeMarker.visible = true;
+        this.orbitRangeMarker.position.set(pMesh.position.x, pMesh.position.y, pMesh.position.z);
+        this.orbitRangeMarker.scale.set(dockRange, dockRange, 1.0);
+      } else {
+        this.orbitRangeMarker.visible = false;
+      }
+    } });
+    p.on('pointerout', () => {
+      // We might have already started pointing at something else
+      if (this.currentlyPointingEntity !== p.ent) {
+        return;
+      }
+
+      this.currentlyPointingEntity = null;
+      this.orbitRangeMarker.visible = false;
+      this.attackRangeMarker.visible = false;
+      this.penting = false;
+    });
     this.turnOrderSprites.push(p);
     this.turnOrder.add(p);
   }
@@ -873,7 +920,7 @@ Gameplay.prototype.update3DScene = function() {
   this.gameCamera.lookAt(this.gameCameraPos.x, 0, this.gameCameraPos.y);
 
   this.previousPointingEntity = this.currentlyPointingEntity;
-  this.currentlyPointingEntity = null;
+  //this.currentlyPointingEntity = null;
   const mouseX = this.input.mousePointer.x / GAME_WIDTH;
   const mouseY = 1.0 - (this.input.mousePointer.y / GAME_HEIGHT);
   threeMouseCoordsVector.x = (mouseX * 2.0) - 1.0;
@@ -891,7 +938,6 @@ Gameplay.prototype.update3DScene = function() {
       this.attackRangeMarker.scale.set(attackRange, attackRange, 1.0);
     }
 
-    
     if (HasComponent(this.currentlyPointingEntity, 'PlanetOrbitableComponent')) {
       const dockRange = GetComponent(this.currentlyPointingEntity, 'PlanetOrbitableComponent').dockRange;
 
@@ -901,7 +947,7 @@ Gameplay.prototype.update3DScene = function() {
     } else {
       this.orbitRangeMarker.visible = false;
     }
-  } else {
+  } else if (!this.penting) {
     this.orbitRangeMarker.visible = false;
     this.attackRangeMarker.visible = false;
   }
