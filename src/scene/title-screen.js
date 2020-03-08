@@ -27,6 +27,8 @@ SplashScreen.prototype.preload = function() {
 SplashScreen.prototype.create = function() {
   this.three = {};
   this.three.camera = new THREE.OrthographicCamera( GAME_WIDTH / -2, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_HEIGHT / -2,  0.1, 100 );
+  this.three.camera.position.set(0, 0, 50);
+  this.three.camera.lookAt(0, 0, 0);
 
   this.three.scene = new THREE.Scene();
   this.three.renderer = new THREE.WebGLRenderer( { canvas: this.game.canvas, context: this.game.context, antialias: false } );
