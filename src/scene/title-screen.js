@@ -27,8 +27,6 @@ SplashScreen.prototype.preload = function() {
 SplashScreen.prototype.create = function() {
   this.three = {};
   this.three.camera = new THREE.OrthographicCamera( GAME_WIDTH / -2, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_HEIGHT / -2,  0.1, 100 );
-  this.three.camera.position.z = 50;
-  this.three.camera.lookAt(0, 0, 0);
 
   this.three.scene = new THREE.Scene();
   this.three.renderer = new THREE.WebGLRenderer( { canvas: this.game.canvas, context: this.game.context, antialias: false } );
@@ -194,6 +192,8 @@ TitleScreen.prototype.setupBackground = function() {
   const background = new THREE.Mesh( backgroundGeom, backgroundMaterial);
   backgroundHolder.add(background);
   this.three.scene.add(backgroundHolder);
+  this.bg = background;
+  this.bgMat = backgroundMaterial;
 
   // Generate starfield from:
   // https://math.stackexchange.com/a/1585996
@@ -213,40 +213,33 @@ TitleScreen.prototype.setupBackground = function() {
   starGeom.addAttribute( 'position', new THREE.Float32BufferAttribute( starVerts, 3 ) );
   const stars = new THREE.Points(starGeom, STARS_COLOR);
   this.three.scene.add(stars);
+  this.st = stars;
+}
+TitleScreen.prototype.showTitle = function (argument) {
+  if (this.hasShownTitle) {
+    return;
+  }
+  this.hasShownTitle = true;
 
   let t = this.add.tween({
-    targets: [background.rotation, stars.rotation],
+    targets: [this.bg, this.st],
     y: Math.PI * 2,
     x: 0.1,
     duration: 253425
   });
-}
-TitleScreen.prototype.create = function() {
-  this.cameras.cameras[0].fadeIn(400);
 
-  this.setupBackground();
-
-  const tSound = this.add.tween({
-    targets: BGMSingletons[0],
-    volume: MAX_VOLUME * 0.5,
-    delay: 2000,
-    duration: 500,
-  });
-
-  this.time.addEvent({
-    delay: 500,
-    callback: () => {
-      SFXSingletons['win_game'].play();
-    }
-  });
-
-  const logoHere = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'miniset', 'LOGOTYPE GOES HERE', DEFAULT_TEXT_SIZE);
+  const logoHere = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.5, 'century', 'NAYR ODYSSEY', 32);
+  logoHere.setCenterAlign();
   logoHere.setOrigin(0.5, 0.5);
 
-  const startText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.75, 'miniset', 'title screen press space to start', DEFAULT_TEXT_SIZE);
+  const startText = this.add.bitmapText(GAME_WIDTH * 0.5, GAME_HEIGHT * 0.75, 'miniset', 'press space to start', DEFAULT_TEXT_SIZE);
   startText.setOrigin(0.5, 0.5);
   startText.setCenterAlign();
-
+  this.time.addEvent({
+    delay: 500,
+    repeat: -1,
+    callback: () => { startText.visible = !(startText.visible); }
+  })
 
   this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
     this.cameras.cameras[0].fadeOut(500);
@@ -290,6 +283,301 @@ TitleScreen.prototype.create = function() {
       }
     });
   });
+}
+TitleScreen.prototype.createEarth = function (argument) {
+  const vertexInfp = this.cache.shader.get('planet_vertex');
+  const vert = vertexInfp.fragmentSrc;
+
+  const fragmentInfo = this.cache.shader.get('planet_fragment');
+  const frag = fragmentInfo.fragmentSrc;
+
+  const planetGeom = new THREE.IcosahedronBufferGeometry(2.0, 2);
+  const earthMaterial = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: frag,
+      uniforms: {
+        color1: new THREE.Uniform(new THREE.Color(0x1010aa)),
+        color2: new THREE.Uniform(new THREE.Color(0x104499)),
+        color3: new THREE.Uniform(new THREE.Color(0x007710)),
+        scaleNoise: new THREE.Uniform(2.0),
+        deRes: new THREE.Uniform(1),
+        displayShadow: new THREE.Uniform(1)
+      }
+    });
+  const earth = new THREE.Mesh( planetGeom, earthMaterial );
+  const earthTween = this.add.tween({
+    targets: earth.rotation,
+    y: Math.PI * 2,
+    duration: 15000,
+    repeat: -1
+  });
+
+  return earth;
+};
+TitleScreen.prototype.createIscandar = function (argument) {
+  const vertexInfp = this.cache.shader.get('planet_vertex');
+  const vert = vertexInfp.fragmentSrc;
+
+  const fragmentInfo = this.cache.shader.get('planet_fragment');
+  const frag = fragmentInfo.fragmentSrc;
+
+  const planetGeom = new THREE.IcosahedronBufferGeometry(1.8, 2);
+  const earthMaterial = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: frag,
+      uniforms: {
+        color1: new THREE.Uniform(new THREE.Color(0x102099)),
+        color2: new THREE.Uniform(new THREE.Color(0x109999)),
+        color3: new THREE.Uniform(new THREE.Color(0xaacccc)),
+        scaleNoise: new THREE.Uniform(2.0),
+        deRes: new THREE.Uniform(1),
+        displayShadow: new THREE.Uniform(1)
+      }
+    });
+  const earth = new THREE.Mesh( planetGeom, earthMaterial );
+  const earthTween = this.add.tween({
+    targets: earth.rotation,
+    y: Math.PI * 2,
+    duration: 15000,
+    repeat: -1
+  });
+
+  return earth;
+};
+
+TitleScreen.prototype.createAsteroid = function (argument) {
+  const vertexInfp = this.cache.shader.get('planet_vertex');
+  const vert = vertexInfp.fragmentSrc;
+
+  const fragmentInfo = this.cache.shader.get('planet_fragment');
+  const frag = fragmentInfo.fragmentSrc;
+
+  const asteroidMaterial = new THREE.ShaderMaterial({
+    vertexShader: vert,
+    fragmentShader: frag,
+    uniforms: {
+      color1: new THREE.Uniform(new THREE.Color(0x44111)),
+      color2: new THREE.Uniform(new THREE.Color(0x775500)),
+      color3: new THREE.Uniform(new THREE.Color(0xeeaa88)),
+      scaleNoise: new THREE.Uniform(2.0),
+      deRes: new THREE.Uniform(1),
+      displayShadow: new THREE.Uniform(1)
+    }
+  });
+
+  const planetGeom = new THREE.IcosahedronBufferGeometry(Math.random() * 5, 2);
+  const earth = new THREE.Mesh( planetGeom, asteroidMaterial );
+  const earthTween = this.add.tween({
+    targets: earth.rotation,
+    y: Math.PI * 2,
+    duration: 15000,
+    repeat: -1
+  });
+
+  return earth;
+};
+TitleScreen.prototype.create = function() {
+  this.hasShownTitle = false;
+
+  this.cameras.cameras[0].fadeIn(400);
+  const tSound = this.add.tween({
+    targets: BGMSingletons[0],
+    volume: MAX_VOLUME * 0.5,
+    delay: 2000,
+    duration: 500,
+  });
+
+  this.setupBackground();
+  this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).once('down', () => {
+    this.showTitle();
+  });
+
+  this.three.camera.position.set(5, 3, -5);
+  this.three.camera.lookAt(0, 0, 0);
+
+  const loader = new THREE.GLTFLoader();
+
+  for (let i = 0; i < 30; i++) {
+    const a = this.createAsteroid();
+    a.position.set(-30 + (Math.random() * 70), (Math.random() * 20) - 10, (Math.random() * -150) + (50))
+    if (Math.abs(a.position.x) < 10) {
+      a.position.x -= 20;
+    }
+    if (a.position.y < 5) {
+      a.position.y += (Math.random() < 0.5) ? 10 : -10;
+    }
+    this.three.scene.add(a);
+  }
+
+  let cinematicStuff = [];
+  const iscandar = this.createIscandar();
+  iscandar.position.set(0, 0, 0);
+  this.three.scene.add(iscandar);
+
+  const earth = this.createEarth();
+  earth.position.set(0, 0, -50);
+  this.three.scene.add(earth);
+
+  let matTweenData = {value: 0};
+
+  let playerShip = null;
+  let playerShipTween = null;
+  const gltfBinary = this.cache.binary.get('player_ship');
+  loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
+    const playerShip = gltfData.scene.children[0];
+    playerShip.scale.set(0.0001, 0.0001, 0.0001);
+    playerShip.position.set(earth.position.x, earth.position.y, earth.position.z + 1.2);
+    this.three.scene.add(playerShip);
+
+    playerShipTween = this.add.tween({
+      targets:playerShip.position,
+      paused: true,
+      z: ((earth.position.z + iscandar.position.z) * 0.5),
+      duration: 10000,
+      easing: Phaser.Math.Easing.Cubic.Out,
+      onStart: () => {
+        this.time.addEvent({
+          delay: 5000,
+          callback: () => {
+            SFXSingletons['win_game'].play();
+            this.showTitle();
+          }
+        })
+        this.add.tween({
+          targets: playerShip.scale,
+          x: 0.5,
+          y: 0.5,
+          z: 0.5,
+          duration: 2000
+        })
+      },
+      onUpdate: () => { this.three.camera.lookAt(playerShip.position) }
+    })
+  });
+
+  const dispatchPlayerShip = () => {
+    if (playerShipTween !== null) {
+      playerShipTween.play();
+    } else {
+      this.time.addEvent({
+        delay: 1000,
+        callback: dispatchPlayerShip
+      })
+    }
+  };
+
+  const toEarthTweenDuration = 1500;
+  const toEarthTweenDelay = 1500;
+
+  const n = new THREE.Vector3(iscandar.position.x, iscandar.position.y, iscandar.position.z);
+  const cameraScrollTween = this.add.tween({
+    targets: n,
+    x: earth.position.x,
+    y: earth.position.y,
+    z: earth.position.z,
+    paused: true,
+    duration: toEarthTweenDuration,
+    onUpdate: (tween, target) => {
+      this.three.camera.lookAt(target.x, target.y, target.z);
+
+      this.three.camera.position.x = target.x - 5;
+      this.three.camera.position.y = target.y + 3;
+      this.three.camera.position.z = Phaser.Math.Interpolation.Linear([iscandar.position.z - 5, earth.position.z + 5], tween.progress);
+    },
+    onComplete: () => {
+      this.time.addEvent({
+        delay: 1000,
+        callback: () => { dispatchPlayerShip(); }
+      })
+    }
+  });
+
+  const matTweenB = this.add.tween({
+    targets: matTweenData,
+    value: 1.0,
+    duration: toEarthTweenDuration,
+    paused: true,
+    easing: Phaser.Math.Easing.Cubic.Out,
+    onStart: () => { matTweenData.value = 0; },
+    onUpdate: () => {
+      const v = matTweenData.value;
+      const newA = lerpColor(GamilonHomeworldSectorColor.colorA, StartingSectorColor.colorA, v);
+      const newB = lerpColor(GamilonHomeworldSectorColor.colorB, StartingSectorColor.colorB, v);
+      const newC = lerpColor(GamilonHomeworldSectorColor.colorC, StartingSectorColor.colorC, v);
+      this.bgMat.uniforms.color1.value.set(newA);
+      this.bgMat.uniforms.color2.value.set(newB);
+      this.bgMat.uniforms.color3.value.set(newC);
+      this.bgMat.uniformsNeedUpdate = true;
+    }
+  });
+
+  const toEarth = () => {
+    matTweenB.play();
+    cameraScrollTween.play();
+  };
+
+  const gamilonTweenDuration = 300;
+  const matTweenA = this.add.tween({
+    targets: matTweenData,
+    value: 1.0,
+    paused: true,
+    duration: gamilonTweenDuration,
+    easing: Phaser.Math.Easing.Cubic.Out,
+    onUpdate: () => {
+      const v = matTweenData.value;
+      const newA = lerpColor(IscandarSectorColor.colorA, GamilonHomeworldSectorColor.colorA, v);
+      const newB = lerpColor(IscandarSectorColor.colorB, GamilonHomeworldSectorColor.colorB, v);
+      const newC = lerpColor(IscandarSectorColor.colorC, GamilonHomeworldSectorColor.colorC, v);
+      this.bgMat.uniforms.color1.value.set(newA);
+      this.bgMat.uniforms.color2.value.set(newB);
+      this.bgMat.uniforms.color3.value.set(newC);
+      this.bgMat.uniformsNeedUpdate = true;
+    }
+  });
+
+  const farRange = 10;
+  const closeRange = 3.4;
+  const gamilonTweens = [];
+  for (let id = 0; id < 16; id++) {
+    const i = id;
+    const gltfBinary = this.cache.binary.get('gamilon_small');
+    loader.parse(gltfBinary, 'asset/model/', (gltfData) => {
+      // The mesh must be the only object in the scene
+      const m = gltfData.scene.children[0];
+      m.scale.set(0.5, 0.5, 0.5);
+      this.three.scene.add(m);
+      m.position.set(iscandar.position.x + Math.cos(i / 16 * Math.PI * 2) * farRange, 0, iscandar.position.z + Math.sin(i / 16 * Math.PI * 2) * farRange)
+      m.lookAt(iscandar.position);
+      m.visible = false;
+
+      let t = this.add.tween({
+        targets: m.position,
+        paused: true,
+        x: (iscandar.position.x + Math.cos(i / 16 * Math.PI * 2) * closeRange),
+        z: (iscandar.position.z + Math.sin(i / 16 * Math.PI * 2) * closeRange),
+        duration: gamilonTweenDuration,
+        easing: Phaser.Math.Easing.Cubic.Out,
+        onStart: () => { m.visible = true; },
+        onComplete: () => { if (i === 0) { this.time.addEvent({delay: toEarthTweenDelay, callback: toEarth}) } }
+      });
+      gamilonTweens.push(t);
+    });
+  }
+
+  const launchGamilons = () => {
+    gamilonTweens.forEach((t) => {
+      t.play();
+    });
+    matTweenA.play();
+  };
+
+  this.time.addEvent({
+    delay: 2000,
+    callback: launchGamilons
+  })
+
+  this.three.camera.position.set(-5, 3, -5);
+  this.three.camera.lookAt(iscandar.position);
 };
 
 // lol
@@ -374,13 +662,6 @@ WinScreen.prototype.create = function() {
     volume: MAX_VOLUME * 0.5,
     delay: 2000,
     duration: 500,
-  });
-
-  this.time.addEvent({
-    delay: 500,
-    callback: () => {
-      SFXSingletons['win_game'].play();
-    }
   });
 
   this.add.bitmapText(32, 32, 'miniset', 'You win! Press space to go to back to the title', DEFAULT_TEXT_SIZE);
