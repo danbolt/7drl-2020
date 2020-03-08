@@ -194,9 +194,9 @@ GameWorld.prototype.generateSupplyPlanetEntitiesForSector = function(sector, rng
   const meanSuppliesPerPlanet = Math.max(rng.getNormal(40, 30), 30);
 
   for (let i = 0; i < numberOfPlanetsToGenerate; i++) {
-    const planetRadius = rng.getNormal(5.0, 2.1);
-    const generatedX = 1.0 + (rng.getUniform() * (SECTOR_WIDTH - 3));
-    const generatedY = 1.0 + (rng.getUniform() * (SECTOR_HEIGHT - 3));
+    const planetRadius = rng.getNormal(4.0, 2.1);
+    const generatedX = 1.0 + (rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.4));
+    const generatedY = 1.0 + (rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.4));
 
     if (rng.getUniform() < 0.15) {
       let p2 = NewEntity();
@@ -429,6 +429,23 @@ GameWorld.prototype.tickGenerate = function (playerEntities) {
     // TODO: if we have time, generate "the machine core" that destroys all ingame drones if destroyed
   } else {
     this.generateSupplyPlanetEntitiesForSector(newSector, this.rng, 3);
+
+    // add some cosmetic asteroids
+    const asteroidCount = ~~(this.rng.getUniform() * tileDistanceFromStart);
+    for (let i = 0; i < asteroidCount; i++) {
+      const planetRadius = this.rng.getNormal(9.87926, 0.4);
+      const generatedX = rng.getNormal(SECTOR_WIDTH * 0.5, SECTOR_WIDTH * 0.5);
+      const generatedY = rng.getNormal(SECTOR_HEIGHT * 0.5, SECTOR_HEIGHT * 0.5);
+
+      let p2 = NewEntity();
+      AddComponent(p2, 'PositionComponent', new PositionComponent(generatedX, generatedY));
+      AddComponent(p2, 'PlanetViewDataComponent', new PlanetViewDataComponent(planetRadius, 0.3435, 0x44111, lerpColor(0x664344, 0x77777F, this.rng.getUniform()), 0xeeaa88));
+      AddComponent(p2, 'MeshComponent', new MeshComponent());
+      AddComponent(p2, 'RequestPlanetAppearanceComponent', new RequestPlanetAppearanceComponent());
+      AddComponent(p2, 'ECSIndexComponent', new ECSIndexComponent(newSector.entities.length));
+      AddComponent(p2, 'ClassComponent', new NameComponent('Asteroid'));
+      newSector.entities.push(p2);
+    }
 
     // if none of the other situations hold true, then generate normal enemies
     if (tileDistanceFromStart <= 2) {
